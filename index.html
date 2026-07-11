@@ -120,6 +120,7 @@
     .pill.new-pill{color:var(--gold);border-color:rgba(200,146,26,.3);background:var(--gold-light)}
     .pill.new-pill:hover{background:#F5E6C8}
     .pill.log-active{background:var(--good);border-color:var(--good);color:#fff}
+    .pill-select{padding:.52rem 2.2rem .52rem 1rem;border-radius:9px;font-size:.8rem;font-weight:600;cursor:pointer;border:1.5px solid var(--teal);background:var(--teal-light);color:var(--teal-dark);font-family:'Plus Jakarta Sans',sans-serif;outline:none}
     .new-period-inline{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.5rem;padding:.75rem 1rem;background:var(--teal-light);border-radius:10px;border:1px solid var(--teal-mid)}
     .new-period-inline input,.new-period-inline select{padding:.5rem .8rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.82rem;outline:none;background:var(--white)}
     .new-period-inline input:focus,.new-period-inline select:focus{border-color:var(--teal)}
@@ -209,6 +210,8 @@
     .modal-btn.primary:hover{box-shadow:0 4px 18px rgba(200,146,26,.5)}
     .modal-btn.ghost{background:transparent;color:rgba(255,255,255,.5);font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;font-weight:500;padding:.6rem}
     .modal-btn.ghost:hover{color:rgba(255,255,255,.85)}
+    .gd-sketch{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem;display:flex;align-items:center;justify-content:center;gap:.7rem;margin-top:.9rem}
+    .gd-sketch-icon{width:34px;height:34px;border-radius:9px;background:rgba(229,168,32,.16);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
 
     /* LEDGER */
     .ledger-intro{background:var(--teal-xdark);border-radius:16px;padding:1.5rem;margin-bottom:1.75rem;color:#fff}
@@ -323,6 +326,11 @@
       .sidebar.collapsed{transform:translateX(-100%)}
       .sb-mobile-overlay{display:none;position:fixed;inset:0;background:rgba(4,61,61,.52);z-index:49}
       .sb-mobile-overlay.show{display:block;animation:fadeIn .22s ease}
+      /* iOS Safari auto-zooms the whole page when a focused input's font-size
+         is under 16px, forcing the user to manually zoom back out every time.
+         Forcing 16px on every form control here (mobile only) prevents that,
+         without changing any desktop sizing. */
+      input,select,textarea{font-size:16px!important}
     }
     .dash-home{max-width:880px;margin:0 auto;padding:2.5rem 1.75rem 5rem}
     .dash-greeting-card{background:linear-gradient(135deg,var(--teal-xdark) 0%,var(--teal) 100%);border-radius:20px;padding:2.25rem 2rem;margin-bottom:1.75rem;position:relative;overflow:hidden}
@@ -351,9 +359,15 @@
     .log-stock-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.38rem .85rem;font-size:.78rem}
     .log-stock-pill .sp-name{color:rgba(255,255,255,.55)}
     .log-stock-pill .sp-val{color:#fff;font-weight:700}
-    .log-metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem}
+    .log-stock-more{cursor:pointer;background:rgba(229,168,32,.16);border-color:rgba(229,168,32,.35);color:var(--gold-bright);font-weight:700}
+    .log-stock-more:hover{background:rgba(229,168,32,.26)}
+    .stk-row{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    .stk-row:last-child{border-bottom:none}
+    .stk-name{font-size:.85rem;color:rgba(255,255,255,.85);font-weight:600}
+    .stk-val{font-size:.85rem;color:#fff;font-weight:700}
+    .log-metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem}
     .lsm{background:rgba(255,255,255,.06);border-radius:10px;padding:.75rem 1rem;min-width:0}
-    .lsm-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:#fff;margin-bottom:.18rem;overflow-wrap:break-word}
+    .lsm-val{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:#fff;margin-bottom:.18rem;overflow-wrap:break-word}
     .lsm-lbl{font-size:.68rem;color:rgba(255,255,255,.42);line-height:1.4}
     .log-content{max-width:880px;margin:0 auto;padding:2rem 2rem 5rem}
     .log-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:.75rem}
@@ -559,6 +573,7 @@
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('log');buildLogPage()"><span class="sb-item-icon">📝</span>Fill My Log</button>
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('ledger');buildLedgerPage()"><span class="sb-item-icon">📒</span>The Ledger</button>
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('customers');switchCustomersTab('owes')"><span class="sb-item-icon">🤝</span>My Customers</button>
+    <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('suppliers');buildSuppliersPage()"><span class="sb-item-icon">🧾</span>My Suppliers</button>
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('baseline');buildBaselinePage()"><span class="sb-item-icon">📊</span>My Baseline</button>
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('learn')"><span class="sb-item-icon">📋</span>Core Business Numbers</button>
     <div class="sb-divider"></div>
@@ -566,6 +581,7 @@
     <button class="sb-item" id="sb-add-product" onclick="closeSidebarOnMobile();openMyProducts()"><span class="sb-item-icon">📋</span>My Products</button>
     <div class="sb-divider"></div>
     <button class="sb-item" onclick="closeSidebarOnMobile();showScreen('biz-center')"><span class="sb-item-icon">🧭</span>Speak to a Guide</button>
+    <button class="sb-item" onclick="closeSidebarOnMobile();openBaselineGuide()"><span class="sb-item-icon">❓</span>How Baseline Works</button>
   </div>
   <div class="sb-footer">BASELINE</div>
 </div>
@@ -631,6 +647,23 @@
           <option value="43">43</option><option value="44">44</option><option value="45">45</option>
           <option value="46">46</option><option value="47">47</option><option value="48">48</option>
           <option value="49">49</option><option value="50">50</option>
+          <option value="51">51</option><option value="52">52</option><option value="53">53</option>
+          <option value="54">54</option><option value="55">55</option><option value="56">56</option>
+          <option value="57">57</option><option value="58">58</option><option value="59">59</option>
+          <option value="60">60</option><option value="61">61</option><option value="62">62</option>
+          <option value="63">63</option><option value="64">64</option><option value="65">65</option>
+          <option value="66">66</option><option value="67">67</option><option value="68">68</option>
+          <option value="69">69</option><option value="70">70</option><option value="71">71</option>
+          <option value="72">72</option><option value="73">73</option><option value="74">74</option>
+          <option value="75">75</option><option value="76">76</option><option value="77">77</option>
+          <option value="78">78</option><option value="79">79</option><option value="80">80</option>
+          <option value="81">81</option><option value="82">82</option><option value="83">83</option>
+          <option value="84">84</option><option value="85">85</option><option value="86">86</option>
+          <option value="87">87</option><option value="88">88</option><option value="89">89</option>
+          <option value="90">90</option><option value="91">91</option><option value="92">92</option>
+          <option value="93">93</option><option value="94">94</option><option value="95">95</option>
+          <option value="96">96</option><option value="97">97</option><option value="98">98</option>
+          <option value="99">99</option><option value="100">100</option>
         </select>
       </div>
       <div class="ob-product-fields" id="ob-product-fields"></div>
@@ -651,7 +684,14 @@
     <button class="back-btn" onclick="goHome()">← Back</button>
     <div class="mp-header">
       <h2 id="mp-screen-title">My Products</h2>
-      <button class="mp-add-btn" onclick="addNewProduct()" id="mp-add-btn">+ Add product</button>
+      <button class="mp-add-btn" onclick="showMpAddProduct()" id="mp-add-btn">+ Add product</button>
+    </div>
+    <div id="mp-add-inline" style="display:none">
+      <div class="new-period-inline" style="margin-bottom:1.25rem">
+        <input type="text" id="mp-add-input" placeholder="e.g. Dried Fish" autocomplete="off" onkeydown="if(event.key==='Enter')submitMpAddProduct()"/>
+        <button class="np-add" onclick="submitMpAddProduct()">Add</button>
+        <button class="np-cancel" onclick="hideMpAddProduct()">Cancel</button>
+      </div>
     </div>
     <div class="mp-list" id="mp-list"></div>
     <div class="mp-limit-note" id="mp-limit-note"></div>
@@ -785,6 +825,22 @@
   </div>
 </div>
 
+<!-- BASELINE GUIDE MODAL -->
+<div class="modal-overlay" id="baseline-guide-modal" onclick="if(event.target===this)closeBaselineGuide()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-top">
+      <div class="modal-top-row">
+        <div class="modal-progress" id="gd-progress"></div>
+        <div class="modal-close" onclick="closeBaselineGuide()">✕</div>
+      </div>
+      <div class="slide-label" id="gd-step-label"></div>
+      <div class="modal-metric-name" id="gd-title"></div>
+    </div>
+    <div class="modal-body"><div class="modal-content" id="gd-content"></div></div>
+    <div class="modal-footer" id="gd-footer"></div>
+  </div>
+</div>
+
 <!-- THE LEDGER -->
 <div class="screen" id="screen-ledger">
   <div class="inner">
@@ -834,6 +890,17 @@
       <div class="bpt" id="tab-customers-buyers" onclick="switchCustomersTab('buyers')">Top Buyers</div>
     </div>
     <div id="customers-content"></div>
+  </div>
+</div>
+
+<div class="screen" id="screen-suppliers">
+  <div class="inner">
+    <button class="back-btn" onclick="goHome()">← Back to home</button>
+    <div class="s-hdr">
+      <h2>My Suppliers</h2>
+      <p>Outstanding balances from credit or split-paid stock purchases, based on the supplier name entered when you logged the delivery.</p>
+    </div>
+    <div id="suppliers-content"></div>
   </div>
 </div>
 
@@ -904,6 +971,23 @@
       <div id="lem-delete-area" style="text-align:center;padding-top:.35rem">
         <span id="lem-delete-link" onclick="showLemDeleteConfirm()" style="font-size:.8rem;color:var(--bad);cursor:pointer;text-decoration:underline">Delete this entry</span>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS IN STOCK MODAL -->
+<div class="modal-overlay" id="stock-modal" onclick="if(event.target===this)closeStockModal()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-top">
+      <div class="modal-top-row">
+        <div class="modal-metric-name">Products in stock</div>
+        <div class="modal-close" onclick="closeStockModal()">✕</div>
+      </div>
+    </div>
+    <div class="modal-body"><div class="modal-content" id="stock-modal-content"></div></div>
+    <div class="modal-footer">
+      <button class="modal-btn primary" onclick="closeStockModal();openMyProducts()">Edit products</button>
+      <button class="modal-btn ghost" onclick="closeStockModal()">Close</button>
     </div>
   </div>
 </div>
@@ -1252,7 +1336,7 @@ function completeStep3(dest){
   updateSidebarAddLabel();
   buildDashboard();
   if(dest==='ledger'){ showScreen('ledger'); buildLedgerPage(); }
-  else showScreen('home');
+  else { showScreen('home'); setTimeout(openBaselineGuide,450); }
 }
 
 // ── NAVIGATION ───────────────────────────────────────────
@@ -1265,6 +1349,8 @@ function goHome(){ showScreen('home'); buildDashboard(); }
 
 // ── CATEGORIES SCREEN ────────────────────────────────────
 const PRODUCT_ONLY=['Inventory Turnover','Sell-Through Rate','Spoilage and Wastage Rate','Days Inventory Outstanding'];
+const PILL_SWITCH_LIMIT=8; // product pill rows switch to a dropdown selector above this count
+const STOCK_PREVIEW_COUNT=4; // stock pills shown inline on the Log page before "+N more"
 
 function buildCatGrid(){
   const grid=document.getElementById('cat-grid');
@@ -1313,6 +1399,64 @@ function setLedgerField(period,owner,fieldId,value){
   saveLedgerStore(d);
 }
 function getLedgerPeriods(){ return getLedgerStore().periods||[]; }
+
+// Derives a period's real calendar start/end date from its name and type
+// (periods are only ever created from Month/Quarter/Year pickers, so the
+// name — "July 2026", "Q3 2026", "2026" — reliably parses back into a real
+// range, even though the stored object itself has no explicit start date).
+// Returns null for anything that doesn't match a known type/format.
+function getPeriodDateRange(periodName){
+  const p=getLedgerPeriods().find(x=>x.name===periodName);
+  const type=p?p.type:null;
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  if(type==='month'){
+    const parts=periodName.split(' ');
+    const monthIdx=months.indexOf(parts[0]);
+    const year=parseInt(parts[1],10);
+    if(monthIdx<0||isNaN(year)) return null;
+    return {start:new Date(year,monthIdx,1),end:new Date(year,monthIdx+1,0)};
+  }
+  if(type==='quarter'){
+    const parts=periodName.split(' ');
+    const qNum=parseInt((parts[0]||'').replace('Q',''),10);
+    const year=parseInt(parts[1],10);
+    if(isNaN(qNum)||isNaN(year)) return null;
+    const startMonth=(qNum-1)*3;
+    return {start:new Date(year,startMonth,1),end:new Date(year,startMonth+3,0)};
+  }
+  if(type==='year'){
+    const year=parseInt(periodName,10);
+    if(isNaN(year)) return null;
+    return {start:new Date(year,0,1),end:new Date(year,11,31)};
+  }
+  return null;
+}
+
+// Chunks a period's real date range into 7-day weeks (the final week may be
+// shorter). Returns [] when the range can't be derived (e.g. custom period
+// types), in which case week filtering is simply not offered.
+function getPeriodWeeks(periodName){
+  const range=getPeriodDateRange(periodName);
+  if(!range) return [];
+  const weeks=[];
+  let cur=new Date(range.start);
+  let idx=1;
+  while(cur<=range.end){
+    const weekStart=new Date(cur);
+    const weekEnd=new Date(cur);
+    weekEnd.setDate(weekEnd.getDate()+6);
+    if(weekEnd>range.end) weekEnd.setTime(range.end.getTime());
+    weeks.push({index:idx,start:weekStart,end:weekEnd});
+    cur.setDate(cur.getDate()+7);
+    idx++;
+  }
+  return weeks;
+}
+function dateInWeek(dateStr,week){
+  const d=new Date(dateStr+'T00:00:00');
+  return d>=week.start&&d<=week.end;
+}
+
 function addLedgerPeriod(name,type,days){
   const d=getLedgerStore();
   if(!d.periods) d.periods=[];
@@ -1982,13 +2126,25 @@ function buildCalcProductPills(){
   if(lbl) lbl.textContent='Calculating for:';
   if(!bar) return;
   bar.innerHTML='';
-  PS.products.forEach(p=>{
-    const pill=document.createElement('div');
-    pill.className='pill'+(p===calcProduct?' active':'');
-    pill.textContent=p;
-    pill.onclick=()=>{ calcProduct=p; buildCalcProductPills(); buildCalcInputs(activeCat,activeF); };
-    bar.appendChild(pill);
-  });
+  if(PS.products.length>PILL_SWITCH_LIMIT){
+    const sel=document.createElement('select');
+    sel.className='pill-select';
+    PS.products.forEach(p=>{
+      const opt=document.createElement('option');
+      opt.value=p; opt.textContent=p; opt.selected=(p===calcProduct);
+      sel.appendChild(opt);
+    });
+    sel.onchange=()=>{ calcProduct=sel.value; buildCalcProductPills(); buildCalcInputs(activeCat,activeF); };
+    bar.appendChild(sel);
+  } else {
+    PS.products.forEach(p=>{
+      const pill=document.createElement('div');
+      pill.className='pill'+(p===calcProduct?' active':'');
+      pill.textContent=p;
+      pill.onclick=()=>{ calcProduct=p; buildCalcProductPills(); buildCalcInputs(activeCat,activeF); };
+      bar.appendChild(pill);
+    });
+  }
 }
 
 function showLedgerAddProduct(secId){
@@ -2311,7 +2467,7 @@ function buildCalcInputs(ci,fi){
           <div class="stored-choice">
             ${_calcTag}
             <div class="stored-options">
-              <div class="stored-opt active" id="opt-use-${inp.id}" onclick="chooseSource('${inp.id}','ledger',${ledgerVal})">${inp.qty?n(ledgerVal)+' units':'Use ₦'+n(ledgerVal)}</div>
+              <div class="stored-opt active" id="opt-use-${inp.id}" onclick="chooseSource('${inp.id}','ledger',${ledgerVal})">${inp.money?'Use ₦'+n(ledgerVal):'Use '+n(ledgerVal)}</div>
               <div class="stored-opt" id="opt-new-${inp.id}" onclick="chooseSource('${inp.id}','manual')">Enter a different number</div>
             </div>
             <input type="hidden" id="i-${inp.id}" value="${ledgerVal}"/>
@@ -2450,75 +2606,297 @@ function saveResult(period,product,metricName,data){
 // ── MY BUSINESS BASELINE ─────────────────────────────────
 let baselinePeriod=null;
 let baselineProduct='__all__';
+let _calcMetricsOpen=true;
+
+// Total revenue for a period: sum of every sale entry's amount, regardless
+// of payment status (revenue is recognized at the sale, not the payment).
+function getPeriodTotalRevenue(period){
+  const data=getLog();
+  return data.entries.filter(e=>e.type==='sale'&&e.period===period).reduce((a,e)=>a+(e.amount||0),0);
+}
+// Sums the Ledger's Cost of goods sold field across every product for a
+// period. Returns null (not 0) if nothing has been entered for any product
+// yet, so the caller can show a nudge instead of a false ₦0.
+function getPeriodCOGS(period){
+  let total=0,hasAny=false;
+  PS.products.forEach(p=>{
+    const v=getLedgerField(period,p,'lf-cogs');
+    if(v!==null){ total+=(parseFloat(v)||0); hasAny=true; }
+  });
+  return hasAny?total:null;
+}
+// Every product's revenue for a period, sorted highest first — used for the
+// Top 3 / slowest mover card. Same underlying metric (revenue) at both ends
+// of the same list, rather than introducing a second metric.
+function getPeriodProductRevenueBreakdown(period){
+  const data=getLog();
+  const totals={};
+  data.entries.filter(e=>e.type==='sale'&&e.period===period).forEach(e=>{
+    if(!e.product) return;
+    totals[e.product]=(totals[e.product]||0)+(e.amount||0);
+  });
+  return Object.keys(totals).map(p=>({product:p,revenue:totals[p]})).sort((a,b)=>b.revenue-a.revenue);
+}
+// Same reorder-threshold logic as the Home dashboard's low-stock banner —
+// a live snapshot of current stock, not scoped to any particular period.
+function getLowStockCount(){
+  if(PS.type==='services') return 0;
+  return PS.products.filter(p=>{
+    const pd=PS.productData[p];
+    if(!pd||pd.reorderThreshold===null||pd.reorderThreshold===undefined) return false;
+    return (pd.stock||0)<=pd.reorderThreshold;
+  }).length;
+}
+// Revenue for the `count` most recent real periods leading up to and
+// including `uptoPeriod`, ordered chronologically by each period's derived
+// calendar start date — used by the revenue trend popup.
+function getRecentPeriodsRevenue(uptoPeriod,count){
+  const periods=getLedgerPeriods().map(p=>({name:p.name,range:getPeriodDateRange(p.name)})).filter(p=>p.range);
+  periods.sort((a,b)=>a.range.start-b.range.start);
+  const idx=periods.findIndex(p=>p.name===uptoPeriod);
+  if(idx<0) return [{name:uptoPeriod,revenue:getPeriodTotalRevenue(uptoPeriod)}];
+  const start=Math.max(0,idx-count+1);
+  return periods.slice(start,idx+1).map(p=>({name:p.name,revenue:getPeriodTotalRevenue(p.name)}));
+}
 
 function buildBaselinePage(){
   const results=getResults();
-  const periods=Object.keys(results);
   const content=document.getElementById('baseline-content');
   if(!content) return;
 
-  if(periods.length===0){
-    content.innerHTML=`<div class="baseline-empty"><div class="be-icon">📊</div><p>No results saved yet. Calculate some metrics and they will appear here automatically.</p></div>`;
+  // Period tabs now come from real Ledger periods (sorted chronologically
+  // where derivable), not just periods that happen to have saved calculator
+  // results — the new snapshot dashboard below needs every real period to
+  // be selectable, even ones nothing's been calculated for yet.
+  const allPeriods=getLedgerPeriods();
+  let periodNames=allPeriods.map(p=>p.name);
+  const withRange=allPeriods.map(p=>({name:p.name,range:getPeriodDateRange(p.name)}));
+  if(withRange.length&&withRange.every(p=>p.range)){
+    withRange.sort((a,b)=>a.range.start-b.range.start);
+    periodNames=withRange.map(p=>p.name);
+  }
+
+  if(periodNames.length===0){
+    content.innerHTML=`<div class="baseline-empty"><div class="be-icon">📊</div><p>No periods set up yet. Create a period in the Ledger or My Log, and your business snapshot will appear here automatically.</p></div>`;
     return;
   }
 
-  if(!baselinePeriod||!results[baselinePeriod]) baselinePeriod=periods[periods.length-1];
+  if(!baselinePeriod||!periodNames.includes(baselinePeriod)) baselinePeriod=periodNames[periodNames.length-1];
+  _baselineChartOpen=false; // collapse the chart popup whenever the page (re)builds, e.g. on period switch
 
-  // Period tabs
   let html=`<div class="selector-lbl">Period:</div><div class="baseline-product-tabs" style="margin-bottom:1.5rem">`;
-  periods.forEach(p=>{
+  periodNames.forEach(p=>{
     html+=`<div class="bpt${p===baselinePeriod?' active':''}" onclick="baselinePeriod='${p}';baselineProduct='__all__';buildBaselinePage()">${p}</div>`;
   });
   html+=`</div>`;
 
+  html+=buildBaselineDashboardHtml(baselinePeriod);
+
+  // ── Calculated metrics — unchanged behavior, now just guarded per-section
+  // instead of hiding the whole page when nothing's been calculated yet ──
   const periodData=results[baselinePeriod]||{};
   const products=Object.keys(periodData);
-
-  // Period note
-  const periodObj=getLedgerPeriods().find(p=>p.name===baselinePeriod);
+  const periodObj=allPeriods.find(p=>p.name===baselinePeriod);
   const periodType=periodObj?periodObj.type:'period';
+
+  html+=`<div class="baseline-section-title" style="margin-top:1.75rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between" onclick="toggleCalcMetrics()">Calculated metrics<span id="calc-metrics-chevron" style="transition:transform .2s;display:inline-block;transform:rotate(${_calcMetricsOpen?'0deg':'-90deg'})">▾</span></div>`;
+  html+=`<div id="calc-metrics-body" style="display:${_calcMetricsOpen?'':'none'}">`;
   html+=`<div class="baseline-period-note">Showing your results for <strong>${baselinePeriod}</strong>. This is a ${periodType==='month'?'monthly':periodType==='quarter'?'quarterly':'annual'} view of ${B()}.</div>`;
 
-  // Product tabs
-  if(products.length>1){
-    html+=`<div class="selector-lbl">Viewing:</div><div class="baseline-product-tabs">`;
-    html+=`<div class="bpt${baselineProduct==='__all__'?' active':''}" onclick="baselineProduct='__all__';buildBaselinePage()">All products</div>`;
-    products.forEach(pr=>{
-      html+=`<div class="bpt${baselineProduct===pr?' active':''}" onclick="baselineProduct='${pr}';buildBaselinePage()">${pr}</div>`;
-    });
-    html+=`</div><br/>`;
-  }
-
-  if(baselineProduct==='__all__'&&products.length>1){
-    // Show per-product results side by side
-    products.forEach(pr=>{
-      const pData=periodData[pr]||{};
-      const metricNames=Object.keys(pData);
-      if(metricNames.length===0) return;
-      html+=`<div class="baseline-section"><div class="baseline-section-title">${pr}</div><div class="baseline-cards">`;
-      metricNames.forEach(mn=>{
-        const m=pData[mn];
-        html+=`<div class="baseline-card"><div class="bc-metric-name">${mn}</div><div class="bc-value">${m.formatted}</div><span class="bc-badge ${m.level}">${m.tag}</span></div>`;
-      });
-      html+=`</div></div>`;
-    });
+  if(products.length===0){
+    html+=`<div class="baseline-empty"><div class="be-icon">📋</div><p>No metrics calculated for ${baselinePeriod} yet. Run a calculator and results will appear here automatically.</p></div>`;
   } else {
-    const target=baselineProduct==='__all__'?products[0]:baselineProduct;
-    const pData=periodData[target]||{};
-    const metricNames=Object.keys(pData);
-    if(metricNames.length===0){
-      html+=`<div class="baseline-empty"><div class="be-icon">📋</div><p>No metrics calculated for ${target} in ${baselinePeriod} yet.</p></div>`;
-    } else {
-      html+=`<div class="baseline-section"><div class="baseline-section-title">${target} — ${baselinePeriod}</div><div class="baseline-cards">`;
-      metricNames.forEach(mn=>{
-        const m=pData[mn];
-        html+=`<div class="baseline-card"><div class="bc-metric-name">${mn}</div><div class="bc-value">${m.formatted}</div><span class="bc-badge ${m.level}">${m.tag}</span></div>`;
+    if(products.length>1){
+      html+=`<div class="selector-lbl">Viewing:</div><div class="baseline-product-tabs">`;
+      html+=`<div class="bpt${baselineProduct==='__all__'?' active':''}" onclick="baselineProduct='__all__';buildBaselinePage()">All products</div>`;
+      products.forEach(pr=>{
+        html+=`<div class="bpt${baselineProduct===pr?' active':''}" onclick="baselineProduct='${pr}';buildBaselinePage()">${pr}</div>`;
       });
-      html+=`</div></div>`;
+      html+=`</div><br/>`;
+    }
+
+    if(baselineProduct==='__all__'&&products.length>1){
+      products.forEach(pr=>{
+        const pData=periodData[pr]||{};
+        const metricNames=Object.keys(pData);
+        if(metricNames.length===0) return;
+        html+=`<div class="baseline-section"><div class="baseline-section-title">${pr}</div><div class="baseline-cards">`;
+        metricNames.forEach(mn=>{
+          const m=pData[mn];
+          html+=`<div class="baseline-card"><div class="bc-metric-name">${mn}</div><div class="bc-value">${m.formatted}</div><span class="bc-badge ${m.level}">${m.tag}</span></div>`;
+        });
+        html+=`</div></div>`;
+      });
+    } else {
+      const target=baselineProduct==='__all__'?products[0]:baselineProduct;
+      const pData=periodData[target]||{};
+      const metricNames=Object.keys(pData);
+      if(metricNames.length===0){
+        html+=`<div class="baseline-empty"><div class="be-icon">📋</div><p>No metrics calculated for ${target} in ${baselinePeriod} yet.</p></div>`;
+      } else {
+        html+=`<div class="baseline-section"><div class="baseline-section-title">${target} — ${baselinePeriod}</div><div class="baseline-cards">`;
+        metricNames.forEach(mn=>{
+          const m=pData[mn];
+          html+=`<div class="baseline-card"><div class="bc-metric-name">${mn}</div><div class="bc-value">${m.formatted}</div><span class="bc-badge ${m.level}">${m.tag}</span></div>`;
+        });
+        html+=`</div></div>`;
+      }
     }
   }
+  html+=`</div>`; // close #calc-metrics-body
 
   content.innerHTML=html;
+}
+
+// Collapses/expands the "Calculated metrics" section without a full page
+// rebuild — just toggles the existing DOM, so switching it doesn't lose
+// scroll position or flash.
+function toggleCalcMetrics(){
+  _calcMetricsOpen=!_calcMetricsOpen;
+  const body=document.getElementById('calc-metrics-body');
+  const chev=document.getElementById('calc-metrics-chevron');
+  if(body) body.style.display=_calcMetricsOpen?'':'none';
+  if(chev) chev.style.transform=_calcMetricsOpen?'rotate(0deg)':'rotate(-90deg)';
+}
+
+// Builds the five-card live snapshot at the top of My Results, plus the
+// "View revenue chart" trigger. Total revenue, Gross profit, and Top
+// product are scoped to `period`; Money owed to you and Low stock items are
+// live current-state snapshots (same numbers Who Owes You / My Products
+// show), not historical to any one period — there's no meaningful "money
+// owed as of a past period" without much deeper tracking, so showing today's
+// real figure regardless of which period is selected is the honest choice.
+function buildBaselineDashboardHtml(period){
+  const revenue=getPeriodTotalRevenue(period);
+  const cogs=getPeriodCOGS(period);
+  const owed=getTotalMoneyOwedToBusiness();
+  const lowStockCount=getLowStockCount();
+  const breakdown=getPeriodProductRevenueBreakdown(period);
+  const escPeriod=period.replace(/'/g,"\\'");
+  _baselineChartOpen=false;
+  _baselineGPPopupOpen=false;
+
+  if(revenue<=0&&breakdown.length===0){
+    return `<div class="ledger-nudge-bar" style="margin-bottom:1.5rem">No sales logged for ${period} yet. <span class="ledger-nudge-link" onclick="logPeriod='${escPeriod}';showScreen('log');buildLogPage()">Log a sale</span> and your snapshot will appear here automatically.</div>`;
+  }
+
+  const grossProfitHtml=cogs===null
+    ? `<div style="font-size:.8rem;color:var(--muted);line-height:1.4">Add cost of goods sold to see this. <span class="ledger-nudge-link" onclick="event.stopPropagation();openLedgerSection('${escPeriod}','sales')">Populate your Ledger</span></div>`
+    : `<div class="bc-value">₦${n(Math.max(0,revenue-cogs))}</div>`;
+  const gpOnclick=cogs===null?'':` onclick="toggleGrossProfitBreakdown('${escPeriod}')"`;
+
+  // Top 3 (right, smaller) and the single lowest-revenue product (left) —
+  // only shown when there are more than 3 products sold, so it's never just
+  // repeating what's already in the Top 3 list.
+  const top3=breakdown.slice(0,3);
+  const least=breakdown.length>3?breakdown[breakdown.length-1]:null;
+  const leftHtml=least
+    ? `<div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem">Slowest mover</div><div style="font-size:1rem;font-weight:700;color:var(--text)">${least.product}</div><div style="font-size:.8rem;color:var(--muted)">₦${n(least.revenue)}</div>`
+    : `<div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem">Products sold</div><div style="font-size:.85rem;color:var(--muted)">${breakdown.length?`Only ${breakdown.length} product${breakdown.length===1?'':'s'} this period`:'None yet'}</div>`;
+  const rightHtml=top3.length
+    ? `<div style="font-size:.72rem;color:var(--muted);margin-bottom:.3rem">Top product${top3.length===1?'':'s'}</div><ul style="margin:0;padding-left:1.1rem;font-size:.8rem;color:var(--text)">${top3.map(t=>`<li style="margin-bottom:.2rem">${t.product} — ₦${n(t.revenue)}</li>`).join('')}</ul>`
+    : `<div style="font-size:.85rem;color:var(--muted)">No sales yet</div>`;
+
+  return `<div class="baseline-cards" style="margin-bottom:.75rem">
+    <div class="baseline-card" style="cursor:pointer" onclick="openLedgerSection('${escPeriod}','sales')">
+      <div class="bc-metric-name">Total revenue</div>
+      <div class="bc-value">₦${n(revenue)}</div>
+    </div>
+    <div class="baseline-card" style="${cogs===null?'':'cursor:pointer'}"${gpOnclick}>
+      <div class="bc-metric-name">Gross profit</div>
+      ${grossProfitHtml}
+    </div>
+    <div class="baseline-card" style="cursor:pointer" onclick="showScreen('customers');switchCustomersTab('owes')">
+      <div class="bc-metric-name">Money owed to you</div>
+      <div class="bc-value">₦${n(owed)}</div>
+    </div>
+    <div class="baseline-card" style="cursor:pointer" onclick="openMyProducts()">
+      <div class="bc-metric-name">Low stock items</div>
+      <div class="bc-value">${lowStockCount}</div>
+    </div>
+    <div id="baseline-gp-popup" style="display:none;grid-column:1/-1"></div>
+    <div class="baseline-card" style="grid-column:1/-1">
+      <div style="display:flex;gap:1rem">
+        <div style="flex:1;min-width:0">${leftHtml}</div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div style="flex:1;min-width:0">${rightHtml}</div>
+      </div>
+    </div>
+  </div>
+  <button class="log-add-btn" style="width:100%;justify-content:center;margin-bottom:1.5rem" onclick="toggleBaselineRevenueChart('${escPeriod}')">View revenue chart</button>
+  <div id="baseline-chart-popup" style="display:none;margin-bottom:1.5rem"></div>`;
+}
+
+// Opens the Ledger at a specific period and expands/scrolls to a specific
+// section — used by the Total revenue card (→ Sales and Revenue) and the
+// Gross profit nudge (→ Variable Costs, where COGS-driving fields live).
+function openLedgerSection(period,sectionId){
+  ledgerActivePeriod=period;
+  if(!ledgerActiveProduct&&PS.products.length) ledgerActiveProduct=PS.products[0];
+  // Clear any earlier session dismissal of the "re-populate" staleness
+  // banner for this period — this navigation exists specifically to help
+  // reconcile a number, so the signal should reliably show if it's stale.
+  sessionStorage.removeItem('baseline_pop_dismiss_'+period.replace(/[^a-zA-Z0-9]/g,'_'));
+  showScreen('ledger'); // lands at the top of the page, where the "re-populate" staleness banner lives
+  buildLedgerPage();
+  setTimeout(function(){
+    const body=document.getElementById('lsbody-'+sectionId);
+    if(body&&!body.classList.contains('open')) toggleLS(sectionId);
+    // Deliberately not auto-scrolling straight to the section — if the Log
+    // has entries since this period was last populated, the banner at the
+    // top of the page needs to be seen first, not skipped past. The section
+    // is expanded and ready by the time the user scrolls down to it.
+  },0);
+}
+
+// Shows/hides a small "how this was calculated" breakdown under the Gross
+// profit card: Total revenue minus Cost of goods sold.
+let _baselineGPPopupOpen=false;
+function toggleGrossProfitBreakdown(period){
+  _baselineGPPopupOpen=!_baselineGPPopupOpen;
+  const el=document.getElementById('baseline-gp-popup');
+  if(!el) return;
+  if(!_baselineGPPopupOpen){ el.style.display='none'; el.innerHTML=''; return; }
+  const revenue=getPeriodTotalRevenue(period);
+  const cogs=getPeriodCOGS(period);
+  if(cogs===null){ _baselineGPPopupOpen=false; el.style.display='none'; return; }
+  const profit=Math.max(0,revenue-cogs);
+  el.innerHTML=`<div class="baseline-card">
+    <div class="bc-metric-name" style="margin-bottom:.6rem">How this is calculated</div>
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.35rem 0;border-bottom:1px solid var(--border)"><span>Total revenue</span><strong>₦${n(revenue)}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:.35rem 0;border-bottom:1px solid var(--border)"><span>− Cost of goods sold</span><strong>₦${n(cogs)}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:.9rem;padding:.5rem 0 0;font-weight:700;color:var(--teal-dark)"><span>= Gross profit</span><span>₦${n(profit)}</span></div>
+  </div>`;
+  el.style.display='block';
+}
+
+// Lightweight custom bar chart (no external charting library — this app
+// works fully offline, and pulling in a CDN dependency for one small chart
+// would either break that offline behavior or mean caching a much bigger
+// footprint than the chart is worth).
+let _baselineChartOpen=false;
+function toggleBaselineRevenueChart(period){
+  _baselineChartOpen=!_baselineChartOpen;
+  const el=document.getElementById('baseline-chart-popup');
+  if(!el) return;
+  if(!_baselineChartOpen){ el.style.display='none'; el.innerHTML=''; return; }
+  const trend=getRecentPeriodsRevenue(period,4);
+  const max=Math.max(1,...trend.map(t=>t.revenue));
+  const bars=trend.map(t=>{
+    const barH=Math.max(4,Math.round((t.revenue/max)*90));
+    return `<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:.3rem;min-width:0">
+      <div style="font-size:.68rem;color:var(--muted);white-space:nowrap">₦${n(t.revenue)}</div>
+      <div style="width:60%;height:90px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${barH}px;background:var(--teal);border-radius:4px 4px 0 0"></div>
+      </div>
+      <div style="font-size:.68rem;color:var(--muted);text-align:center;white-space:nowrap">${t.name}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="baseline-card">
+    <div class="bc-metric-name" style="margin-bottom:.75rem">Revenue, last ${trend.length} period${trend.length===1?'':'s'}</div>
+    <div style="display:flex;align-items:flex-start;gap:.5rem">${bars}</div>
+  </div>`;
+  el.style.display='block';
 }
 
 // ── WHO OWES YOU ──────────────────────────────────────────
@@ -2535,55 +2913,426 @@ function buildBaselinePage(){
 // only for customers whose net balance is still positive. This is a
 // simplification when partial payments have occurred, not an exact
 // per-transaction age.
+// Precise remaining balance on a single sale entry: original amount, minus
+// whatever was paid at time of sale, minus whatever's been repaid since via
+// Record a payment / Mark fully paid. This is the single source of truth
+// for "how much is owed" going forward — no name-matching involved.
+function receivableOwed(e){
+  const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+  return Math.max(0,(e.amount||0)-paidNow-(e.amountRepaid||0));
+}
+
+// Live total of everything currently owed to the business across all open
+// credit/split sales, regardless of period — used by the Ledger's "Money
+// customers owe you" pre-fill so it always matches Who Owes You exactly.
+function getTotalMoneyOwedToBusiness(){
+  migrateLegacyCreditBalances();
+  const data=getLog();
+  return (data.entries||[]).filter(e=>e.type==='sale').reduce((a,e)=>a+receivableOwed(e),0);
+}
+
+// One-time migration for data saved before per-entry payment tracking
+// existed. Old money-in entries were only matched to a customer by name, not
+// to a specific sale, so this applies each named customer's historical
+// payments to their oldest open sale(s) first (oldest debt paid off first —
+// the same assumption most simple bookkeeping applies when it isn't told
+// otherwise). Unnamed sales never had matchable payments, so they're
+// untouched. Runs once; gated by a flag so it never re-applies old payments
+// on top of new per-entry tracking.
+function migrateLegacyCreditBalances(){
+  if(localStorage.getItem('baseline_v2_ar_migrated')) return;
+  const data=getLog();
+  const byName={};
+  data.entries.forEach(e=>{
+    if(e.type!=='sale'||e.amountRepaid!==undefined) return;
+    const raw=(e.label||'').trim();
+    if(raw==='') return;
+    const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+    if((e.amount||0)-paidNow<=0) return;
+    const key=raw.toLowerCase();
+    if(!byName[key]) byName[key]={sales:[],paid:0};
+    byName[key].sales.push(e);
+  });
+  data.entries.forEach(e=>{
+    if(e.type!=='money-in') return;
+    const key=(e.label||'').trim().toLowerCase();
+    if(key&&byName[key]) byName[key].paid+=(e.amount||0);
+  });
+  Object.values(byName).forEach(group=>{
+    group.sales.sort((a,b)=>a.date.localeCompare(b.date));
+    let pool=group.paid;
+    group.sales.forEach(e=>{
+      const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+      const owed=Math.max(0,(e.amount||0)-paidNow);
+      const applied=Math.max(0,Math.min(pool,owed));
+      e.amountRepaid=applied;
+      pool-=applied;
+    });
+  });
+  data.entries.forEach(e=>{ if(e.type==='sale'&&e.amountRepaid===undefined) e.amountRepaid=0; });
+  saveLog(data);
+  localStorage.setItem('baseline_v2_ar_migrated','1');
+}
+
+// Renders one receivable card: name (tap to rename), amount owed, days
+// outstanding, due date badge if set, and payment actions. `nested` drops
+// the card's own border/spacing when it's shown inside a customer group.
+function renderReceivableCard(entry,owed,isUnnamed,nested){
+  const today=new Date();
+  const saleDate=new Date(entry.date+'T00:00:00');
+  const days=Math.max(0,Math.floor((today-saleDate)/86400000));
+  const badgeClass=days<30?'good':days<60?'ok':'bad';
+  let dueBadge='';
+  if(entry.dueDate){
+    const due=new Date(entry.dueDate+'T00:00:00');
+    const overdue=today>due;
+    dueBadge=`<span class="bc-badge ${overdue?'bad':'info'}" style="margin-left:.4rem">${overdue?'Overdue since '+entry.dueDate:'Due '+entry.dueDate}</span>`;
+  }
+  const name=isUnnamed?'Unnamed':(entry.label||'').trim();
+  const idAttr=(entry.id||'').replace(/'/g,"\\'");
+  return `<div class="baseline-card" data-entry-id="${idAttr}" style="${nested?'border:none;padding:.6rem 0 0;border-top:1px solid var(--border);border-radius:0;margin-top:.6rem':'margin-bottom:.6rem'}">
+    <div class="bc-cust-name-row" style="display:flex;align-items:center;gap:.35rem;cursor:pointer" onclick="startReceivableRename(this)">
+      <div class="bc-metric-name">${name}${isUnnamed?' <span style="font-weight:400;color:var(--muted)">(no name entered)</span>':''}</div>
+      <span style="font-size:.72rem;color:var(--teal)">✏️</span>
+    </div>
+    <div class="bc-value">₦${n(owed)}</div>
+    <div style="margin-top:.3rem"><span class="bc-badge ${badgeClass}">${days} day${days===1?'':'s'} outstanding</span>${dueBadge}</div>
+    <div class="receivable-actions" style="display:flex;gap:.5rem;margin-top:.6rem">
+      <button onclick="openRecordPayment(this)" style="font-size:.75rem;font-weight:600;color:var(--teal-dark);background:var(--teal-light);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Record a payment</button>
+      <button onclick="markFullyPaid(this)" style="font-size:.75rem;font-weight:600;color:var(--good);background:var(--good-bg);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Mark fully paid</button>
+    </div>
+  </div>`;
+}
+
 function buildCustomersPage(){
   const el=document.getElementById('customers-content');
   if(!el) return;
+  migrateLegacyCreditBalances();
   const data=getLog();
-  const entries=data.entries||[];
-  const groups={}; // normalized name -> {displayName, isUnnamed, owed, paid, oldestDate}
-
-  entries.forEach(e=>{
-    if(e.type!=='sale'||e.isCash!==false) return;
-    const raw=(e.label||'').trim();
-    const isUnnamed=raw==='';
-    const key=isUnnamed?'__unnamed__':raw.toLowerCase();
-    if(!groups[key]) groups[key]={displayName:raw,isUnnamed,owed:0,paid:0,oldestDate:null};
-    groups[key].owed+=(e.amount||0);
-    if(!groups[key].oldestDate||e.date<groups[key].oldestDate) groups[key].oldestDate=e.date;
+  const sales=(data.entries||[]).filter(e=>e.type==='sale');
+  const open=sales.map(e=>({entry:e,owed:receivableOwed(e)})).filter(r=>r.owed>0);
+  const paidOff=sales.filter(e=>{
+    const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+    const wasCreditOrSplit=(e.amount||0)-paidNow>0;
+    return wasCreditOrSplit&&receivableOwed(e)<=0;
   });
 
-  entries.forEach(e=>{
-    if(e.type!=='money-in') return;
-    const raw=(e.label||'').trim();
-    if(raw==='') return; // unnamed payments can't be matched to a specific debt
-    const key=raw.toLowerCase();
-    if(groups[key]) groups[key].paid+=(e.amount||0);
-  });
-
-  const today=new Date();
-  const rows=Object.values(groups).map(g=>{
-    const balance=Math.max(0,g.owed-g.paid);
-    const oldest=g.oldestDate?new Date(g.oldestDate+'T00:00:00'):null;
-    const days=oldest?Math.max(0,Math.floor((today-oldest)/86400000)):0;
-    return {...g,balance,days};
-  }).filter(r=>r.balance>0);
-
-  rows.sort((a,b)=>b.balance-a.balance);
-
-  if(rows.length===0){
-    el.innerHTML=`<div class="baseline-empty"><div class="be-icon">🤝</div><p>No outstanding credit sales recorded yet. Log a sale, mark it as credit, and add a customer name to start tracking who owes you.</p></div>`;
+  if(open.length===0&&paidOff.length===0){
+    el.innerHTML=`<div class="baseline-empty"><div class="be-icon">🤝</div><p>No credit or split-payment sales recorded yet. Mark a sale as partially or fully unpaid to start tracking who owes you.</p></div>`;
     return;
   }
 
-  el.innerHTML=`<div class="baseline-cards">`+rows.map(r=>{
-    const badgeClass=r.days<30?'good':r.days<60?'ok':'bad';
-    const name=r.isUnnamed?'Unnamed':r.displayName;
-    return `<div class="baseline-card">
-      <div class="bc-metric-name">${name}${r.isUnnamed?' <span style="font-weight:400;color:var(--muted)">(no name entered)</span>':''}</div>
-      <div class="bc-value">₦${n(r.balance)}</div>
-      <span class="bc-badge ${badgeClass}">${r.days} day${r.days===1?'':'s'} outstanding</span>
+  const totalOwed=open.reduce((a,r)=>a+r.owed,0);
+  let html=`<div class="baseline-card" style="margin-bottom:1rem"><div class="bc-metric-name">Money owed to you</div><div class="bc-value">₦${n(totalOwed)}</div></div>`;
+
+  // Group open receivables by customer name for a rollup view. Unnamed sales
+  // are never grouped with each other — each is its own standalone card,
+  // since there's no reliable way to tell separate unnamed customers apart.
+  const groups={};
+  open.forEach(r=>{
+    const raw=(r.entry.label||'').trim();
+    const isUnnamed=raw==='';
+    const key=isUnnamed?('__u_'+r.entry.id):raw.toLowerCase();
+    if(!groups[key]) groups[key]={displayName:raw,isUnnamed,items:[],total:0};
+    groups[key].items.push(r);
+    groups[key].total+=r.owed;
+  });
+
+  html+=Object.values(groups).sort((a,b)=>b.total-a.total).map(g=>{
+    if(g.isUnnamed||g.items.length===1){
+      return renderReceivableCard(g.items[0].entry,g.items[0].owed,g.isUnnamed);
+    }
+    return `<div class="baseline-card" style="margin-bottom:.6rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleCustomerGroup(this)">
+        <div class="bc-metric-name">${g.displayName} <span style="font-weight:400;color:var(--muted);font-size:.78rem">(${g.items.length} open)</span></div>
+        <div class="bc-value" style="font-size:1.1rem">₦${n(g.total)}</div>
+      </div>
+      <div class="customer-group-cards" style="display:none">
+        ${g.items.map(it=>renderReceivableCard(it.entry,it.owed,false,true)).join('')}
+      </div>
     </div>`;
-  }).join('')+`</div>`;
+  }).join('');
+
+  if(paidOff.length){
+    html+=`<div class="baseline-card" style="margin-top:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="togglePaidOffSection(this)">
+        <div class="bc-metric-name">Paid off <span style="font-weight:400;color:var(--muted);font-size:.78rem">(${paidOff.length})</span></div>
+        <span style="color:var(--muted);font-size:.8rem">▾</span>
+      </div>
+      <div class="paid-off-list" style="display:none;margin-top:.6rem">
+        ${paidOff.map(e=>{
+          const name=(e.label||'').trim()||'Unnamed';
+          return `<div style="padding:.4rem 0;border-top:1px solid var(--border);font-size:.78rem;color:var(--text-secondary)">${name} · ₦${n(e.amount)} · ${e.date} · <span style="color:var(--good);font-weight:600">Paid in full</span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+function toggleCustomerGroup(headerEl){
+  const wrap=headerEl.parentElement.querySelector('.customer-group-cards');
+  if(wrap) wrap.style.display=wrap.style.display==='none'?'':'none';
+}
+function togglePaidOffSection(headerEl){
+  const wrap=headerEl.parentElement.querySelector('.paid-off-list');
+  if(wrap) wrap.style.display=wrap.style.display==='none'?'':'none';
+}
+
+// Renames exactly one sale entry, matched by its stable id — never affects
+// any other sale, named or unnamed.
+function startReceivableRename(rowEl){
+  const card=rowEl.closest('.baseline-card');
+  if(!card) return;
+  const entryId=card.dataset.entryId;
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===entryId);
+  const placeholder=entry&&entry.type==='stock-in'?'Supplier name':'Customer name';
+  const currentName=rowEl.querySelector('.bc-metric-name').textContent.replace('(no name entered)','').trim();
+  rowEl.innerHTML=`<input type="text" class="receivable-rename-input" value="${currentName.replace(/"/g,'&quot;')}" placeholder="${placeholder}" onclick="event.stopPropagation()" style="flex:1;padding:.4rem .6rem;border:1.5px solid var(--teal-mid);border-radius:8px;font-size:.9rem;font-family:'Plus Jakarta Sans',sans-serif"/>
+    <button onclick="event.stopPropagation();saveReceivableRename(this,'${entryId.replace(/'/g,"\\'")}')" style="font-size:.75rem;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:6px;padding:.4rem .6rem;cursor:pointer">Save</button>`;
+  const input=rowEl.querySelector('.receivable-rename-input');
+  if(input){ input.focus(); input.select(); }
+}
+function saveReceivableRename(btn,entryId){
+  const input=btn.parentElement.querySelector('.receivable-rename-input');
+  const newName=input?input.value.trim():'';
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===entryId);
+  if(!entry) return;
+  entry.label=newName; // blank is allowed here — un-naming a single mis-attributed entry is fine
+  saveLog(data);
+  // Reused by both Who Owes You (sale) and My Suppliers (stock-in) cards —
+  // rebuild whichever screen this entry actually belongs to.
+  if(entry.type==='stock-in'){ buildSuppliersPage(); } else { buildCustomersPage(); }
+}
+
+// Reveals an inline "amount paid" input on one card, in place of its
+// Record/Mark-paid buttons.
+function openRecordPayment(btn){
+  const card=btn.closest('.baseline-card');
+  const actions=card?card.querySelector('.receivable-actions'):null;
+  if(!actions) return;
+  actions.innerHTML=`<input type="number" class="receivable-payment-input" placeholder="Amount paid (₦)" step="any" min="0" style="flex:1;padding:.4rem .6rem;border:1.5px solid var(--teal-mid);border-radius:8px;font-size:.85rem"/>
+    <button onclick="saveRecordedPayment(this)" style="font-size:.75rem;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Save</button>
+    <span onclick="buildCustomersPage()" style="cursor:pointer;color:var(--muted);padding:.4rem;font-size:.85rem">✕</span>`;
+  const input=actions.querySelector('.receivable-payment-input');
+  if(input) input.focus();
+}
+function saveRecordedPayment(btn){
+  const card=btn.closest('.baseline-card');
+  if(!card) return;
+  const input=card.querySelector('.receivable-payment-input');
+  const raw=input?parseFloat((input.value||'').replace(/,/g,'')):NaN;
+  if(isNaN(raw)||raw<=0) return;
+  recordPaymentAgainstEntry(card.dataset.entryId,raw);
+}
+// "Mark fully paid" is the same mechanism as Record a payment, just
+// pre-filled with the exact remaining balance instead of a typed amount.
+function markFullyPaid(btn){
+  const card=btn.closest('.baseline-card');
+  if(!card) return;
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===card.dataset.entryId);
+  if(!entry) return;
+  const owed=receivableOwed(entry);
+  if(owed<=0) return;
+  recordPaymentAgainstEntry(card.dataset.entryId,owed);
+}
+// Applies a payment to one specific receivable and auto-logs it as a Money
+// received entry (same date, same customer name), so Daily Log, Cash
+// Position, and Ledger pre-fills all stay accurate without double entry.
+function recordPaymentAgainstEntry(entryId,paymentAmount){
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===entryId);
+  if(!entry) return;
+  const owed=receivableOwed(entry);
+  const applied=Math.max(0,Math.min(paymentAmount,owed));
+  if(applied<=0) return;
+  entry.amountRepaid=(entry.amountRepaid||0)+applied;
+  saveLog(data);
+  addLogEntry({type:'money-in',date:new Date().toISOString().split('T')[0],period:activePeriod||entry.period,product:'',units:0,amount:applied,isCash:true,category:'',label:(entry.label||'').trim()});
+  if(document.getElementById('log-entries-list')) buildLogEntries();
+  if(document.getElementById('log-summary')) buildLogSummary();
+  buildCustomersPage();
+}
+
+// ── MY SUPPLIERS (accounts payable) ──────────────────────
+// Mirrors the receivables system above exactly, but for money the business
+// owes suppliers on credit/split stock purchases. The one real difference:
+// recording a payment here logs it as an `expense` (category: "supplier"),
+// not a `money-in` — money is leaving the business, not arriving.
+
+// Precise remaining balance on a single stock-in entry, same shape as
+// receivableOwed().
+function payableOwed(e){
+  const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+  return Math.max(0,(e.amount||0)-paidNow-(e.amountRepaid||0));
+}
+
+// Supplier names didn't exist before this ticket, so there's no historical
+// name-matched payment data to reconcile (unlike the receivables migration,
+// which had to redistribute old money-in payments across old sales). This
+// just ensures every pre-existing stock-in entry has an explicit
+// amountRepaid so payableOwed() never has to guess. Runs once.
+function migrateLegacyPayableBalances(){
+  if(localStorage.getItem('baseline_v2_ap_migrated')) return;
+  const data=getLog();
+  data.entries.forEach(e=>{ if(e.type==='stock-in'&&e.amountRepaid===undefined) e.amountRepaid=0; });
+  saveLog(data);
+  localStorage.setItem('baseline_v2_ap_migrated','1');
+}
+
+// Live total currently owed to suppliers across all open stock purchases —
+// used by the Ledger's "Money you owe suppliers" pre-fill, same pattern as
+// getTotalMoneyOwedToBusiness().
+function getTotalMoneyOwedToSuppliers(){
+  migrateLegacyPayableBalances();
+  const data=getLog();
+  return (data.entries||[]).filter(e=>e.type==='stock-in').reduce((a,e)=>a+payableOwed(e),0);
+}
+
+function renderPayableCard(entry,owed,isUnnamed,nested){
+  const today=new Date();
+  const purchaseDate=new Date(entry.date+'T00:00:00');
+  const days=Math.max(0,Math.floor((today-purchaseDate)/86400000));
+  const badgeClass=days<30?'good':days<60?'ok':'bad';
+  let dueBadge='';
+  if(entry.dueDate){
+    const due=new Date(entry.dueDate+'T00:00:00');
+    const overdue=today>due;
+    dueBadge=`<span class="bc-badge ${overdue?'bad':'info'}" style="margin-left:.4rem">${overdue?'Overdue since '+entry.dueDate:'Due '+entry.dueDate}</span>`;
+  }
+  const name=isUnnamed?'Unnamed':(entry.label||'').trim();
+  const idAttr=(entry.id||'').replace(/'/g,"\\'");
+  return `<div class="baseline-card" data-entry-id="${idAttr}" style="${nested?'border:none;padding:.6rem 0 0;border-top:1px solid var(--border);border-radius:0;margin-top:.6rem':'margin-bottom:.6rem'}">
+    <div class="bc-cust-name-row" style="display:flex;align-items:center;gap:.35rem;cursor:pointer" onclick="startReceivableRename(this)">
+      <div class="bc-metric-name">${name}${isUnnamed?' <span style="font-weight:400;color:var(--muted)">(no name entered)</span>':''}</div>
+      <span style="font-size:.72rem;color:var(--teal)">✏️</span>
+    </div>
+    <div class="bc-value">₦${n(owed)}</div>
+    <div style="margin-top:.3rem"><span class="bc-badge ${badgeClass}">${days} day${days===1?'':'s'} outstanding</span>${dueBadge}</div>
+    <div class="receivable-actions" style="display:flex;gap:.5rem;margin-top:.6rem">
+      <button onclick="openRecordSupplierPayment(this)" style="font-size:.75rem;font-weight:600;color:var(--teal-dark);background:var(--teal-light);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Record a payment</button>
+      <button onclick="markSupplierFullyPaid(this)" style="font-size:.75rem;font-weight:600;color:var(--good);background:var(--good-bg);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Mark fully paid</button>
+    </div>
+  </div>`;
+}
+
+function buildSuppliersPage(){
+  const el=document.getElementById('suppliers-content');
+  if(!el) return;
+  migrateLegacyPayableBalances();
+  const data=getLog();
+  const purchases=(data.entries||[]).filter(e=>e.type==='stock-in');
+  const open=purchases.map(e=>({entry:e,owed:payableOwed(e)})).filter(r=>r.owed>0);
+  const paidOff=purchases.filter(e=>{
+    const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?(e.amount||0):0);
+    const wasCreditOrSplit=(e.amount||0)-paidNow>0;
+    return wasCreditOrSplit&&payableOwed(e)<=0;
+  });
+
+  if(open.length===0&&paidOff.length===0){
+    el.innerHTML=`<div class="baseline-empty"><div class="be-icon">🧾</div><p>No credit or split-payment stock purchases recorded yet. Mark a stock delivery as partially or fully unpaid to start tracking what you owe suppliers.</p></div>`;
+    return;
+  }
+
+  const totalOwed=open.reduce((a,r)=>a+r.owed,0);
+  let html=`<div class="baseline-card" style="margin-bottom:1rem"><div class="bc-metric-name">Money you owe</div><div class="bc-value">₦${n(totalOwed)}</div></div>`;
+
+  const groups={};
+  open.forEach(r=>{
+    const raw=(r.entry.label||'').trim();
+    const isUnnamed=raw==='';
+    const key=isUnnamed?('__u_'+r.entry.id):raw.toLowerCase();
+    if(!groups[key]) groups[key]={displayName:raw,isUnnamed,items:[],total:0};
+    groups[key].items.push(r);
+    groups[key].total+=r.owed;
+  });
+
+  html+=Object.values(groups).sort((a,b)=>b.total-a.total).map(g=>{
+    if(g.isUnnamed||g.items.length===1){
+      return renderPayableCard(g.items[0].entry,g.items[0].owed,g.isUnnamed);
+    }
+    return `<div class="baseline-card" style="margin-bottom:.6rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleCustomerGroup(this)">
+        <div class="bc-metric-name">${g.displayName} <span style="font-weight:400;color:var(--muted);font-size:.78rem">(${g.items.length} open)</span></div>
+        <div class="bc-value" style="font-size:1.1rem">₦${n(g.total)}</div>
+      </div>
+      <div class="customer-group-cards" style="display:none">
+        ${g.items.map(it=>renderPayableCard(it.entry,it.owed,false,true)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  if(paidOff.length){
+    html+=`<div class="baseline-card" style="margin-top:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="togglePaidOffSection(this)">
+        <div class="bc-metric-name">Paid off <span style="font-weight:400;color:var(--muted);font-size:.78rem">(${paidOff.length})</span></div>
+        <span style="color:var(--muted);font-size:.8rem">▾</span>
+      </div>
+      <div class="paid-off-list" style="display:none;margin-top:.6rem">
+        ${paidOff.map(e=>{
+          const name=(e.label||'').trim()||'Unnamed';
+          return `<div style="padding:.4rem 0;border-top:1px solid var(--border);font-size:.78rem;color:var(--text-secondary)">${name} · ₦${n(e.amount)} · ${e.date} · <span style="color:var(--good);font-weight:600">Paid in full</span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+}
+// toggleCustomerGroup() and togglePaidOffSection() (defined above) are pure
+// structural toggles — they don't reference "customer" in their logic, just
+// a sibling's class name — so they're reused as-is here rather than
+// duplicated.
+
+function openRecordSupplierPayment(btn){
+  const card=btn.closest('.baseline-card');
+  const actions=card?card.querySelector('.receivable-actions'):null;
+  if(!actions) return;
+  actions.innerHTML=`<input type="number" class="receivable-payment-input" placeholder="Amount paid (₦)" step="any" min="0" style="flex:1;padding:.4rem .6rem;border:1.5px solid var(--teal-mid);border-radius:8px;font-size:.85rem"/>
+    <button onclick="saveRecordedSupplierPayment(this)" style="font-size:.75rem;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:6px;padding:.4rem .7rem;cursor:pointer">Save</button>
+    <span onclick="buildSuppliersPage()" style="cursor:pointer;color:var(--muted);padding:.4rem;font-size:.85rem">✕</span>`;
+  const input=actions.querySelector('.receivable-payment-input');
+  if(input) input.focus();
+}
+function saveRecordedSupplierPayment(btn){
+  const card=btn.closest('.baseline-card');
+  if(!card) return;
+  const input=card.querySelector('.receivable-payment-input');
+  const raw=input?parseFloat((input.value||'').replace(/,/g,'')):NaN;
+  if(isNaN(raw)||raw<=0) return;
+  recordPaymentAgainstPayable(card.dataset.entryId,raw);
+}
+function markSupplierFullyPaid(btn){
+  const card=btn.closest('.baseline-card');
+  if(!card) return;
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===card.dataset.entryId);
+  if(!entry) return;
+  const owed=payableOwed(entry);
+  if(owed<=0) return;
+  recordPaymentAgainstPayable(card.dataset.entryId,owed);
+}
+// Applies a payment to one specific payable and auto-logs it as an Expense
+// entry, category "supplier" (reusing the existing "Supplier payment
+// (reducing what I owe)" category already in the expense form) — so
+// Expenses paid and the Ledger stay accurate without double entry.
+function recordPaymentAgainstPayable(entryId,paymentAmount){
+  const data=getLog();
+  const entry=data.entries.find(e=>e.id===entryId);
+  if(!entry) return;
+  const owed=payableOwed(entry);
+  const applied=Math.max(0,Math.min(paymentAmount,owed));
+  if(applied<=0) return;
+  entry.amountRepaid=(entry.amountRepaid||0)+applied;
+  saveLog(data);
+  addLogEntry({type:'expense',date:new Date().toISOString().split('T')[0],period:activePeriod||entry.period,product:'',units:0,amount:applied,isCash:true,category:'supplier',label:(entry.label||'').trim()});
+  if(document.getElementById('log-entries-list')) buildLogEntries();
+  if(document.getElementById('log-summary')) buildLogSummary();
+  buildSuppliersPage();
 }
 
 // Switches between the "Who Owes You" and "Top Buyers" views on the same
@@ -2869,9 +3618,17 @@ function buildSectionBody(sec,period){
   // Always show product pills + add button for per-product sections
   if(sec.perProduct){
     html+=`<div class="product-pills-row" id="ppr-${sec.id}">`;
-    PS.products.forEach(p=>{
-      html+=`<div class="product-pill${p===ledgerActiveProduct?' active':''}" onclick="switchLedgerProduct('${p}','${sec.id}')">${p}</div>`;
-    });
+    if(PS.products.length>PILL_SWITCH_LIMIT){
+      html+=`<select class="pill-select" onchange="switchLedgerProduct(this.value,'${sec.id}')">`;
+      PS.products.forEach(p=>{
+        html+=`<option value="${p}"${p===ledgerActiveProduct?' selected':''}>${p}</option>`;
+      });
+      html+=`</select>`;
+    } else {
+      PS.products.forEach(p=>{
+        html+=`<div class="product-pill${p===ledgerActiveProduct?' active':''}" onclick="switchLedgerProduct('${p}','${sec.id}')">${p}</div>`;
+      });
+    }
     html+=`<div class="add-product-btn" style="border-radius:999px" onclick="showLedgerAddProduct('${sec.id}')">+ Add ${word}</div>`;
     html+=`</div>`;
     html+=`<div id="lap-${sec.id}" style="display:none"><div class="new-period-inline" style="margin-bottom:.75rem">
@@ -2942,6 +3699,20 @@ function buildSectionBody(sec,period){
         }
       });
       if(hasAny&&totalVal>0) val=String(totalVal);
+    }
+    // Pre-fill 5: lf-recv = current total from Who Owes You (sum of every
+    // still-open receivable, across all periods). This is a live business
+    // snapshot, same reasoning as lf-stkval above — "money customers owe
+    // you right now" matches what that screen already tracks precisely.
+    if(savedVal===null&&f.id==='lf-recv'&&!sec.perProduct){
+      const owed=getTotalMoneyOwedToBusiness();
+      if(owed>0) val=String(owed);
+    }
+    // Pre-fill 6: lf-pay = current total owed to suppliers (mirrors Pre-fill 5,
+    // using the equivalent payables total once a supplier owes something).
+    if(savedVal===null&&f.id==='lf-pay'&&!sec.perProduct){
+      const owed=getTotalMoneyOwedToSuppliers();
+      if(owed>0) val=String(owed);
     }
     // Quantity fields show "Enter quantity" and no ₦ symbol; monetary fields keep "₦ Enter amount"
     const isQty=['lf-txns','lf-sold','lf-recv-u','lf-lost'].includes(f.id);
@@ -3240,6 +4011,63 @@ function renderSlide(){
 function closeLearnModal(){ document.getElementById('learn-modal').classList.remove('show'); document.body.style.overflow=''; }
 function closeModal(e){ if(e.target===document.getElementById('learn-modal')) closeLearnModal(); }
 
+// ── BASELINE GUIDE ───────────────────────────────────────
+const GUIDE_STEPS=[
+  {icon:'📝',title:'Fill my log',desc:"This is where you record what happened today: sales, stock received, expenses, and money received. A minute a day keeps your numbers accurate.",rows:['💰','📦','🧾']},
+  {icon:'🔢',title:'Calculate my baseline',desc:"Your library of business calculators, grouped into Core Unit Economics, Pricing and Profitability, Inventory and Cash Flow, and Product Performance. Pick a metric and see where you stand.",rows:['⚖️','💰','🏆']},
+  {icon:'📊',title:'My results',desc:"A live snapshot of your business: revenue, profit, money owed to you, low stock, and your best and slowest products. Every metric you calculate gets saved here too.",rows:['📊','🤝','📦']},
+  {icon:'📒',title:'Fill my ledger',desc:"A structured record of your pricing, costs, revenue, and cash, organised by period and product. Fill it in once to unlock auto-calculations everywhere else.",rows:['💰','📦','🧾']},
+  {icon:'🤝',title:'My customers',desc:"See who owes you money from credit sales, and who your top buyers are, all pulled from the customer names you enter when logging a sale.",rows:['👤','👤','👤']},
+  {icon:'🧾',title:'My suppliers',desc:"See who you owe money to, based on credit or split-paid stock purchases you've logged.",rows:['🚚','📦','🧾']},
+  {icon:'📋',title:'Core business numbers',desc:"Not sure what a metric means? This is your glossary: plain-English explanations, real examples, and what a good or bad result looks like.",rows:['💡','✅','⚠️']},
+  {icon:'📋',title:'My products',desc:"Manage your product list: prices, costs, stock levels, and reorder thresholds, all in one place.",rows:['📦','🏷️','📋']}
+];
+let gdStep=0;
+function openBaselineGuide(){
+  gdStep=0;
+  renderGuideStep();
+  document.getElementById('baseline-guide-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function renderGuideStep(){
+  const s=GUIDE_STEPS[gdStep];
+  const dots=document.getElementById('gd-progress');
+  dots.innerHTML='';
+  GUIDE_STEPS.forEach((_,i)=>{ const d=document.createElement('div'); d.className='prog-dot'+(i===gdStep?' active':''); dots.appendChild(d); });
+  document.getElementById('gd-step-label').textContent='Step '+(gdStep+1)+' of '+GUIDE_STEPS.length;
+  document.getElementById('gd-title').textContent=s.title;
+  const content=document.getElementById('gd-content');
+  content.innerHTML='<div class="slide-icon">'+s.icon+'</div><div class="slide-body">'+s.desc+'</div><div class="gd-sketch">'+s.rows.map(r=>'<div class="gd-sketch-icon">'+r+'</div>').join('')+'</div>';
+  content.style.animation='none'; content.offsetHeight; content.style.animation='fadeIn .22s ease';
+  const footer=document.getElementById('gd-footer');
+  footer.innerHTML='';
+  const nextBtn=document.createElement('button');
+  nextBtn.className='modal-btn primary';
+  nextBtn.textContent=(gdStep<GUIDE_STEPS.length-1)?'Next':'Complete';
+  nextBtn.onclick=()=>{ if(gdStep<GUIDE_STEPS.length-1){ gdStep++; renderGuideStep(); } else { completeBaselineGuide(); } };
+  footer.appendChild(nextBtn);
+  if(gdStep>0){
+    const backBtn=document.createElement('button');
+    backBtn.className='modal-btn ghost'; backBtn.textContent='← Back';
+    backBtn.onclick=()=>{ gdStep--; renderGuideStep(); };
+    footer.appendChild(backBtn);
+  } else {
+    const skipBtn=document.createElement('button');
+    skipBtn.className='modal-btn ghost'; skipBtn.textContent='Skip tour';
+    skipBtn.onclick=()=>closeBaselineGuide();
+    footer.appendChild(skipBtn);
+  }
+}
+function closeBaselineGuide(){
+  document.getElementById('baseline-guide-modal').classList.remove('show');
+  document.body.style.overflow='';
+}
+function completeBaselineGuide(){
+  closeBaselineGuide();
+  showScreen('home');
+  buildDashboard();
+}
+
 // ── QUOTES ───────────────────────────────────────────────
 const QUOTES=[
   {text:"Happy employees lead to happy customers, which leads to more profits.",author:"Vaughn Aust"},
@@ -3376,6 +4204,18 @@ function buildDashboard(){
 const LOG_KEY='baseline_v2_log';
 let logPeriod=null;
 let logEntryType='sale';
+// Tracks whether the user has deliberately edited "Amount received now" on
+// the current sale entry form (see syncAmountPaidDefault()/markAmountPaidTouched()
+// further down). Declared here, alongside the other log-entry state, since
+// buildLogEntryForm() resets it before this point in the file is reached.
+let _logAmountPaidTouched=false;
+// Type/week filter state for the My Log entries list (buildLogEntries()).
+// Reset to "show everything" automatically whenever the selected period
+// changes — see the _logFilterLastPeriod check inside buildLogEntries().
+let logFilterType='all';
+let logFilterWeeks=[]; // empty = no week filter (show the whole period)
+let _logWeekDropdownOpen=false;
+let _logFilterLastPeriod=null;
 
 function getLog(){
   try{ return JSON.parse(localStorage.getItem(LOG_KEY)||'{"openingStock":{},"entries":[]}'); }
@@ -3402,12 +4242,34 @@ function getLogSummary(period){
     const lost=entries.filter(e=>e.type==='units-lost'&&e.product===p).reduce((a,e)=>a+(e.units||0),0);
     stockOnHand[p]=opening+received-sold-lost;
   });
-  const cashRevenue=entries.filter(e=>e.type==='sale'&&e.isCash).reduce((a,e)=>a+(e.amount||0),0);
-  const creditRevenue=entries.filter(e=>e.type==='sale'&&!e.isCash).reduce((a,e)=>a+(e.amount||0),0);
+  // Split-payment aware: use the precise amountPaidNow when present (new
+  // sale entries), falling back to the old all-or-nothing isCash split for
+  // entries saved before this ticket — same result as before for those.
+  // Also subtracts amountRepaid, so a payment recorded later via Who Owes
+  // You (Record a payment / Mark fully paid) is reflected here too, not
+  // just the amount that was outstanding at the moment of the sale.
+  let cashRevenue=0,creditRevenue=0;
+  entries.filter(e=>e.type==='sale').forEach(e=>{
+    const amt=e.amount||0;
+    const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?amt:0);
+    cashRevenue+=Math.min(paidNow,amt);
+    creditRevenue+=Math.max(0,amt-paidNow-(e.amountRepaid||0));
+  });
   const moneyIn=entries.filter(e=>e.type==='money-in').reduce((a,e)=>a+(e.amount||0),0);
   const expenses=entries.filter(e=>e.type==='expense').reduce((a,e)=>a+(e.amount||0),0);
-  const creditStock=entries.filter(e=>e.type==='stock-in'&&!e.isCash).reduce((a,e)=>a+(e.amount||0),0);
-  return {stockOnHand,cashRevenue,creditRevenue,moneyIn,expenses,creditStock};
+  // Same split-payment-aware treatment as sales: creditStock is the real
+  // remaining balance (subtracting amountRepaid), not just what was unpaid
+  // at the moment of purchase. cashSpentOnStock is tracked separately from
+  // "Expenses paid" — stock purchases are inventory, not an operating
+  // expense, so they're never merged into that figure (see My Log summary).
+  let cashSpentOnStock=0,creditStock=0;
+  entries.filter(e=>e.type==='stock-in').forEach(e=>{
+    const amt=e.amount||0;
+    const paidNow=e.amountPaidNow!==undefined?e.amountPaidNow:(e.isCash?amt:0);
+    cashSpentOnStock+=Math.min(paidNow,amt);
+    creditStock+=Math.max(0,amt-paidNow-(e.amountRepaid||0));
+  });
+  return {stockOnHand,cashRevenue,creditRevenue,moneyIn,expenses,creditStock,cashSpentOnStock};
 }
 
 function updateLogPeriodUI(){
@@ -3449,11 +4311,15 @@ function buildLogSummary(){
     return;
   }
   const s=getLogSummary(logPeriod);
-  const stockPills=PS.products.map(p=>`<div class="log-stock-pill"><span class="sp-name">${p}</span><span class="sp-val">${n(s.stockOnHand[p]||0)} units</span></div>`).join('');
+  const visibleProducts=PS.products.slice(0,STOCK_PREVIEW_COUNT);
+  const remainingCount=PS.products.length-visibleProducts.length;
+  const stockPills=visibleProducts.map(p=>`<div class="log-stock-pill"><span class="sp-name">${p}</span><span class="sp-val">${n(s.stockOnHand[p]||0)} units</span></div>`).join('')
+    +(remainingCount>0?`<div class="log-stock-pill log-stock-more" onclick="openStockModal()">+${remainingCount} more</div>`:'');
   el.innerHTML=`<div class="log-summary-inner">
     <div class="log-stocks-row"><span class="log-stocks-label">Stock on hand:</span>${stockPills||'<span style="color:rgba(255,255,255,.35);font-size:.78rem">Set opening stock below to track inventory</span>'}</div>
     <div class="log-metrics-row">
       <div class="lsm"><div class="lsm-val">₦${n(s.cashRevenue+s.moneyIn)}</div><div class="lsm-lbl">Cash collected</div></div>
+      <div class="lsm"><div class="lsm-val">₦${n(s.cashSpentOnStock)}</div><div class="lsm-lbl">Cash spent on stock</div></div>
       <div class="lsm"><div class="lsm-val">₦${n(s.creditRevenue)}</div><div class="lsm-lbl">Credit sales owed to you</div></div>
       <div class="lsm"><div class="lsm-val">₦${n(s.expenses)}</div><div class="lsm-lbl">Expenses paid</div></div>
       <div class="lsm"><div class="lsm-val">₦${n(s.creditStock)}</div><div class="lsm-lbl">Owed to suppliers</div></div>
@@ -3478,6 +4344,17 @@ function buildOpeningStockSection(){
   el.querySelectorAll('input[type="number"]').forEach(attachCommaInput);
 }
 
+function openStockModal(){
+  const s=getLogSummary(logPeriod);
+  const content=document.getElementById('stock-modal-content');
+  content.innerHTML=PS.products.map(p=>`<div class="stk-row"><span class="stk-name">${p}</span><span class="stk-val">${n(s.stockOnHand[p]||0)} units</span></div>`).join('');
+  document.getElementById('stock-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeStockModal(){
+  document.getElementById('stock-modal').classList.remove('show');
+  document.body.style.overflow='';
+}
 function saveOpeningStock(){
   const data=getLog();
   if(!data.openingStock) data.openingStock={};
@@ -3489,12 +4366,40 @@ function saveOpeningStock(){
   saveLog(data); buildOpeningStockSection(); buildLogSummary();
 }
 
+function setLogFilterType(type){
+  logFilterType=type;
+  buildLogEntries();
+}
+function toggleWeekDropdown(){
+  _logWeekDropdownOpen=!_logWeekDropdownOpen;
+  buildLogEntries();
+}
+function toggleWeekSelection(weekIndex){
+  const pos=logFilterWeeks.indexOf(weekIndex);
+  if(pos>=0) logFilterWeeks.splice(pos,1); else logFilterWeeks.push(weekIndex);
+  buildLogEntries(); // dropdown stays open (_logWeekDropdownOpen is untouched) so multiple weeks can be picked in one go
+}
+// "July 1st" style formatting for the default (no weeks selected) header.
+function fmtOrdinalDate(d){
+  const day=d.getDate();
+  const suffix=(day%10===1&&day!==11)?'st':(day%10===2&&day!==12)?'nd':(day%10===3&&day!==13)?'rd':'th';
+  return d.toLocaleDateString('en-GB',{month:'long'})+' '+day+suffix;
+}
+
 function buildLogEntries(){
   const el=document.getElementById('log-entries-list');
   if(!el||!logPeriod){ if(el) el.innerHTML=''; return; }
+  if(_logFilterLastPeriod!==logPeriod){
+    // Switched periods — start fresh rather than carrying over a filter
+    // that may not even apply to the new period.
+    logFilterType='all';
+    logFilterWeeks=[];
+    _logWeekDropdownOpen=false;
+    _logFilterLastPeriod=logPeriod;
+  }
   const data=getLog();
-  const entries=data.entries.filter(e=>e.period===logPeriod).sort((a,b)=>b.date.localeCompare(a.date));
-  if(entries.length===0){
+  const allEntries=data.entries.filter(e=>e.period===logPeriod).sort((a,b)=>b.date.localeCompare(a.date));
+  if(allEntries.length===0){
     el.innerHTML=`<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:.86rem">No entries logged for ${logPeriod} yet. Tap "Log an entry" to start recording.</div>`;
     return;
   }
@@ -3505,28 +4410,108 @@ function buildLogEntries(){
     'expense':    {label:'Expense paid',  icon:'💸',color:'var(--bad)'},
     'units-lost': {label:'Units lost',    icon:'⚠️',color:'var(--ok)'},
   };
-  el.innerHTML=`<div class="log-entries-header">${entries.length} entr${entries.length===1?'y':'ies'} in ${logPeriod}</div>`+entries.map((e,i)=>{
-    // Use stored id; generate a display key for legacy entries that pre-date id assignment
-    const eKey=(e.id||('leg'+i+'_'+(e.savedAt||String(i)))).replace(/'/g,"\'");
-    const t=TYPE[e.type]||{label:e.type,icon:'•',color:'var(--muted)'};
-    const parts=[];
-    if(e.units) parts.push(n(e.units)+' units');
-    if(e.amount) parts.push('₦'+n(e.amount));
-    if(e.product&&['sale','stock-in','units-lost'].includes(e.type)) parts.push(e.product);
-    if(['sale','stock-in'].includes(e.type)&&!e.isCash) parts.push('Credit');
-    if(e.label) parts.push(e.label);
-    if(e.category&&['expense','units-lost'].includes(e.type)) parts.push(e.category);
-    return `<div class="log-entry-row">
-      <div class="ler-icon">${t.icon}</div>
-      <div class="ler-body">
-        <div class="ler-type" style="color:${t.color}">${t.label}</div>
-        <div class="ler-detail">${parts.join(' · ')}</div>
-      </div>
-      <div class="ler-date">${fmtLogDate(e.date)}</div>
-      <button class="mp-edit-btn" onclick="openLogEditModal('${eKey}')" title="Edit entry" style="font-size:.72rem;padding:.28rem .55rem;flex-shrink:0;align-self:flex-start;margin-top:.05rem">Edit</button>
-      <button class="ler-del" onclick="deleteLogEntry('${eKey}')" title="Remove entry">✕</button>
+
+  // Type pills: All, one per type actually present this period (with live
+  // counts), plus "Has a balance" — a cross-cutting filter for any Sale or
+  // Stock-received entry still owing money, regardless of type.
+  const typeCounts={};
+  allEntries.forEach(e=>{ typeCounts[e.type]=(typeCounts[e.type]||0)+1; });
+  const balanceCount=allEntries.filter(e=>
+    (e.type==='sale'&&receivableOwed(e)>0)||(e.type==='stock-in'&&payableOwed(e)>0)
+  ).length;
+  const typePillDefs=[{key:'all',label:'All',count:allEntries.length}]
+    .concat(Object.keys(TYPE).filter(k=>typeCounts[k]).map(k=>({key:k,label:TYPE[k].label,count:typeCounts[k]})));
+  if(balanceCount>0) typePillDefs.push({key:'balance',label:'Has a balance',count:balanceCount});
+  const typePillsHtml=`<div class="baseline-product-tabs">`+typePillDefs.map(p=>
+    `<div class="bpt${logFilterType===p.key?' active':''}" onclick="setLogFilterType('${p.key}')">${p.label} (${p.count})</div>`
+  ).join('')+`</div>`;
+
+  // Week selector: a compact header (either the full period's date range, or
+  // chips for whichever weeks are currently selected) plus a "⋯" button that
+  // opens a checkbox dropdown — only offered when this period's calendar
+  // range is derivable and actually spans more than one week.
+  const weeks=getPeriodWeeks(logPeriod);
+  let weekRowHtml='';
+  if(weeks.length>1){
+    const fmtShort=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    let headerHtml;
+    if(logFilterWeeks.length===0){
+      const range=getPeriodDateRange(logPeriod);
+      headerHtml=range?`<span style="font-size:.86rem;font-weight:700;color:var(--teal-dark)">${fmtOrdinalDate(range.start)} – ${fmtOrdinalDate(range.end)}</span>`:'';
+    } else {
+      headerHtml=logFilterWeeks.slice().sort((a,b)=>a-b).map(idx=>{
+        const w=weeks.find(x=>x.index===idx);
+        if(!w) return '';
+        return `<span class="bpt active" style="display:inline-flex;align-items:center;gap:.35rem;margin-right:.4rem">Week ${idx} (${fmtShort(w.start)}–${fmtShort(w.end)}) <span onclick="event.stopPropagation();toggleWeekSelection(${idx})" style="cursor:pointer;font-weight:700" title="Remove">✕</span></span>`;
+      }).join('');
+    }
+    const dropdownHtml=`<div id="log-week-dropdown" style="display:${_logWeekDropdownOpen?'block':'none'};position:absolute;top:100%;left:0;margin-top:.35rem;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.14);padding:.5rem .6rem;z-index:20;min-width:130px">`+
+      weeks.map(w=>`<label style="display:flex;align-items:center;gap:.5rem;padding:.32rem 0;font-size:.84rem;color:var(--text);cursor:pointer"><input type="checkbox" ${logFilterWeeks.includes(w.index)?'checked':''} onchange="toggleWeekSelection(${w.index})"/>Week ${w.index}</label>`).join('')+
+      `<div onclick="toggleWeekDropdown()" style="margin-top:.3rem;padding-top:.35rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--teal);cursor:pointer;text-align:center">Done</div>`+
+      `</div>`;
+    weekRowHtml=`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.6rem;position:relative">
+      <div>${headerHtml}</div>
+      <span onclick="toggleWeekDropdown()" title="Choose weeks" style="cursor:pointer;font-size:1rem;line-height:1;color:var(--muted);padding:.25rem .55rem;border-radius:6px;border:1px solid var(--border)">⋯</span>
+      ${dropdownHtml}
     </div>`;
-  }).join('');
+  }
+
+  // Apply the active filters on top of the full period list.
+  let entries=allEntries;
+  if(logFilterType==='balance'){
+    entries=entries.filter(e=>(e.type==='sale'&&receivableOwed(e)>0)||(e.type==='stock-in'&&payableOwed(e)>0));
+  } else if(logFilterType!=='all'){
+    entries=entries.filter(e=>e.type===logFilterType);
+  }
+  if(logFilterWeeks.length>0){
+    entries=entries.filter(e=>logFilterWeeks.some(idx=>{
+      const week=weeks.find(w=>w.index===idx);
+      return week&&dateInWeek(e.date,week);
+    }));
+  }
+
+  const countLabel=entries.length===allEntries.length
+    ? `${allEntries.length} entr${allEntries.length===1?'y':'ies'} in ${logPeriod}`
+    : `${entries.length} of ${allEntries.length} entries in ${logPeriod}`;
+
+  const listHtml=entries.length===0
+    ? `<div style="text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.84rem">No entries match this filter.</div>`
+    : entries.map(e=>{
+        // Fallback key uses this entry's position in the full unfiltered list
+        // (not the filtered one), so edit/delete still target the right
+        // entry regardless of which filter is currently active.
+        const i=allEntries.indexOf(e);
+        const eKey=(e.id||('leg'+i+'_'+(e.savedAt||String(i)))).replace(/'/g,"\'");
+        const t=TYPE[e.type]||{label:e.type,icon:'•',color:'var(--muted)'};
+        const parts=[];
+        if(e.units) parts.push(n(e.units)+' units');
+        // Split payments show the precise paid/owed breakdown instead of a
+        // flat total + generic "Credit" tag — applies to both sale and
+        // stock-in now that both support split payments.
+        const isSplit=['sale','stock-in'].includes(e.type)&&e.amountPaidNow!==undefined&&e.amountPaidNow>0&&e.amountPaidNow<(e.amount||0);
+        if(isSplit){
+          parts.push('₦'+n(e.amountPaidNow)+' (Paid)');
+          parts.push('₦'+n((e.amount||0)-e.amountPaidNow)+' (Credit)');
+        } else if(e.amount){
+          parts.push('₦'+n(e.amount));
+        }
+        if(e.product&&['sale','stock-in','units-lost'].includes(e.type)) parts.push(e.product);
+        if(!isSplit&&['sale','stock-in'].includes(e.type)&&!e.isCash) parts.push('Credit');
+        if(e.label) parts.push(e.label);
+        if(e.category&&['expense','units-lost'].includes(e.type)) parts.push(e.category);
+        return `<div class="log-entry-row">
+          <div class="ler-icon">${t.icon}</div>
+          <div class="ler-body">
+            <div class="ler-type" style="color:${t.color}">${t.label}</div>
+            <div class="ler-detail">${parts.join(' · ')}</div>
+          </div>
+          <div class="ler-date">${fmtLogDate(e.date)}</div>
+          <button class="mp-edit-btn" onclick="openLogEditModal('${eKey}')" title="Edit entry" style="font-size:.72rem;padding:.28rem .55rem;flex-shrink:0;align-self:flex-start;margin-top:.05rem">Edit</button>
+          <button class="ler-del" onclick="deleteLogEntry('${eKey}')" title="Remove entry">✕</button>
+        </div>`;
+      }).join('');
+
+  el.innerHTML=`<div class="log-entries-header">${countLabel}</div>${typePillsHtml}${weekRowHtml}${listHtml}`;
 }
 
 function fmtLogDate(d){
@@ -3624,6 +4609,7 @@ function lefCreatePeriod(){
 function buildLogEntryForm(){
   const content=document.getElementById('log-entry-content');
   if(!content)return;
+  _logAmountPaidTouched=false; // fresh render — default "amount received" back to auto-following the revenue amount
   // Task 4: if no period is selected, show an inline period selector/creator before the entry form.
   // Applies to both products and services flows (shared code path).
   if(!logPeriod){
@@ -3665,15 +4651,21 @@ function buildLogEntryForm(){
     const nameChipsHtml=knownNames.length?`<div class="lef-np-pills" style="margin-bottom:.4rem">${knownNames.map(nm=>`<div class="lef-np-pill" onclick="document.getElementById('log-label').value='${nm.replace(/'/g,"\\'")}'">${nm}</div>`).join('')}</div>`:'';
     fields+=`
       <div class="field-group"><label>${isServ?'Revenue from this engagement (₦)':'Units sold'}</label><input type="number"${isServ?' data-plain-comma="1"':''} id="log-units" placeholder="${isServ?'Skip if not applicable':'e.g. 50'}" step="any" min="0"${isServ?'':' oninput="lefAutoCalcAmount()"'} style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
-      <div class="field-group"><label>Revenue amount (₦)</label><input type="number" data-plain-comma="1" id="log-amount" placeholder="e.g. 100000" step="any" min="0" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
-      <div class="field-group"><label>Payment received now?</label><div class="radio-row"><label><input type="radio" name="pt" value="cash" checked onchange="toggleSaleCustomerField()"> Cash or bank transfer now</label><label><input type="radio" name="pt" value="credit" onchange="toggleSaleCustomerField()"> Credit (they will pay later)</label></div></div>
+      <div class="field-group"><label>Revenue amount (₦)</label><input type="number" data-plain-comma="1" id="log-amount" placeholder="e.g. 100000" step="any" min="0" oninput="syncAmountPaidDefault()" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
+      <div class="field-group"><label>Amount received now (₦)</label><div class="lf-hint" style="color:rgba(255,255,255,.42);font-size:.72rem;margin-bottom:.3rem">Defaults to the full amount. Reduce it if the customer is only paying part now.</div><input type="number" data-plain-comma="1" id="log-amount-paid" placeholder="e.g. 100000" step="any" min="0" oninput="markAmountPaidTouched()" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
       <div class="field-group" id="log-customer-link-wrap"><span id="log-customer-add-link" onclick="expandSaleCustomerField()" style="font-size:.78rem;color:var(--gold);cursor:pointer;text-decoration:underline">+ Add customer name (optional)</span></div>
-      <div class="field-group" id="log-customer-wrap" style="display:none"><label>Customer name (optional)</label>${nameChipsHtml}<input type="text" id="log-label" placeholder="e.g. Alhaji Musa" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>`;
+      <div class="field-group" id="log-customer-wrap" style="display:none"><label>Customer name (optional)</label>${nameChipsHtml}<input type="text" id="log-label" placeholder="e.g. Alhaji Musa" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/>
+        <label style="margin-top:.6rem;display:block">Due date (optional)</label><input type="date" id="log-due-date" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>`;
   } else if(logEntryType==='stock-in'){
+    const knownSuppliers=getKnownSupplierNames();
+    const supplierChipsHtml=knownSuppliers.length?`<div class="lef-np-pills" style="margin-bottom:.4rem">${knownSuppliers.map(nm=>`<div class="lef-np-pill" onclick="document.getElementById('log-label').value='${nm.replace(/'/g,"\\'")}'">${nm}</div>`).join('')}</div>`:'';
     fields+=`
       <div class="field-group"><label>Units received</label><input type="number" id="log-units" placeholder="e.g. 200" step="any" min="0" oninput="lefAutoCalcAmount()" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
-      <div class="field-group"><label>Total cost paid (₦)</label><input type="number" data-plain-comma="1" id="log-amount" placeholder="e.g. 240000" step="any" min="0" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
-      <div class="field-group"><label>Did you pay now?</label><div class="radio-row"><label><input type="radio" name="pt" value="cash" checked> Yes, paid now</label><label><input type="radio" name="pt" value="credit"> No, will pay later (credit)</label></div></div>`;
+      <div class="field-group"><label>Total cost (₦)</label><input type="number" data-plain-comma="1" id="log-amount" placeholder="e.g. 240000" step="any" min="0" oninput="syncAmountPaidDefault()" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
+      <div class="field-group"><label>Amount paid now (₦)</label><div class="lf-hint" style="color:rgba(255,255,255,.42);font-size:.72rem;margin-bottom:.3rem">Defaults to the full amount. Reduce it if you're only paying part now.</div><input type="number" data-plain-comma="1" id="log-amount-paid" placeholder="e.g. 240000" step="any" min="0" oninput="markAmountPaidTouched()" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
+      <div class="field-group" id="log-customer-link-wrap"><span id="log-customer-add-link" onclick="expandSaleCustomerField()" style="font-size:.78rem;color:var(--gold);cursor:pointer;text-decoration:underline">+ Add supplier name (optional)</span></div>
+      <div class="field-group" id="log-customer-wrap" style="display:none"><label>Supplier name (optional)</label>${supplierChipsHtml}<input type="text" id="log-label" placeholder="e.g. Emeka Wholesale" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/>
+        <label style="margin-top:.6rem;display:block">Due date (optional)</label><input type="date" id="log-due-date" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>`;
   } else if(logEntryType==='money-in'){
     fields+=`
       <div class="field-group"><label>Amount received (₦)</label><input type="number" data-plain-comma="1" id="log-amount" placeholder="e.g. 50000" step="any" min="0" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.15)"/></div>
@@ -3698,19 +4690,24 @@ function buildLogEntryForm(){
   content.querySelectorAll('input[type="number"]:not([data-plain-comma])').forEach(attachCommaInput);
 }
 
-// Controls visibility of the optional "Customer name" field on a sale entry.
-// Credit: field + suggestion chips are always shown immediately, since a name
-// matters more there (it feeds Who Owes You). Cash: field starts collapsed
-// behind a lightweight "+ Add customer name" link instead, since cash sales
-// are the highest-frequency action and shouldn't gain visual weight by
-// default — tapping the link reveals the same field, same as credit.
-// Switching back to cash re-collapses the field (no hidden expanded state
-// carried across radio changes), keeping the logic simple and predictable.
-function toggleSaleCustomerField(){
-  const payType=document.querySelector('input[name="pt"]:checked')?.value||'cash';
+// Controls visibility of the optional "Customer name" field on a sale entry
+// based on whether a balance is outstanding (Amount received now < Revenue
+// amount), rather than a binary cash/credit choice — since a sale can now be
+// partially paid. Field starts collapsed behind a lightweight "+ Add
+// customer name" link when there's no balance (fully paid, matches old
+// "cash" behavior); expands automatically once a balance exists (matches
+// old "credit" behavior), since a name matters more there (it feeds Who
+// Owes You).
+function toggleSaleCustomerFieldByBalance(){
+  const amountEl=document.getElementById('log-amount');
+  const paidEl=document.getElementById('log-amount-paid');
   const wrap=document.getElementById('log-customer-wrap');
   const linkWrap=document.getElementById('log-customer-link-wrap');
-  if(payType==='credit'){
+  if(!amountEl||!paidEl) return;
+  const amount=parseFloat((amountEl.value||'').replace(/,/g,''))||0;
+  const paid=parseFloat((paidEl.value||'').replace(/,/g,''))||0;
+  const hasBalance=paid<amount;
+  if(hasBalance){
     if(wrap) wrap.style.display='';
     if(linkWrap) linkWrap.style.display='none';
   } else {
@@ -3718,6 +4715,29 @@ function toggleSaleCustomerField(){
     if(linkWrap) linkWrap.style.display='';
   }
 }
+
+// "Amount received now" defaults to matching the Revenue amount (implying a
+// full cash sale) until the user deliberately edits it themselves. Reset
+// per-render by buildLogEntryForm(). Called whenever Revenue amount changes
+// (typed directly, or auto-calculated by lefAutoCalcAmount) so the default
+// stays in sync until the user opts into a split.
+function syncAmountPaidDefault(){
+  if(_logAmountPaidTouched) return;
+  const amountEl=document.getElementById('log-amount');
+  const paidEl=document.getElementById('log-amount-paid');
+  if(!amountEl||!paidEl) return;
+  paidEl.value=amountEl.value;
+  if(amountEl.dataset.raw!==undefined) paidEl.dataset.raw=amountEl.dataset.raw;
+  toggleSaleCustomerFieldByBalance();
+}
+// Marks that the user has deliberately typed their own "amount received"
+// value, so syncAmountPaidDefault() stops overwriting it on further edits
+// to units/revenue — this is what makes a split payment "stick".
+function markAmountPaidTouched(){
+  _logAmountPaidTouched=true;
+  toggleSaleCustomerFieldByBalance();
+}
+
 // Reveals the customer name field on a cash sale when the "+ Add customer
 // name" link is tapped, in place of the link.
 function expandSaleCustomerField(){
@@ -3738,6 +4758,24 @@ function getKnownCustomerNames(){
   const known={}; // normalized key -> {displayName, lastDate}
   entries.forEach(e=>{
     if(!['sale','money-in'].includes(e.type)) return;
+    const raw=(e.label||'').trim();
+    if(raw==='') return;
+    const key=raw.toLowerCase();
+    if(!known[key]||e.date>known[key].lastDate){
+      known[key]={displayName:raw,lastDate:e.date};
+    }
+  });
+  return Object.values(known).sort((a,b)=>b.lastDate.localeCompare(a.lastDate)).map(k=>k.displayName).slice(0,8);
+}
+
+// Same as getKnownCustomerNames() above, but scanning stock-in entries'
+// label field for supplier names instead.
+function getKnownSupplierNames(){
+  const data=getLog();
+  const entries=data.entries||[];
+  const known={};
+  entries.forEach(e=>{
+    if(e.type!=='stock-in') return;
     const raw=(e.label||'').trim();
     if(raw==='') return;
     const key=raw.toLowerCase();
@@ -3771,6 +4809,7 @@ function lefAutoCalcAmount(){
   const amount=units*price;
   amountEl.value=amount>=1000?amount.toLocaleString('en-NG',{maximumFractionDigits:2}):String(parseFloat(amount.toFixed(2)));
   amountEl.dataset.raw=String(amount);
+  if(['sale','stock-in'].includes(logEntryType)) syncAmountPaidDefault(); // keep "amount paid now" following the auto-calculated total by default
 }
 
 function submitLogEntry(){
@@ -3781,10 +4820,28 @@ function submitLogEntry(){
   const product=document.getElementById('log-entry-product')?.value||(PS.products[0]||'');
   const units=parseFloat((document.getElementById('log-units')?.value||'').replace(/,/g,''))||0;
   const amount=parseFloat((document.getElementById('log-amount')?.value||'').replace(/,/g,''))||0;
-  const payType=document.querySelector('input[name="pt"]:checked')?.value||'cash';
   const category=document.getElementById('log-category')?.value||'';
   const label=document.getElementById('log-label')?.value||'';
-  const entry={type,date,period:logPeriod,product,units,amount,isCash:payType==='cash',category,label};
+  let isCash,amountPaidNow;
+  if(type==='sale'||type==='stock-in'){
+    // Split-payment aware: "Amount paid now" can be anywhere from 0 to the
+    // full amount. isCash is still derived and stored for backward
+    // compatibility with every other part of the app that reads it (Quick
+    // Add, the edit modal, Ledger cash position, old saved entries) — it
+    // just means "fully paid" now rather than a user-facing choice.
+    const paidEl=document.getElementById('log-amount-paid');
+    amountPaidNow=paidEl?Math.max(0,Math.min(amount,parseFloat((paidEl.value||'').replace(/,/g,''))||0)):amount;
+    isCash=amountPaidNow>=amount;
+  } else {
+    const payType=document.querySelector('input[name="pt"]:checked')?.value||'cash';
+    isCash=payType==='cash';
+  }
+  const entry={type,date,period:logPeriod,product,units,amount,isCash,category,label};
+  if(type==='sale'||type==='stock-in'){
+    entry.amountPaidNow=amountPaidNow;
+    entry.amountRepaid=0; // running total of payments recorded later via Who Owes You / My Suppliers
+    entry.dueDate=document.getElementById('log-due-date')?.value||'';
+  }
   addLogEntry(entry);
   // Task 1: sync stock changes to productData
   if(['sale','units-lost'].includes(type)&&product&&units>0){
@@ -5012,7 +6069,7 @@ function buildMyProductsPage(){
   const wordCap=PS.type==='services'?'Service Lines':'Products';
   document.getElementById('mp-screen-title').textContent='My '+wordCap;
   document.getElementById('mp-add-btn').textContent='+ Add '+word;
-  document.getElementById('mp-add-btn').onclick=addNewProduct;
+  document.getElementById('mp-add-btn').onclick=showMpAddProduct;
   const list=document.getElementById('mp-list');
   const limit=document.getElementById('mp-limit-note');
   list.innerHTML='';
@@ -5031,9 +6088,9 @@ function buildMyProductsPage(){
           <span class="mp-num">${i+1}</span>
           <span class="mp-name" id="mp-name-${i}">${p}</span>
           <div id="mp-code-area-${i}">${_codeTagHtml(pd.code||'',i)}</div>
-          <div class="mp-actions">
+          <div class="mp-actions" id="mp-actions-${i}">
             <button class="mp-edit-btn" onclick="editProduct(${i})">✏️ Edit</button>
-            <button class="mp-del-btn" onclick="deleteProduct(${i})">🗑</button>
+            <button class="mp-del-btn" onclick="showMpDeleteConfirm(${i})">🗑</button>
           </div>
         </div>
         <div class="mp-meta">
@@ -5044,7 +6101,7 @@ function buildMyProductsPage(){
       list.appendChild(item);
     });
   }
-  limit.textContent=`${PS.products.length} / 50 ${word}s`;
+  limit.textContent=`${PS.products.length} / 100 ${word}s`;
   buildCodeCheatsheet();
 }
 function editProduct(i){
@@ -5056,7 +6113,7 @@ function editProduct(i){
   if(!item) return;
   const sellVal=pd.sellPrice!==null&&pd.sellPrice!==undefined?n(pd.sellPrice):'';
   const costVal=pd.costPrice!==null&&pd.costPrice!==undefined?n(pd.costPrice):'';
-  const stockVal=pd.stock?n(pd.stock):'';
+  const stockVal=pd.stock!==null&&pd.stock!==undefined?n(pd.stock):'';
   const reorderVal=pd.reorderThreshold!==null&&pd.reorderThreshold!==undefined?n(pd.reorderThreshold):'';
   item.innerHTML=`<div class="mp-item-top">
       <span class="mp-num">${i+1}</span>
@@ -5114,9 +6171,21 @@ function saveProduct(i){
   buildMyProductsPage();
   updateSidebarAddLabel();
 }
-function deleteProduct(i){
-  if(PS.products.length<=1){ alert('You need at least one product.'); return; }
-  if(!confirm(`Remove "${PS.products[i]}"?`)) return;
+function showMpDeleteConfirm(i){
+  const area=document.getElementById('mp-actions-'+i);
+  if(!area) return;
+  if(PS.products.length<=1){
+    area.innerHTML='<span style="font-size:.72rem;color:var(--muted)">Keep at least 1</span><button class="mp-edit-btn" onclick="cancelMpDelete()">OK</button>';
+    return;
+  }
+  area.innerHTML='<span style="font-size:.72rem;color:var(--muted)">Delete?</span>'
+    +'<button class="mp-del-btn" onclick="confirmMpDelete('+i+')">Yes</button>'
+    +'<button class="mp-edit-btn" onclick="cancelMpDelete()">Cancel</button>';
+}
+function cancelMpDelete(){
+  buildMyProductsPage();
+}
+function confirmMpDelete(i){
   const removed=PS.products.splice(i,1)[0];
   delete PS.productData[removed];
   if(calcProduct===removed) calcProduct=PS.products[0]||null;
@@ -5125,12 +6194,19 @@ function deleteProduct(i){
   buildMyProductsPage();
   updateSidebarAddLabel();
 }
-function addNewProduct(){
-  if(PS.products.length>=50){ alert('You can have up to 50 products. Remove one to add another.'); return; }
-  const word=PS.type==='services'?'service line':'product';
-  const name=prompt(`Name of new ${word}:`);
-  if(!name||!name.trim()) return;
-  const trimmed=name.trim();
+function showMpAddProduct(){
+  if(PS.products.length>=100){ alert('You can have up to 100 products. Remove one to add another.'); return; }
+  document.getElementById('mp-add-inline').style.display='block';
+  document.getElementById('mp-add-input').focus();
+}
+function hideMpAddProduct(){
+  document.getElementById('mp-add-inline').style.display='none';
+  document.getElementById('mp-add-input').value='';
+}
+function submitMpAddProduct(){
+  const input=document.getElementById('mp-add-input');
+  const trimmed=(input?.value||'').trim();
+  if(!trimmed) return;
   if(PS.products.includes(trimmed)){ alert('That name already exists.'); return; }
   PS.products.push(trimmed);
   ensureProductData(trimmed);
@@ -5138,6 +6214,7 @@ function addNewProduct(){
   if(!calcProduct) calcProduct=trimmed;
   if(!ledgerActiveProduct) ledgerActiveProduct=trimmed;
   savePSData();
+  hideMpAddProduct();
   buildMyProductsPage();
   updateSidebarAddLabel();
 }
@@ -5342,6 +6419,7 @@ function getLFLabel(fid){
     'lf-rev':'Total revenue earned',
     'lf-sold':'Units sold',
     'lf-txns':'Number of sales or orders',
+    'lf-cogs':'Cost of goods sold',
     'lf-recv-u':'Stock received (units)',
     'lf-lost':'Units lost',
     'lf-rent':'Rent',
@@ -5355,6 +6433,7 @@ function getLFLabel(fid){
     'lf-rev':'Total revenue earned',
     'lf-sold':'Number of engagements or sessions',
     'lf-txns':'Number of sales or engagements',
+    'lf-cogs':'Cost of goods sold',
     'lf-recv-u':'Units or materials received',
     'lf-lost':'Units or materials lost',
     'lf-rent':'Rent',
@@ -5369,7 +6448,7 @@ function getLFLabel(fid){
 
 // Which ledger section body contains each field ID
 const LF_SEC={
-  'lf-rev':'sales','lf-sold':'sales','lf-txns':'sales',
+  'lf-rev':'sales','lf-sold':'sales','lf-txns':'sales','lf-cogs':'sales',
   'lf-recv-u':'stock','lf-lost':'stock',
   'lf-rent':'fixed','lf-sal':'fixed','lf-util':'fixed',
   'lf-inet':'fixed','lf-lrep':'fixed','lf-oth':'fixed'
@@ -5476,6 +6555,25 @@ function aggregateLogForPeriod(periodName){
     const d=result.products[p];
     if(!d['lf-rev']&&!d['lf-sold']&&!d['lf-txns']&&!d['lf-recv-u']&&!d['lf-lost'])
       delete result.products[p];
+  });
+
+  // Log itself carries no cost data, so lf-cogs can't be aggregated the same
+  // way as lf-rev/lf-sold above — but it CAN be derived by combining the
+  // log-derived units-sold figure with whatever variable cost is already
+  // saved in the Ledger for this product/period (same formula as Pre-fill 3
+  // and the live-recalc-on-typing path). Adding it here means it flows
+  // through the existing conflict-detection/resolution pipeline below like
+  // every other field, rather than being silently left stale after a
+  // "Populate from Log" run.
+  Object.keys(result.products).forEach(p=>{
+    const sold=result.products[p]['lf-sold']||0;
+    if(sold<=0) return;
+    const src=parseFloat(getLedgerField(periodName,p,'lf-src'))||0;
+    const pkg=parseFloat(getLedgerField(periodName,p,'lf-pkg'))||0;
+    const del=parseFloat(getLedgerField(periodName,p,'lf-del'))||0;
+    if(src>0||pkg>0||del>0){
+      result.products[p]['lf-cogs']=(src+pkg+del)*sold;
+    }
   });
 
   return {products:result.products,biz:result.biz,skippedProducts:[...skippedSet]};
@@ -5696,7 +6794,7 @@ function showConflictModal(periodName,aggregated,conflicts,skippedProducts){
   let bodyHtml='';
   conflictList.forEach((c,i)=>{
     const label=getLFLabel(c.fid);
-    const isMonetary=['lf-rev','lf-rent','lf-sal','lf-util','lf-inet','lf-lrep','lf-oth'].includes(c.fid);
+    const isMonetary=['lf-rev','lf-cogs','lf-rent','lf-sal','lf-util','lf-inet','lf-lrep','lf-oth'].includes(c.fid);
     const fmt=v=>isMonetary?'₦'+n(v):n(v);
     const prodLabel=c.isBiz?'Business-wide':c.owner;
     bodyHtml+=`<div class="lpm-conflict-row">
