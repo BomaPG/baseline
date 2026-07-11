@@ -6,14 +6,14 @@
 // Bump CACHE_NAME whenever index.html changes and you want returning users
 // to pick up the new version (old caches are cleared automatically on the
 // next activate).
-const CACHE_NAME = 'baseline-v1';
+const CACHE_NAME = 'baseline-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './apple-touch-icon.png'
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
