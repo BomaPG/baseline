@@ -6,7 +6,7 @@
 // Bump CACHE_NAME whenever index.html changes and you want returning users
 // to pick up the new version (old caches are cleared automatically on the
 // next activate).
-const CACHE_NAME = 'baseline-v2';
+const CACHE_NAME = 'baseline-v3';
 const ASSETS = [
   './',
   './index.html',
