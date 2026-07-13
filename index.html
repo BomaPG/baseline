@@ -59,6 +59,8 @@
     .ob-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1.5rem}
     .ob-type-card{border:2px solid var(--border);border-radius:14px;padding:1.2rem 1rem;cursor:pointer;transition:all .2s;text-align:center}
     .ob-type-card:hover{border-color:var(--teal);background:var(--teal-light)}
+    .ob-type-card.ob-type-disabled{opacity:.5}
+    .ob-type-card.ob-type-disabled:hover{border-color:var(--border);background:transparent}
     .ob-type-card.selected{border-color:var(--teal);background:var(--teal-light)}
     .ob-type-icon{font-size:1.8rem;margin-bottom:.5rem}
     .ob-type-label{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--teal-dark)}
@@ -184,6 +186,8 @@
 
     /* ATLAS-STYLE MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(4,20,30,.7);z-index:300;align-items:center;justify-content:center;padding:1.25rem}
+    .app-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);background:var(--teal-xdark);color:#fff;padding:.85rem 1.3rem;border-radius:12px;font-size:.85rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.3);opacity:0;transition:opacity .25s ease,transform .25s ease;z-index:999;pointer-events:none;max-width:88vw;text-align:center}
+    .app-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .modal-overlay.show{display:flex;animation:fadeIn .22s ease}
     .modal-card{background:var(--modal-bg);border-radius:22px;width:100%;max-width:460px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.55)}
     .modal-top{padding:1.25rem 1.5rem 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:.8rem}
@@ -207,6 +211,7 @@
     .modal-footer{padding:1.1rem 1.5rem 1.4rem;display:flex;flex-direction:column;gap:.55rem;flex-shrink:0;background:rgba(0,0,0,.18)}
     .modal-btn{width:100%;padding:.88rem;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;border:none;transition:all .18s;text-align:center;letter-spacing:.01em}
     .modal-btn.primary{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:#fff}
+    .modal-btn.success{background:var(--good);color:#fff}
     .modal-btn.primary:hover{box-shadow:0 4px 18px rgba(200,146,26,.5)}
     .modal-btn.ghost{background:transparent;color:rgba(255,255,255,.5);font-family:'Plus Jakarta Sans',sans-serif;font-size:.84rem;font-weight:500;padding:.6rem}
     .modal-btn.ghost:hover{color:rgba(255,255,255,.85)}
@@ -612,7 +617,7 @@
           <div class="ob-type-label">Products</div>
           <div class="ob-type-sub">Physical goods, farm produce, manufactured or processed items</div>
         </div>
-        <div class="ob-type-card" id="ob-type-services" onclick="selectBizType('services')">
+        <div class="ob-type-card ob-type-disabled" id="ob-type-services" onclick="showToast('Services coming soon')">
           <div class="ob-type-icon">🛠️</div>
           <div class="ob-type-label">Services</div>
           <div class="ob-type-sub">Consulting, logistics, training, delivery, professional services</div>
@@ -822,6 +827,45 @@
     </div>
     <div class="modal-body"><div class="modal-content" id="modal-content"></div></div>
     <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<div id="app-toast" class="app-toast"></div>
+
+<!-- ADD PRODUCT PRICES NUDGE -->
+<div class="modal-overlay" id="prices-nudge-modal" onclick="if(event.target===this)dismissPricesNudge()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:400px">
+    <div class="modal-top">
+      <div class="modal-top-row">
+        <div class="modal-metric-name">Add your product prices</div>
+        <div class="modal-close" onclick="dismissPricesNudge()">✕</div>
+      </div>
+    </div>
+    <div class="modal-body"><div class="modal-content">
+      <div class="slide-icon">💰</div>
+      <div class="slide-body">Add a selling price and cost price for each product so Baseline can calculate your sales and profit automatically as you log entries.</div>
+    </div></div>
+    <div class="modal-footer">
+      <button class="modal-btn success" onclick="dismissPricesNudge();openMyProducts()">Update my products</button>
+      <button class="modal-btn ghost" onclick="dismissPricesNudge()">Skip for now</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICE CHECK MODAL (log entry gate) -->
+<div class="modal-overlay" id="price-check-modal" onclick="if(event.target===this)closePriceCheckModal()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:400px">
+    <div class="modal-top">
+      <div class="modal-top-row">
+        <div class="modal-metric-name">Set a price first</div>
+        <div class="modal-close" onclick="closePriceCheckModal()">✕</div>
+      </div>
+    </div>
+    <div class="modal-body"><div class="modal-content" id="price-check-content"></div></div>
+    <div class="modal-footer">
+      <button class="modal-btn success" onclick="closePriceCheckModal();closeLogEntryModal();openMyProducts()">Update my products</button>
+      <button class="modal-btn ghost" onclick="closePriceCheckModal()">Go back</button>
+    </div>
   </div>
 </div>
 
@@ -1336,7 +1380,7 @@ function completeStep3(dest){
   updateSidebarAddLabel();
   buildDashboard();
   if(dest==='ledger'){ showScreen('ledger'); buildLedgerPage(); }
-  else { showScreen('home'); setTimeout(openBaselineGuide,450); }
+  else { showScreen('home'); setTimeout(()=>openBaselineGuide(true),450); }
 }
 
 // ── NAVIGATION ───────────────────────────────────────────
@@ -4011,6 +4055,17 @@ function renderSlide(){
 function closeLearnModal(){ document.getElementById('learn-modal').classList.remove('show'); document.body.style.overflow=''; }
 function closeModal(e){ if(e.target===document.getElementById('learn-modal')) closeLearnModal(); }
 
+// ── TOAST ─────────────────────────────────────────────────
+let _toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('app-toast');
+  if(!t) return;
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{ t.classList.remove('show'); },2200);
+}
+
 // ── BASELINE GUIDE ───────────────────────────────────────
 const GUIDE_STEPS=[
   {icon:'📝',title:'Fill my log',desc:"This is where you record what happened today: sales, stock received, expenses, and money received. A minute a day keeps your numbers accurate.",rows:['💰','📦','🧾']},
@@ -4023,7 +4078,9 @@ const GUIDE_STEPS=[
   {icon:'📋',title:'My products',desc:"Manage your product list: prices, costs, stock levels, and reorder thresholds, all in one place.",rows:['📦','🏷️','📋']}
 ];
 let gdStep=0;
-function openBaselineGuide(){
+let guideIsOnboarding=false;
+function openBaselineGuide(isOnboarding){
+  guideIsOnboarding=!!isOnboarding;
   gdStep=0;
   renderGuideStep();
   document.getElementById('baseline-guide-modal').classList.add('show');
@@ -4061,11 +4118,23 @@ function renderGuideStep(){
 function closeBaselineGuide(){
   document.getElementById('baseline-guide-modal').classList.remove('show');
   document.body.style.overflow='';
+  if(guideIsOnboarding){
+    guideIsOnboarding=false;
+    setTimeout(showPricesNudge,350);
+  }
 }
 function completeBaselineGuide(){
   closeBaselineGuide();
   showScreen('home');
   buildDashboard();
+}
+function showPricesNudge(){
+  document.getElementById('prices-nudge-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function dismissPricesNudge(){
+  document.getElementById('prices-nudge-modal').classList.remove('show');
+  document.body.style.overflow='';
 }
 
 // ── QUOTES ───────────────────────────────────────────────
@@ -4812,10 +4881,33 @@ function lefAutoCalcAmount(){
   if(['sale','stock-in'].includes(logEntryType)) syncAmountPaidDefault(); // keep "amount paid now" following the auto-calculated total by default
 }
 
+function showPriceCheckModal(product,type){
+  const label=type==='sale'?'selling price':'cost price';
+  document.getElementById('price-check-content').innerHTML=
+    `<div class="slide-icon">💰</div><div class="slide-body">${product} doesn't have a ${label} set yet. Add it in My Products so this entry can be saved and calculated correctly.</div>`;
+  document.getElementById('price-check-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closePriceCheckModal(){
+  document.getElementById('price-check-modal').classList.remove('show');
+  document.body.style.overflow='';
+}
 function submitLogEntry(){
   // Task 4: if no period is set, re-show the selector step instead of alerting
   if(!logPeriod){ buildLogEntryForm(); return; }
   const type=logEntryType;
+  if(type==='sale'||type==='stock-in'){
+    const productForCheck=document.getElementById('log-entry-product')?.value||(PS.products[0]||'');
+    if(productForCheck){
+      ensureProductData(productForCheck);
+      const priceField=type==='sale'?'sellPrice':'costPrice';
+      const priceVal=PS.productData[productForCheck][priceField];
+      if(priceVal===null||priceVal===undefined){
+        showPriceCheckModal(productForCheck,type);
+        return;
+      }
+    }
+  }
   const date=document.getElementById('log-entry-date')?.value||new Date().toISOString().split('T')[0];
   const product=document.getElementById('log-entry-product')?.value||(PS.products[0]||'');
   const units=parseFloat((document.getElementById('log-units')?.value||'').replace(/,/g,''))||0;
@@ -6624,27 +6716,34 @@ function renderPopulateBanner(periodName){
   const entries=getLogEntriesForPeriod(periodName);
   if(!entries.length){banner.innerHTML='';return;}
   const cnt=entries.length;
+  const safeP=periodName.replace(/'/g,"\\'");
 
-  // TASK 2D — Stale data indicator
-  let staleHtml='';
   const popKey=getPopulateKey(periodName);
   const lastPopRaw=localStorage.getItem(popKey);
+
   if(lastPopRaw){
+    // Already populated this period before — only speak up if something's actually new.
     const lastTs=parseInt(lastPopRaw,10)||0;
     const newCnt=entries.filter(e=>{
       if(!e.savedAt) return false;
       return new Date(e.savedAt).getTime()>lastTs;
     }).length;
     if(newCnt>0){
-      const safeP=periodName.replace(/'/g,"\\'");
-      staleHtml=`<div class="lpb-stale">Your log has ${newCnt} new entr${newCnt===1?'y':'ies'} since you last populated this period. <span class="lpb-repop-link" onclick="runPopulateFromLog('${safeP}')">Re-populate</span></div>`;
+      banner.innerHTML=`<div class="ledger-populate-bar">
+        Your log has <strong>${newCnt}</strong> new entr${newCnt===1?'y':'ies'} for <strong>${periodName}</strong> since you last populated this period.
+        <div class="lpb-actions">
+          <button class="lpb-btn-yes" onclick="runPopulateFromLog('${safeP}')">Re-populate</button>
+          <button class="lpb-btn-no" onclick="dismissPopulateBanner('${safeP}')">Dismiss</button>
+        </div>
+      </div>`;
+    } else {
+      banner.innerHTML='';
     }
+    return;
   }
 
-  const safeP=periodName.replace(/'/g,"\\'");
   banner.innerHTML=`<div class="ledger-populate-bar">
     You have <strong>${cnt}</strong> log entr${cnt===1?'y':'ies'} for <strong>${periodName}</strong>. Populate your Ledger from your Daily Log?
-    ${staleHtml}
     <div class="lpb-actions">
       <button class="lpb-btn-yes" onclick="runPopulateFromLog('${safeP}')">Populate from Log</button>
       <button class="lpb-btn-no" onclick="dismissPopulateBanner('${safeP}')">Dismiss</button>
