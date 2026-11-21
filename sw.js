@@ -4,14 +4,27 @@
 
    To ship a new version of the app: just deploy the new index.html. This file does not need to change.
    Change VERSION only if you change which files are in SHELL. */
-const VERSION = 'baseline-shell-v3';
+const VERSION = 'baseline-shell-v4';
 const FONTS = 'baseline-fonts-v1';
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
-  './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png', './icon.svg'];
+// Core files the app needs to boot offline. Anything else (icons, manifest, extra assets) is cached
+// on first fetch, so a missing optional file won't stop the app from being installed offline.
+const CORE = ['./', './index.html'];
+const OPTIONAL = ['./manifest.json', './manifest.webmanifest', './icon.svg', './favicon-32.png',
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png',
+  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
+  './icons/apple-touch-icon.png', './icons/favicon-32.png', './icons/icon.svg'];
 const APP_MARKER = 'baseline_settings';          // text only our app contains: guards against hotspot login pages and error pages
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(VERSION);
+    // Core files MUST cache — if the index can't be saved, the app can't open offline at all.
+    await cache.addAll(CORE);
+    // Optional files are best-effort: cache what exists, skip what doesn't. A missing icon file
+    // must not fail the whole install (that was the old bug — one 404 killed offline support).
+    await Promise.all(OPTIONAL.map((u) => cache.add(u).catch(() => {})));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
@@ -68,8 +81,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Our own icons and manifest: saved copy first.
+  // Our own icons and manifest: saved copy first, fall back to network and cache it for next time.
   if (url.origin === self.location.origin) {
-    event.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
+    event.respondWith((async () => {
+      const cache = await caches.open(VERSION);
+      const saved = await cache.match(req);
+      if (saved) return saved;
+      try {
+        const res = await fetch(req);
+        if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+        return res;
+      } catch (e) {
+        return new Response('', { status: 504 });
+      }
+    })());
   }
 });
