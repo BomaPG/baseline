@@ -478,6 +478,8 @@ ul, ol { list-style: none; }
 .sheet-item-icon.stock { background: var(--teal-light); color: var(--teal-dark); }
 .sheet-item-icon.lost { background: var(--warn-soft); color: var(--warn); }
 .sheet-item-icon.paste { background: var(--gray-100); color: var(--gray-700); }
+.sheet-item-icon.invoice { background: var(--warn-soft); color: var(--warn); }
+:root[data-theme="dark"] .sheet-item-icon.invoice { background: var(--warn-soft); color: var(--warn); }
 .sheet-item-text { display: flex; flex-direction: column; gap: 2px; }
 .sheet-item-title { font-size: 15px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.01em; }
 .sheet-item-sub { font-size: 12px; color: var(--gray-500); font-weight: 500; }
@@ -492,6 +494,39 @@ ul, ol { list-style: none; }
 .pin-block .pin-go { margin-top: 8px; min-height: 48px; font-size: 15px; }
 .pin-forgot-row { text-align: center; margin-top: 16px; }
 .pin-forgot-row .link-btn { font-size: 13px; }
+
+
+.ob-prices { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
+.ob-price-card { background: #fff; border: 1px solid var(--gray-100); border-radius: var(--r-lg); padding: 14px; box-shadow: var(--shadow-sm); }
+.ob-price-name { font-weight: 700; font-size: 15px; color: var(--gray-900); margin-bottom: 10px; letter-spacing: -0.01em; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ob-price-code-wrap { display: flex; align-items: center; gap: 6px; }
+.ob-price-code { width: 72px; padding: 6px 10px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--teal-dark); background: var(--teal-light); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; font-family: 'Inter', 'Manrope', system-ui, sans-serif; }
+.ob-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ob-price-field label { display: block; font-size: 11px; font-weight: 700; color: var(--gray-500); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+.ob-price-field input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 10px; font-size: 14px; color: var(--gray-900); background: #fff; font-weight: 600; }
+.ob-price-field input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(11,123,123,0.12); }
+.obnav-step4 { flex-wrap: wrap; }
+.obnav-step4 .btn { flex: 1; min-width: 120px; }
+:root[data-theme="dark"] .ob-price-card { background: #15191F; border-color: var(--gray-200); }
+:root[data-theme="dark"] .ob-price-field input { background: #15191F; border-color: var(--gray-200); color: var(--gray-900); }
+:root[data-theme="dark"] .ob-price-code { background: var(--teal-light); color: var(--teal); border-color: var(--teal-light); }
+
+
+/* Paste & Log promo */
+.promo-hero { text-align: center; margin-bottom: 20px; }
+.promo-ico { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 18px; background: var(--teal-light); color: var(--teal-dark); display: flex; align-items: center; justify-content: center; }
+.promo-ico svg { width: 32px; height: 32px; stroke-width: 1.5; }
+.promo-title { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--gray-900); margin-bottom: 8px; }
+.promo-sub { font-size: 14px; color: var(--gray-700); line-height: 1.5; font-weight: 500; }
+.promo-example { display: block; margin-top: 8px; padding: 12px 14px; background: var(--gray-100); border-radius: 12px; text-align: left; font-family: 'Inter', 'Manrope', system-ui, sans-serif; font-size: 13px; color: var(--gray-800); white-space: pre-line; }
+.promo-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.promo-actions .btn { min-height: 48px; }
+.pw-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 20px; }
+.pw-dot { width: 24px; height: 4px; border-radius: 999px; background: var(--gray-200); }
+.pw-dot.current { background: var(--teal-dark); }
+.pw-dot.done { background: var(--teal-mid); }
+.pw-hero { text-align: center; margin-bottom: 20px; }
+:root[data-theme="dark"] .promo-example { background: #15191F; color: var(--gray-700); }
 
 /* Home action row: icon tiles */
 .action-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
@@ -692,13 +727,15 @@ textarea.form-input { resize: vertical; min-height: 84px; line-height: 1.4; }
 .fulfil-group-head { display: flex; align-items: center; gap: 8px; padding-bottom: 6px; border-bottom: 1.5px solid var(--gray-300); font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--gray-900); }
 .fulfil-group-head.overdue { color: var(--warning); border-bottom-color: var(--warning); }
 .fulfil-group-head.overdue .code-pill { background: var(--warning); }
-.fulfil-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--gray-200); }
-.fulfil-row:last-child { border-bottom: none; }
+.fulfil-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border: 1px solid var(--gray-100); border-radius: var(--r-lg); margin-bottom: 8px; box-shadow: var(--shadow-sm); transition: box-shadow 0.15s, border-color 0.15s; }
+.fulfil-row:hover { box-shadow: var(--shadow-md); border-color: var(--gray-200); }
 .fulfil-info { flex: 1; min-width: 0; }
-.fulfil-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 600; font-size: 14px; color: var(--gray-900); }
-.fulfil-items { font-size: 13px; color: var(--gray-700); margin-top: 2px; }
-.fulfil-due { font-size: 12px; color: var(--gray-600); margin-top: 3px; }
-.fulfil-due.overdue { color: var(--warning); font-weight: 600; }
+.fulfil-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; font-size: 15px; color: var(--gray-900); letter-spacing: -0.01em; }
+.fulfil-items { font-size: 13px; color: var(--gray-700); margin-top: 3px; }
+.fulfil-due { font-size: 12px; color: var(--gray-500); margin-top: 4px; font-weight: 500; }
+.fulfil-due.overdue { color: var(--bad); font-weight: 700; }
+:root[data-theme="dark"] .fulfil-row { background: #15191F; border-color: var(--gray-200); }
+:root[data-theme="dark"] .fulfil-row:hover { background: #181D24; }
 .fulfil-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); margin: -6px 0 16px; }
 /* ========== SEARCH + FILTER (B-17) ========== */
 .log-search { position: relative; margin-bottom: 10px; }
@@ -708,9 +745,12 @@ textarea.form-input { resize: vertical; min-height: 84px; line-height: 1.4; }
 .log-search-clear.visible { display: flex; }
 .log-search-clear:hover { background: var(--gray-100); }
 .filter-pills { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
-.filter-pill { flex-shrink: 0; padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--gray-300); background: #fff; color: var(--gray-700); font-size: 13px; font-weight: 600; transition: background 0.15s, color 0.15s; }
+.filter-pill { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--gray-300); background: #fff; color: var(--gray-700); font-size: 13px; font-weight: 600; transition: background 0.15s, color 0.15s; }
 .filter-pill:hover { border-color: var(--teal); color: var(--teal); }
 .filter-pill.active { background: var(--teal-xdark); border-color: var(--teal-xdark); color: #fff; box-shadow: 0 4px 12px -4px rgba(4,61,61,0.3); }
+.filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--gray-200); color: var(--gray-700); font-size: 11px; font-weight: 700; }
+.filter-pill.active .filter-count { background: rgba(255,255,255,0.18); color: #fff; }
+:root[data-theme="dark"] .filter-count { background: var(--gray-200); color: var(--gray-700); }
 .search-meta { font-size: 12px; color: var(--gray-600); margin: 0 0 4px; }
 .month-tag { font-size: 11px; font-weight: 500; color: var(--gray-600); background: var(--gray-100); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 .month-picker.dimmed { opacity: 0.35; pointer-events: none; }
@@ -1040,6 +1080,7 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       <div class="step-dot current"></div>
       <div class="step-dot"></div>
       <div class="step-dot"></div>
+      <div class="step-dot"></div>
     </div>
     <div class="ob-step active" data-step="1">
       <h2 class="onboarding-heading">What should we call you?</h2>
@@ -1078,7 +1119,17 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       <div class="product-chips" id="obChips"></div>
       <div class="onboarding-nav">
         <button class="onboarding-back" id="obBack3" aria-label="Back"><span data-icon="chev-left"></span></button>
-        <button class="btn btn-primary" id="obDone" disabled>Done</button>
+        <button class="btn btn-primary" id="obNext3" disabled>Next</button>
+      </div>
+    </div>
+    <div class="ob-step" data-step="4">
+      <h2 class="onboarding-heading">Set your prices</h2>
+      <p class="onboarding-sub">Add selling and cost prices and your own short code for each product. You can skip and set them later.</p>
+      <div class="ob-prices" id="obPrices"></div>
+      <div class="onboarding-nav obnav-step4">
+        <button class="onboarding-back" id="obBack4" aria-label="Back"><span data-icon="chev-left"></span></button>
+        <button class="btn btn-secondary" id="obSkipPrices">Skip for later</button>
+        <button class="btn btn-primary" id="obDone">Done</button>
       </div>
     </div>
   </div>
@@ -1203,6 +1254,12 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
         <div class="empty-state" id="creditEmpty" style="display:none"><span class="es-ico" data-icon="swap"></span><h3>No outstanding credit</h3><p>When a customer pays later, it will show up here until the balance is cleared.</p></div>
       </div>
       <div class="page" id="page-fulfilment" data-title="Fulfilment">
+        <div class="filter-pills" id="fulfilmentTabs" role="group" aria-label="Filter orders">
+          <button type="button" class="filter-pill active" data-tab="overdue">Overdue <span class="filter-count" id="fulfilmentCountOverdue" style="display:none">0</span></button>
+          <button type="button" class="filter-pill" data-tab="today">Today <span class="filter-count" id="fulfilmentCountToday" style="display:none">0</span></button>
+          <button type="button" class="filter-pill" data-tab="later">Later <span class="filter-count" id="fulfilmentCountLater" style="display:none">0</span></button>
+          <button type="button" class="filter-pill" data-tab="unpaid">Unpaid <span class="filter-count" id="fulfilmentCountUnpaid" style="display:none">0</span></button>
+        </div>
         <div id="fulfilmentList"></div>
         <div class="empty-state" id="fulfilmentEmpty" style="display:none"><span class="es-ico" data-icon="check"></span><h3>All caught up</h3><p>Orders with a due date show up here as the day approaches.</p></div>
         <div id="fulfilmentDone"></div>
@@ -2383,7 +2440,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   var obBizInput = document.getElementById('obBiz');
   var obProdInput = document.getElementById('obProdInput');
   var obChips = document.getElementById('obChips');
-  var obDoneBtn = document.getElementById('obDone');
+  var obDoneBtn = document.getElementById('obNext3');
   var stepDots = document.getElementById('stepDots').children;
   var obStepEls = document.querySelectorAll('.ob-step');
 
@@ -2413,23 +2470,57 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     document.getElementById('obProdErr').textContent='';
     obProducts.push(val); obProdInput.value=''; obProdInput.focus(); obRenderChips();
   }
-  function obComplete() {
-    if(obProducts.length===0){document.getElementById('obProdErr').textContent='Add at least one product to get started';return;}
+  function obRenderPrices() {
+    var host = document.getElementById('obPrices');
+    var codes = DataStore.getProducts(true).map(function(p){return p.code;});
+    host.innerHTML = obProducts.map(function(name, i){
+      var code = generateCode(name, codes); codes.push(code);
+      return '<div class="ob-price-card" data-i="'+i+'">'
+        + '<div class="ob-price-name">'+escapeHtml(name)
+        +   '<span class="ob-price-code-wrap"><input type="text" class="ob-price-code" data-f="code" value="'+escapeHtml(code)+'" maxlength="6" aria-label="Code for '+escapeHtml(name)+'" /></span>'
+        + '</div>'
+        + '<div class="ob-price-grid">'
+        +   '<div class="ob-price-field"><label>Selling price (₦)</label><input type="number" inputmode="numeric" min="0" step="1" data-f="sell" placeholder="Optional" /></div>'
+        +   '<div class="ob-price-field"><label>Cost price (₦)</label><input type="number" inputmode="numeric" min="0" step="1" data-f="cost" placeholder="Optional" /></div>'
+        + '</div></div>';
+    }).join('');
+    // Auto-uppercase code input
+    host.querySelectorAll('.ob-price-code').forEach(function(inp){
+      inp.addEventListener('input', function(){ inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); });
+    });
+  }
+
+  function obSaveProducts(fromStep4) {
     var settings = DataStore.getSettings();
     settings.userName = obNameInput.value.trim();
     settings.businessName = obBizInput.value.trim();
     settings.onboardingComplete = true;
     DataStore.saveSettings(settings);
-    var codes = DataStore.getProducts(true).map(function(p){return p.code;});
-    obProducts.forEach(function(name){
-      var code = generateCode(name, codes); codes.push(code);
-      DataStore.saveProduct({id:generateId(),name:name,code:code,sellingPrice:null,costPrice:null,
+    var existingCodes = DataStore.getProducts(true).map(function(p){return p.code;});
+    var cards = fromStep4 ? document.querySelectorAll('#obPrices .ob-price-card') : null;
+    obProducts.forEach(function(name, i){
+      var code = '', sell = null, cost = null;
+      if (fromStep4 && cards[i]) {
+        var inpC = cards[i].querySelector('[data-f="code"]');
+        var inpS = cards[i].querySelector('[data-f="sell"]');
+        var inpK = cards[i].querySelector('[data-f="cost"]');
+        if (inpC) code = (inpC.value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+        if (inpS && inpS.value !== '') { var v = parseFloat(inpS.value); if (!isNaN(v) && v >= 0) sell = Math.round(v); }
+        if (inpK && inpK.value !== '') { var v2 = parseFloat(inpK.value); if (!isNaN(v2) && v2 >= 0) cost = Math.round(v2); }
+      }
+      if (!code) code = generateCode(name, existingCodes);
+      existingCodes.push(code);
+      DataStore.saveProduct({id:generateId(),name:name,code:code,sellingPrice:sell,costPrice:cost,
         stock:0,stockSet:false,reorderLevel:null,createdAt:new Date().toISOString(),deleted:false});
     });
     updateSidebarUser();
     showPage('home');
-    // Show stock prompt right after onboarding
     setTimeout(function() { showInitialStockPrompt(); }, 300);
+  }
+
+  function obComplete() {
+    if(obProducts.length===0){document.getElementById('obProdErr').textContent='Add at least one product to get started';return;}
+    obSaveProducts(true);
   }
 
   document.getElementById('obNext1').addEventListener('click', function(){
@@ -2446,7 +2537,18 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   document.getElementById('obBack3').addEventListener('click', function(){obGoTo(2);});
   document.getElementById('obAddProd').addEventListener('click', obAddProduct);
   obProdInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();obAddProduct();}});
-  obDoneBtn.addEventListener('click', obComplete);
+  // step 3 Next -> step 4 (render prices)
+  var _obNext3 = document.getElementById('obNext3');
+  if (_obNext3) _obNext3.addEventListener('click', function(){
+    if (obProducts.length===0) { document.getElementById('obProdErr').textContent='Add at least one product to get started'; return; }
+    obRenderPrices(); obGoTo(4);
+  });
+  var _obSkip = document.getElementById('obSkipPrices');
+  if (_obSkip) _obSkip.addEventListener('click', function(){ obSaveProducts(false); });
+  var _obBack4 = document.getElementById('obBack4');
+  if (_obBack4) _obBack4.addEventListener('click', function(){ obGoTo(3); });
+  var _obDone = document.getElementById('obDone');
+  if (_obDone) _obDone.addEventListener('click', obComplete);
   obChips.addEventListener('click',function(e){var btn=e.target.closest('.chip-x');if(!btn)return;obProducts.splice(parseInt(btn.getAttribute('data-i')),1);obRenderChips();});
 
   // ============ HOME DASHBOARD (B-04) ============
@@ -2567,7 +2669,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       else { badge.style.display = 'none'; }
     }
     renderLowStockBell();
-    renderBackupBanner();
+    renderBackupBanner(); try { setTimeout(showPasteLogPromo, 500); } catch (e) {}
   }
 
   // ---- low stock (N1) ----
@@ -3171,6 +3273,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '<li class="sheet-item" data-type="stock_received"><span class="sheet-item-icon stock" data-icon="box"></span><span class="sheet-item-text"><span class="sheet-item-title">Stock received</span><span class="sheet-item-sub">Restock a product</span></span></li>'
       + '<li class="sheet-item" data-type="units_lost"><span class="sheet-item-icon lost" data-icon="warning"></span><span class="sheet-item-text"><span class="sheet-item-title">Units lost</span><span class="sheet-item-sub">Damaged, stolen, expired</span></span></li>'
       + '<li class="sheet-item" data-type="paste"><span class="sheet-item-icon paste" data-icon="clipboard"></span><span class="sheet-item-text"><span class="sheet-item-title">Paste and log</span><span class="sheet-item-sub">Copy a note from WhatsApp</span></span></li>'
+      + '<li class="sheet-item" data-type="invoice_only"><span class="sheet-item-icon invoice" data-icon="credit-card"></span><span class="sheet-item-text"><span class="sheet-item-title">Create an invoice</span><span class="sheet-item-sub">Send a bill, log the sale when paid</span></span></li>'
       + '</ul>';
     openModal(html, 'Log an entry', {sheet:true});
     var items = document.querySelectorAll('#modalBody .sheet-item');
@@ -3187,6 +3290,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   function openEntryForm(type) {
     if (type === 'sale') { openSaleForm(); return; }
+    if (type === 'invoice_only') { openInvoiceOnlyForm(); return; }
     if (type === 'expense') { openExpenseForm(); return; }
     if (type === 'stock_received') { openStockReceivedForm(); return; }
     if (type === 'units_lost') { openUnitsLostForm(); return; }
@@ -3706,6 +3810,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     pasteCards = []; pasteFailed = []; pasteTextVal = ''; pasteDateVal = ''; pasteDirty = false;
     closeModal();
     showToast(n + (n === 1 ? ' entry logged.' : ' entries logged.'), 'success');
+    try { localStorage.setItem('baseline_paste_used', '1'); } catch (e) {}
     renderHome();
     renderProductsPage();
     renderLogList();
@@ -4625,6 +4730,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   // Status is derived from the linked entry; invoice.status is only a cache of this.
   function getInvoiceStatus(invoice) {
     if (invoice.status === 'cancelled') return 'cancelled';
+    if (invoice.status === 'pending' && !invoice.entryId) return 'pending';
     var entry = DataStore.getEntryById(invoice.entryId);
     if (!entry) return invoice.status || 'unpaid';
     if (entry.paymentStatus === 'paid') return 'paid';
@@ -4634,8 +4740,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     return received > 0 ? 'partial' : 'unpaid';
   }
   function invoiceStatusPillHtml(status) {
-    var cls = status === 'cancelled' ? 'cancelled' : (status === 'paid' ? 'paid' : (status === 'partial' ? 'credit' : 'unpaid'));
-    var lbl = status === 'cancelled' ? 'Cancelled' : (status === 'paid' ? 'Paid' : (status === 'partial' ? 'Partially paid' : 'Unpaid'));
+    var cls = status === 'cancelled' ? 'cancelled' : (status === 'paid' ? 'paid' : (status === 'partial' ? 'credit' : (status === 'pending' ? 'credit' : 'unpaid')));
+    var lbl = status === 'cancelled' ? 'Cancelled' : (status === 'paid' ? 'Paid' : (status === 'partial' ? 'Partially paid' : (status === 'pending' ? 'Awaiting payment' : 'Unpaid')));
     return '<span class="status-pill ' + cls + '">' + lbl + '</span>';
   }
   function refreshInvoiceCache(entryId) {
@@ -4939,16 +5045,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     ctx.fillStyle = grad || C.teal; ctx.fillRect(0, 0, W, headerH);
     ctx.fillStyle = C.gold; ctx.fillRect(0, headerH - 4, W, 4);
 
-    // Business name in header (big), phone below
-    ctx.textAlign = 'left';
-    var nameSize = invFitSize(ctx, d.businessName, 800, INV_FD, 68, 32, contentW);
+    // Business name in header: centered, uppercase, big
+    ctx.textAlign = 'center';
+    var nameUpper = (d.businessName || '').toUpperCase();
+    var nameSize = invFitSize(ctx, nameUpper, 800, INV_FD, 72, 32, contentW);
     invFont(ctx, 800, nameSize, INV_FD);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(invEllipsize(ctx, d.businessName, contentW), M, d.phone ? 116 : 142);
-    if (d.phone) {
-      invFont(ctx, 500, 30, INV_FB); ctx.fillStyle = 'rgba(255,255,255,0.78)';
-      ctx.fillText(invEllipsize(ctx, d.phone, contentW), M, 172);
-    }
+    ctx.fillText(invEllipsize(ctx, nameUpper, contentW), W / 2, headerH / 2 + nameSize / 3);
+    ctx.textAlign = 'left';
 
     // Big label + number + date (clean block)
     var y = headerH + 88;
@@ -4988,16 +5092,20 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       ctx.fillStyle = C.g200; ctx.fillRect(M, y - 2, contentW, 1);
     });
 
-    // Total — on its own tinted band
+    // Total — on its own tinted band (label and amount vertically centered together)
     y += 36;
-    var totalH = 112;
+    var totalH = 118;
     ctx.fillStyle = C.tealLight; invRoundRect(ctx, M, y, contentW, totalH, 16); ctx.fill();
-    invFont(ctx, 700, 24, INV_FB); ctx.fillStyle = C.tealDark;
-    ctx.textAlign = 'left'; ctx.fillText(d.totalLabel.toUpperCase(), M + 32, y + 46);
+    // Figure out amount size first so we can leave room for the label
     var totalStr = formatNaira(d.totalAmount);
-    var tSize = invFitSize(ctx, totalStr, 800, INV_FD, 48, 28, contentW - 64);
+    var tSize = invFitSize(ctx, totalStr, 800, INV_FD, 52, 30, contentW - 220);
+    var baseline = y + totalH / 2 + tSize / 3;
+    // Label (bigger, same baseline as the amount)
+    invFont(ctx, 700, 32, INV_FB); ctx.fillStyle = C.tealDark;
+    ctx.textAlign = 'left'; ctx.fillText(d.totalLabel, M + 32, baseline);
+    // Amount
     invFont(ctx, 800, tSize, INV_FD); ctx.fillStyle = C.tealXDark; ctx.textAlign = 'right';
-    ctx.fillText(totalStr, W - M - 32, y + 78);
+    ctx.fillText(totalStr, W - M - 32, baseline);
     ctx.textAlign = 'left';
     y += totalH;
 
@@ -5031,6 +5139,13 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       d.note.split(/\r?\n/).forEach(function(p) { if (p.trim()) lines = lines.concat(invWrap(ctx, p.trim(), contentW)); });
       if (lines.length > 8) { lines = lines.slice(0, 8); lines[7] = invEllipsize(ctx, lines[7] + '\u2026', contentW); }
       lines.forEach(function(ln, i) { ctx.fillText(ln, M, y); if (i < lines.length - 1) y += 42; });
+    }
+
+    // Enquiries line (phone)
+    if (d.phone) {
+      y += 48;
+      invFont(ctx, 500, 24, INV_FB); ctx.fillStyle = C.g700; ctx.textAlign = 'left';
+      ctx.fillText(invEllipsize(ctx, 'For more enquiries, call ' + d.phone, contentW), M, y);
     }
 
     // Footer
@@ -5100,7 +5215,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   function openInvoicePreview(invoiceId) {
     var inv = DataStore.getInvoices().filter(function(i) { return i.id === invoiceId; })[0];
     if (!inv) return;
-    var entry = DataStore.getEntryById(inv.entryId);
+    var entry = inv.entryId ? DataStore.getEntryById(inv.entryId) : null;
     if (entry) {
       syncInvoiceFromEntry(entry);   // the invoice always reflects the sale as it stands now
       inv = DataStore.getInvoices().filter(function(i) { return i.id === invoiceId; })[0];
@@ -5165,11 +5280,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     return addDaysStr(today, 7 - dow);
   }
 
-  // Unfulfilled sales with a due date: everything overdue, plus due dates through the end of this week.
+  // Unfulfilled sales with a due date: everything overdue, plus every future due date.
   function getFulfilmentOrders() {
-    var end = fulfilmentWeekEnd();
     return DataStore.getEntries({}).filter(function(e) {
-      return e.type === 'sale' && e.dueDate && !e.fulfilled && e.dueDate <= end;
+      return e.type === 'sale' && e.dueDate && !e.fulfilled;
     }).sort(function(a, b) {
       if (a.dueDate !== b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
       return new Date(a.createdAt) - new Date(b.createdAt);
@@ -5203,7 +5317,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   function fulfilmentPaymentPill(e) {
     var paid = e.paymentStatus === 'paid' || DataStore.getCreditBalance(e.id) <= 0;
-    return '<span class="status-pill ' + (paid ? 'paid' : 'unpaid') + '">' + (paid ? 'Paid' : 'Unpaid') + '</span>';
+    return '<span class="status-pill ' + (paid ? 'paid' : 'credit') + '">' + (paid ? 'Paid' : 'Credit') + '</span>';
   }
 
   function fulfilmentRowHtml(e, done) {
@@ -5235,12 +5349,59 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>';
   }
 
+  var fulfilmentTab = 'overdue';
+  function getPendingInvoices() {
+    return DataStore.getInvoices().filter(function(i) { return i.status === 'pending' && !i.entryId; }).sort(function(a,b) {
+      var ad = a.dueDate || a.date || a.createdAt, bd = b.dueDate || b.date || b.createdAt;
+      return ad < bd ? -1 : (ad > bd ? 1 : 0);
+    });
+  }
+  function fulfilmentPendingRowHtml(inv) {
+    var items = (inv.lineItems || []).map(function(li){ return li.productName + ' (' + li.quantity + ')'; }).join(', ');
+    var today = todayStr();
+    var overdue = inv.dueDate && inv.dueDate < today;
+    var dueTxt = inv.dueDate ? ('Due ' + formatShortDate(inv.dueDate)) : 'No due date';
+    if (overdue) { var n = daysSinceDate(inv.dueDate); dueTxt += ' · ' + n + (n === 1 ? ' day overdue' : ' days overdue'); }
+    return '<div class="fulfil-row pending" data-inv-id="' + inv.id + '">'
+      + '<div class="fulfil-info">'
+      +   '<div class="fulfil-name"><span>' + escapeHtml(inv.customerName || 'No name') + '</span><span class="status-pill credit">' + escapeHtml(inv.invoiceNumber) + '</span></div>'
+      +   '<div class="fulfil-items">' + escapeHtml(items) + '</div>'
+      +   '<div class="fulfil-due' + (overdue ? ' overdue' : '') + '">' + escapeHtml(dueTxt) + ' · ' + formatNaira(inv.total) + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:6px;flex-shrink:0">'
+      +   '<button type="button" class="btn btn-secondary btn-sm" data-action="view-invoice">Open</button>'
+      +   '<button type="button" class="btn btn-primary btn-sm" data-action="mark-paid">Mark paid</button>'
+      + '</div>'
+      + '</div>';
+  }
   function renderFulfilmentPage() {
     var orders = getFulfilmentOrders();
-    document.getElementById('fulfilmentList').innerHTML = groupFulfilmentOrders(orders).map(function(g) {
-      return fulfilmentGroupHtml(g.label, g.overdue, g.orders, false);
-    }).join('');
-    document.getElementById('fulfilmentEmpty').style.display = orders.length === 0 ? '' : 'none';
+    var today = todayStr();
+    var buckets = {
+      overdue: orders.filter(function(e) { return e.dueDate < today; }),
+      today: orders.filter(function(e) { return e.dueDate === today; }),
+      later: orders.filter(function(e) { return e.dueDate > today; })
+    };
+    var pending = getPendingInvoices();
+    var setCount = function(id, n) { var el = document.getElementById(id); if (!el) return; if (n > 0) { el.textContent = n; el.style.display = ''; } else { el.style.display = 'none'; } };
+    setCount('fulfilmentCountOverdue', buckets.overdue.length);
+    setCount('fulfilmentCountToday', buckets.today.length);
+    setCount('fulfilmentCountLater', buckets.later.length);
+    setCount('fulfilmentCountUnpaid', pending.length);
+    var tabs = document.querySelectorAll('#fulfilmentTabs .filter-pill');
+    tabs.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-tab') === fulfilmentTab); });
+    var list = document.getElementById('fulfilmentList');
+    var shownCount = 0;
+    if (fulfilmentTab === 'unpaid') {
+      list.innerHTML = pending.map(fulfilmentPendingRowHtml).join('');
+      shownCount = pending.length;
+    } else {
+      var shown = buckets[fulfilmentTab] || [];
+      list.innerHTML = shown.map(function(e) { return fulfilmentRowHtml(e, false); }).join('');
+      shownCount = shown.length;
+    }
+    var empty = document.getElementById('fulfilmentEmpty');
+    if (empty) empty.style.display = shownCount === 0 ? '' : 'none';
     var completed = getCompletedTodayOrders();
     document.getElementById('fulfilmentDone').innerHTML = completed.length ? fulfilmentGroupHtml('Completed today', false, completed, true) : '';
   }
@@ -5256,8 +5417,18 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   }
 
   document.getElementById('page-fulfilment').addEventListener('click', function(ev) {
+    var tab = ev.target.closest('#fulfilmentTabs .filter-pill');
+    if (tab) { fulfilmentTab = tab.getAttribute('data-tab'); renderFulfilmentPage(); return; }
     var btn = ev.target.closest('[data-action]');
     if (!btn) return;
+    var pendingRow = btn.closest('.fulfil-row.pending');
+    if (pendingRow) {
+      var invId = pendingRow.getAttribute('data-inv-id');
+      var act = btn.getAttribute('data-action');
+      if (act === 'view-invoice') { openInvoicePreview(invId); return; }
+      if (act === 'mark-paid') { showConfirm('Mark this invoice paid? A sale entry will be logged and stock will go down.', function(ok) { if (ok) markPendingInvoicePaid(invId); }, 'Mark paid', 'Cancel'); return; }
+      return;
+    }
     var rowEl = btn.closest('.fulfil-row');
     if (!rowEl) return;
     setOrderFulfilled(rowEl.getAttribute('data-id'), btn.getAttribute('data-action') === 'fulfil');
@@ -6171,6 +6342,15 @@ window.renderIcons = function(root){
 })();
 
   function init() {
+    // Session counter (own key, kept out of backups): count once per tab session.
+    try {
+      if (!sessionStorage.getItem('baseline_session_counted')) {
+        var n = parseInt(localStorage.getItem('baseline_opens') || '0', 10) || 0;
+        localStorage.setItem('baseline_opens', String(n + 1));
+        sessionStorage.setItem('baseline_session_counted', '1');
+      }
+    } catch (e) {}
+
     var settings = DataStore.getSettings();
     // A reload with a pop-up open leaves its history entry behind; step back over it so Back isn't wasted once.
     if (history.state && history.state.blModal) ownBack();
@@ -6199,6 +6379,218 @@ window.renderIcons = function(root){
   }
   // ask the browser not to clear her records when the phone is short of space (installed apps are usually granted this)
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function() {}); } catch (e) {}
+
+
+  // ---- Paste & Log promo (2nd+ return, if they haven't used it yet) ----
+  function pasteLogPromoShouldShow() {
+    try {
+      var opens = parseInt(localStorage.getItem('baseline_opens') || '0', 10) || 0;
+      if (opens < 2) return false;
+      if (localStorage.getItem('baseline_paste_promo_seen') === '1') return false;
+      if (localStorage.getItem('baseline_paste_used') === '1') return false;
+      var st = DataStore.getSettings();
+      if (!st.onboardingComplete) return false;
+      if (modalIsOpen) return false;
+      if (!viewApp.classList.contains('active')) return false;
+      return true;
+    } catch (e) { return false; }
+  }
+  function showPasteLogPromo() {
+    if (!pasteLogPromoShouldShow()) return;
+    try { localStorage.setItem('baseline_paste_promo_seen', '1'); } catch (e) {}
+    var html = '<div class="promo-hero">'
+      +   '<div class="promo-ico" data-icon="clipboard"></div>'
+      +   '<div class="promo-title">Log sales in under 30 seconds</div>'
+      +   '<div class="promo-sub">Paste a note from WhatsApp, your Notes app or anywhere else, and Baseline turns it into entries for you.</div>'
+      + '</div>'
+      + '<div class="promo-actions">'
+      +   '<button type="button" class="btn btn-primary" id="promoShowMe">How to use Paste &amp; Log</button>'
+      +   '<button type="button" class="btn btn-secondary" id="promoDismiss">Not now</button>'
+      + '</div>';
+    openModal(html, 'A faster way to log', {compact: true});
+    try { window.renderIcons(document.getElementById('modalBody')); } catch (e) {}
+    var dismiss = document.getElementById('promoDismiss');
+    if (dismiss) dismiss.addEventListener('click', function(){ requestModalClose(); });
+    var go = document.getElementById('promoShowMe');
+    if (go) go.addEventListener('click', openPasteLogWalkthrough);
+  }
+  var _pwStep = 0;
+  var PW_STEPS = [
+    { icon: 'clipboard', title: 'Step 1 — Copy a note', body: 'Copy any sales note from WhatsApp or your Notes app. Example:<br><br><span class="promo-example">"2 Brown bag at 15000 for Ada\n1 Blue tote at 10000"</span>' },
+    { icon: 'plus', title: 'Step 2 — Open Paste & Log', body: 'Tap the + button on Home, choose <strong>Paste and log</strong>, then paste what you copied. Baseline reads each line.' },
+    { icon: 'pen', title: 'Step 3 — Review and save', body: 'Tap each row to double-check the product, quantity and price, then save them all together.' },
+    { icon: 'tag', title: 'Set short codes for faster pasting', body: 'Short codes like <strong>BRWN</strong> or <strong>BLU</strong> help Baseline recognise your products from short notes. Tap below to set them now.' }
+  ];
+  function openPasteLogWalkthrough() {
+    _pwStep = 0;
+    openModal(pasteLogStepHtml(), 'How Paste & Log works', {compact: true});
+    bindPasteLogWalkthrough();
+  }
+  function pasteLogStepHtml() {
+    var step = PW_STEPS[_pwStep], isLast = _pwStep === PW_STEPS.length - 1;
+    var dots = PW_STEPS.map(function(_, i){ return '<span class="pw-dot' + (i === _pwStep ? ' current' : (i < _pwStep ? ' done' : '')) + '"></span>'; }).join('');
+    var back = _pwStep > 0 ? '<button type="button" class="btn btn-secondary" id="pwBack">Back</button>' : '';
+    var primary = isLast ? '<button type="button" class="btn btn-primary" id="pwGoCodes">Set my codes</button>' : '<button type="button" class="btn btn-primary" id="pwNext">Next</button>';
+    var secondary = isLast ? '<button type="button" class="btn btn-secondary" id="pwSkip">Skip</button>' : '';
+    return '<div class="pw-dots">' + dots + '</div>'
+      + '<div class="pw-hero">'
+      +   '<div class="promo-ico" data-icon="' + step.icon + '"></div>'
+      +   '<div class="promo-title">' + step.title + '</div>'
+      +   '<div class="promo-sub">' + step.body + '</div>'
+      + '</div>'
+      + '<div class="promo-actions">' + back + secondary + primary + '</div>';
+  }
+  function bindPasteLogWalkthrough() {
+    try { window.renderIcons(document.getElementById('modalBody')); } catch (e) {}
+    var next = document.getElementById('pwNext');
+    if (next) next.addEventListener('click', function(){ _pwStep++; var body = document.getElementById('modalBody'); if (body) { body.innerHTML = pasteLogStepHtml(); bindPasteLogWalkthrough(); } });
+    var back = document.getElementById('pwBack');
+    if (back) back.addEventListener('click', function(){ _pwStep--; var body = document.getElementById('modalBody'); if (body) { body.innerHTML = pasteLogStepHtml(); bindPasteLogWalkthrough(); } });
+    var go = document.getElementById('pwGoCodes');
+    if (go) go.addEventListener('click', function(){ closeModal(); navigate('products'); });
+    var skip = document.getElementById('pwSkip');
+    if (skip) skip.addEventListener('click', function(){ requestModalClose(); });
+  }
+
+
+  // ============ CREATE INVOICE (pending, no sale yet) ============
+  var invOnlyLines = [];
+  var invOnlyLineId = 0;
+  var invOnlyCustomer = '', invOnlyNote = '', invOnlyDue = '', invOnlyDate = '';
+  function openInvoiceOnlyForm() {
+    invOnlyLines = [{id: ++invOnlyLineId, productId:'', quantity:1, amount:0, overridden:false}];
+    invOnlyCustomer = ''; invOnlyNote = ''; invOnlyDue = ''; invOnlyDate = todayStr();
+    showInvoiceOnlyForm();
+  }
+  function invOnlyTotal() { return invOnlyLines.reduce(function(s, l){ return s + (parseFloat(l.amount) || 0); }, 0); }
+  function invOnlyLineHtml(line) {
+    var options = ['<option value="">Select product</option>'];
+    DataStore.getProducts().forEach(function(p) { options.push('<option value="' + escAttr(p.id) + '"' + (line.productId === p.id ? ' selected' : '') + '>' + escapeHtml(p.name) + '</option>'); });
+    var removeHtml = invOnlyLines.length > 1 ? '<button type="button" class="sale-line-remove" data-action="remove" aria-label="Remove"><span data-icon="x" style="width:16px;height:16px;display:inline-flex"></span></button>' : '';
+    return '<div class="sale-line" data-line-id="' + line.id + '">'
+      + '<div class="sale-line-row">'
+      +   '<select class="form-select sale-line-product" data-action="product">' + options.join('') + '</select>'
+      +   removeHtml
+      + '</div>'
+      + '<div class="sale-line-row2">'
+      +   '<input type="number" class="form-input" inputmode="numeric" min="1" step="1" placeholder="Qty" value="' + line.quantity + '" data-action="qty">'
+      +   '<input type="number" class="form-input sale-line-amount" inputmode="numeric" min="0" step="1" placeholder="Amount (₦)" value="' + (line.amount || '') + '" data-action="amount">'
+      + '</div></div>';
+  }
+  function renderInvOnlyLines() {
+    var host = document.getElementById('invOnlyLines'); if (!host) return;
+    host.innerHTML = invOnlyLines.map(invOnlyLineHtml).join('');
+    try { window.renderIcons(host); } catch (e) {}
+    document.getElementById('invOnlyTotalValue').textContent = formatNaira(invOnlyTotal());
+  }
+  function showInvoiceOnlyForm() {
+    var html = ''
+      + '<div class="form-group"><label class="form-label">Date</label>'
+      +   '<input type="date" class="form-input" id="invOnlyDate" value="' + invOnlyDate + '"></div>'
+      + '<div id="invOnlyLines"></div>'
+      + '<button type="button" class="btn btn-secondary btn-sm" id="invOnlyAddLine" style="margin-bottom:16px">+ Add product</button>'
+      + '<div class="sale-total-row"><span>Total</span><span class="sale-total-value" id="invOnlyTotalValue">₦0</span></div>'
+      + '<div class="form-group"><label class="form-label">Customer name</label>'
+      +   '<input type="text" class="form-input" id="invOnlyCustomer" placeholder="Required" autocomplete="off" value="' + escapeHtml(invOnlyCustomer) + '">'
+      +   '<div class="form-error" id="invOnlyCustomerErr"></div></div>'
+      + '<div class="form-group"><label class="form-label">Due date</label>'
+      +   '<input type="date" class="form-input" id="invOnlyDue" value="' + invOnlyDue + '">'
+      +   '<div class="form-error" id="invOnlyDueErr"></div></div>'
+      + '<div class="form-group"><label class="form-label">Note</label>'
+      +   '<input type="text" class="form-input" id="invOnlyNote" placeholder="Optional" value="' + escapeHtml(invOnlyNote) + '"></div>'
+      + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="invOnlyCreateBtn">Create invoice</button>';
+    openModal(html, 'Create an invoice');
+    renderInvOnlyLines();
+    var lineHost = document.getElementById('invOnlyLines');
+    lineHost.addEventListener('input', function(e) {
+      var lineEl = e.target.closest('.sale-line'); if (!lineEl) return;
+      var id = parseInt(lineEl.getAttribute('data-line-id'), 10);
+      var line = invOnlyLines.filter(function(l){ return l.id === id; })[0]; if (!line) return;
+      var act = e.target.getAttribute('data-action');
+      if (act === 'qty') {
+        line.quantity = parseInt(e.target.value, 10) || 0;
+        if (!line.overridden) { var p = DataStore.getProductById(line.productId); line.amount = (p && p.sellingPrice != null) ? p.sellingPrice * line.quantity : 0; lineEl.querySelector('.sale-line-amount').value = line.amount; }
+      } else if (act === 'amount') { line.overridden = true; line.amount = parseFloat(e.target.value) || 0; }
+      document.getElementById('invOnlyTotalValue').textContent = formatNaira(invOnlyTotal());
+      setModalChanged();
+    });
+    lineHost.addEventListener('change', function(e) {
+      if (e.target.getAttribute('data-action') !== 'product') return;
+      var lineEl = e.target.closest('.sale-line'); var id = parseInt(lineEl.getAttribute('data-line-id'), 10);
+      var line = invOnlyLines.filter(function(l){ return l.id === id; })[0]; if (!line) return;
+      line.productId = e.target.value; line.overridden = false;
+      var p = DataStore.getProductById(line.productId);
+      line.amount = (p && p.sellingPrice != null) ? p.sellingPrice * (line.quantity || 1) : 0;
+      var amtInp = lineEl.querySelector('.sale-line-amount'); if (amtInp) amtInp.value = line.amount;
+      document.getElementById('invOnlyTotalValue').textContent = formatNaira(invOnlyTotal());
+      setModalChanged();
+    });
+    lineHost.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action="remove"]'); if (!btn) return;
+      var lineEl = btn.closest('.sale-line'); var id = parseInt(lineEl.getAttribute('data-line-id'), 10);
+      invOnlyLines = invOnlyLines.filter(function(l){ return l.id !== id; });
+      renderInvOnlyLines(); setModalChanged();
+    });
+    document.getElementById('invOnlyAddLine').addEventListener('click', function() {
+      invOnlyLines.push({id: ++invOnlyLineId, productId:'', quantity:1, amount:0, overridden:false});
+      renderInvOnlyLines(); setModalChanged();
+    });
+    ['invOnlyCustomer','invOnlyNote','invOnlyDue','invOnlyDate'].forEach(function(id){ var el = document.getElementById(id); if (el) el.addEventListener('input', setModalChanged); });
+    document.getElementById('invOnlyCreateBtn').addEventListener('click', savePendingInvoice);
+  }
+  function savePendingInvoice() {
+    var errs = 0;
+    document.getElementById('invOnlyCustomerErr').textContent = '';
+    document.getElementById('invOnlyDueErr').textContent = '';
+    var customer = (document.getElementById('invOnlyCustomer').value || '').trim();
+    var due = document.getElementById('invOnlyDue').value;
+    var date = document.getElementById('invOnlyDate').value || todayStr();
+    var note = (document.getElementById('invOnlyNote').value || '').trim() || null;
+    if (!customer) { document.getElementById('invOnlyCustomerErr').textContent = 'Add the customer name.'; errs++; }
+    if (!due) { document.getElementById('invOnlyDueErr').textContent = 'Choose a due date.'; errs++; }
+    var lines = invOnlyLines.filter(function(l) { return l.productId && l.quantity > 0; });
+    if (lines.length === 0) { showToast('Add at least one product line.', 'error'); return; }
+    if (errs > 0) return;
+    var total = lines.reduce(function(s, l){ return s + (parseFloat(l.amount) || 0); }, 0);
+    var inv = {
+      id: generateId(),
+      invoiceNumber: DataStore.getNextInvoiceNumber(),
+      entryId: null,
+      customerName: customer,
+      date: date,
+      lineItems: lines.map(function(l) {
+        var p = DataStore.getProductById(l.productId);
+        return { productId: l.productId, productName: p ? p.name : '', quantity: l.quantity, unitPrice: (l.quantity > 0 ? Math.round((parseFloat(l.amount) || 0) / l.quantity) : 0), amount: parseFloat(l.amount) || 0 };
+      }),
+      total: total, note: note, status: 'pending', dueDate: due, createdAt: new Date().toISOString()
+    };
+    DataStore.saveInvoice(inv);
+    closeModal();
+    showToast('Invoice ' + inv.invoiceNumber + ' created.', 'success');
+    renderFulfilmentPage();
+    renderHome();
+  }
+  // Convert a pending invoice to a paid sale (used by Mark paid on Fulfilment)
+  function markPendingInvoicePaid(invoiceId) {
+    var inv = DataStore.getInvoices().filter(function(i){ return i.id === invoiceId; })[0];
+    if (!inv || inv.status !== 'pending') return;
+    var now = new Date().toISOString();
+    var entry = {
+      id: generateId(), type: 'sale', date: todayStr(), createdAt: now,
+      lineItems: inv.lineItems.map(function(li) {
+        var p = DataStore.getProductById(li.productId);
+        return { productId: li.productId, productName: li.productName, quantity: li.quantity, unitPrice: li.unitPrice, costAtSale: p ? p.costPrice : null, amount: li.amount };
+      }),
+      total: inv.total, customerName: inv.customerName, paymentStatus: 'paid',
+      dueDate: null, fulfilled: true, fulfilledAt: now, invoiceId: inv.id, note: inv.note
+    };
+    DataStore.saveEntry(entry);
+    entry.lineItems.forEach(function(li) { if (li.productId) DataStore.adjustStock(li.productId, -li.quantity); });
+    inv.entryId = entry.id; inv.status = 'paid';
+    DataStore.saveInvoice(inv);
+    showToast(inv.invoiceNumber + ' marked paid.', 'success');
+    renderFulfilmentPage(); renderHome(); renderLogList();
+  }
 
   init();
 })();
