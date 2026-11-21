@@ -1012,6 +1012,11 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
 }
 :root[data-theme="dark"] body { background: #0A0D11; color: var(--gray-800); }
 :root[data-theme="dark"] .topbar, :root[data-theme="dark"] .modal-topbar { background: #0E1114; border-color: var(--gray-200); }
+:root[data-theme="dark"] .sidebar { background: #0A0D11; border-right: 1px solid var(--gray-200); }
+:root[data-theme="dark"] .sidebar-business { color: rgba(255,255,255,0.55); }
+:root[data-theme="dark"] .sidebar-user-name { color: #fff; }
+:root[data-theme="dark"] .nav-item.active { background: rgba(255,255,255,0.08); color: #fff; box-shadow: inset 2px 0 0 var(--gold-bright); }
+:root[data-theme="dark"] .sidebar-backdrop { background: rgba(0,0,0,0.55); }
 :root[data-theme="dark"] .modal-body { background: #0A0D11; }
 :root[data-theme="dark"] .modal-container { background: #0E1114; }
 :root[data-theme="dark"] .modal-overlay.compact .modal-container { background: #15191F; }
@@ -1177,6 +1182,7 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       <button class="nav-item" data-page="log"><span class="nav-icon" data-icon="pen"></span><span class="nav-label">My Log</span></button>
       <button class="nav-item" data-page="products"><span class="nav-icon" data-icon="grid"></span><span class="nav-label">My Products</span></button>
       <button class="nav-item" data-page="credit"><span class="nav-icon" data-icon="swap"></span><span class="nav-label">Credit</span></button>
+      <button class="nav-item" data-page="invoices"><span class="nav-icon" data-icon="credit-card"></span><span class="nav-label">Invoices</span></button>
       <button class="nav-item" data-page="fulfilment"><span class="nav-icon" data-icon="check"></span><span class="nav-label">Fulfilment</span></button>
       <button class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span class="nav-label">My Numbers</span></button>
       <button class="nav-item" data-page="settings"><span class="nav-icon" data-icon="gear"></span><span class="nav-label">Settings</span></button>
@@ -1280,12 +1286,19 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
         <div id="creditList"></div>
         <div class="empty-state" id="creditEmpty" style="display:none"><span class="es-ico" data-icon="swap"></span><h3>No outstanding credit</h3><p>When a customer pays later, it will show up here until the balance is cleared.</p></div>
       </div>
+      <div class="page" id="page-invoices" data-title="Invoices">
+        <div class="filter-pills" id="invoicesTabs" role="group" aria-label="Filter invoices">
+          <button type="button" class="filter-pill active" data-tab="unpaid">Unpaid <span class="filter-count" id="invoicesCountUnpaid" style="display:none">0</span></button>
+          <button type="button" class="filter-pill" data-tab="paid">Paid <span class="filter-count" id="invoicesCountPaid" style="display:none">0</span></button>
+        </div>
+        <div id="invoicesList"></div>
+        <div class="empty-state" id="invoicesEmpty" style="display:none"><span class="es-ico" data-icon="credit-card"></span><h3>No invoices</h3><p>Invoices appear here when you create one, or when you log a credit sale.</p></div>
+      </div>
       <div class="page" id="page-fulfilment" data-title="Fulfilment">
         <div class="filter-pills" id="fulfilmentTabs" role="group" aria-label="Filter orders">
           <button type="button" class="filter-pill active" data-tab="overdue">Overdue <span class="filter-count" id="fulfilmentCountOverdue" style="display:none">0</span></button>
           <button type="button" class="filter-pill" data-tab="today">Today <span class="filter-count" id="fulfilmentCountToday" style="display:none">0</span></button>
           <button type="button" class="filter-pill" data-tab="later">Later <span class="filter-count" id="fulfilmentCountLater" style="display:none">0</span></button>
-          <button type="button" class="filter-pill" data-tab="unpaid">Unpaid <span class="filter-count" id="fulfilmentCountUnpaid" style="display:none">0</span></button>
         </div>
         <div id="fulfilmentList"></div>
         <div class="empty-state" id="fulfilmentEmpty" style="display:none"><span class="es-ico" data-icon="check"></span><h3>All caught up</h3><p>Orders with a due date show up here as the day approaches.</p></div>
@@ -2252,7 +2265,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   var isMobile = window.innerWidth < 768;
 
   var pageTitles = { home:'Home', log:'My Log', products:'My Products', credit:'Credit',
-    fulfilment:'Fulfilment', analytics:'My Numbers', settings:'Settings' };
+    invoices:'Invoices', fulfilment:'Fulfilment', analytics:'My Numbers', settings:'Settings' };
 
   // ---- View switching ----
   function showView(name) {
@@ -2850,7 +2863,25 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   // Home action cards
   document.getElementById('pillStock').addEventListener('click', openStockModal);
-  document.getElementById('pillOrders').addEventListener('click', function() { navigate('fulfilment'); });
+  document.getElementById('pillOrders').addEventListener('click', openOrdersMenu);
+  function openOrdersMenu() {
+    var html = '<ul class="sheet-list">'
+      + '<li class="sheet-item" data-type="orders-due"><span class="sheet-item-icon stock" data-icon="check"></span><span class="sheet-item-text"><span class="sheet-item-title">Orders due</span><span class="sheet-item-sub">Overdue, today and later</span></span></li>'
+      + '<li class="sheet-item" data-type="invoices-unpaid"><span class="sheet-item-icon invoice" data-icon="credit-card"></span><span class="sheet-item-text"><span class="sheet-item-title">Unpaid invoices</span><span class="sheet-item-sub">Awaiting payment</span></span></li>'
+      + '</ul>';
+    openModal(html, 'Orders', {compact: true});
+    var items = document.querySelectorAll('#modalBody .sheet-item');
+    items.forEach(function(item) {
+      item.addEventListener('click', function() {
+        var t = item.getAttribute('data-type');
+        closeModal();
+        setTimeout(function() {
+          if (t === 'orders-due') navigate('fulfilment');
+          else if (t === 'invoices-unpaid') { invoicesTab = 'unpaid'; navigate('invoices'); }
+        }, 120);
+      });
+    });
+  }
   document.getElementById('cardLog').addEventListener('click', function() {
     openEntryChooser();
   });
@@ -2865,6 +2896,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     if (p === 'log') renderLogList();
     if (p === 'credit') renderCreditPage();
     if (p === 'fulfilment') renderFulfilmentPage();
+    if (p === 'invoices') renderInvoicesPage();
     if (p === 'settings') renderSettingsPage();
     if (p === 'analytics') renderAnalyticsPage();
   });
@@ -5257,7 +5289,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       +   '<button type="button" class="btn btn-primary" id="invShare" disabled>Share</button>'
       +   '<button type="button" class="btn btn-secondary" id="invDownload" disabled>Download</button>'
       + '</div>'
-      + (getInvoiceStatus(inv) === 'pending' ? '<button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px" id="invEdit">Edit invoice</button>' : '')
+      + (getInvoiceStatus(inv) === 'pending' ? '<button type="button" class="btn btn-primary" style="width:100%;margin-top:10px" id="invMarkPaid">Mark paid</button><button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px" id="invEdit">Edit invoice</button>' : '')
       + '<button type="button" class="btn btn-danger" style="width:100%;margin-top:10px" id="invCancel">Cancel invoice</button>'
       + '</div>';
     openModal(html, 'Invoice');
@@ -5265,6 +5297,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     document.getElementById('invShare').addEventListener('click', shareInvoiceImage);
     var invEditBtn = document.getElementById('invEdit');
     if (invEditBtn) invEditBtn.addEventListener('click', function() { closeModal(); setTimeout(function(){ openInvoiceOnlyForm(inv.id); }, 100); });
+    var invMarkBtn = document.getElementById('invMarkPaid');
+    if (invMarkBtn) invMarkBtn.addEventListener('click', function() {
+      showConfirm('Mark this invoice paid? A sale entry will be logged and stock will go down.', function(ok) { if (ok) { closeModal(); setTimeout(function(){ markPendingInvoicePaid(inv.id); }, 100); } }, 'Mark paid', 'Cancel');
+    });
     document.getElementById('invCancel').addEventListener('click', function() {
       showConfirm('Cancel ' + inv.invoiceNumber + '? The number will not be reused. You can create a new invoice for this sale afterwards.', function(ok) {
         if (!ok) return;
@@ -5406,6 +5442,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>';
   }
   function renderFulfilmentPage() {
+    if (fulfilmentTab === 'unpaid') fulfilmentTab = 'overdue';
     var orders = getFulfilmentOrders();
     var today = todayStr();
     var buckets = {
@@ -5413,32 +5450,22 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       today: orders.filter(function(e) { return e.dueDate === today; }),
       later: orders.filter(function(e) { return e.dueDate > today; })
     };
-    var pending = getPendingInvoices();
     var setCount = function(id, n) { var el = document.getElementById(id); if (!el) return; if (n > 0) { el.textContent = n; el.style.display = ''; } else { el.style.display = 'none'; } };
     setCount('fulfilmentCountOverdue', buckets.overdue.length);
     setCount('fulfilmentCountToday', buckets.today.length);
     setCount('fulfilmentCountLater', buckets.later.length);
-    setCount('fulfilmentCountUnpaid', pending.length);
     var tabs = document.querySelectorAll('#fulfilmentTabs .filter-pill');
     tabs.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-tab') === fulfilmentTab); });
+    var shown = buckets[fulfilmentTab] || [];
     var list = document.getElementById('fulfilmentList');
-    var shownCount = 0;
-    if (fulfilmentTab === 'unpaid') {
-      list.innerHTML = pending.map(fulfilmentPendingRowHtml).join('');
-      shownCount = pending.length;
-    } else {
-      var shown = buckets[fulfilmentTab] || [];
-      list.innerHTML = shown.map(function(e) { return fulfilmentRowHtml(e, false); }).join('');
-      shownCount = shown.length;
-    }
+    list.innerHTML = shown.map(function(e) { return fulfilmentRowHtml(e, false); }).join('');
     var empty = document.getElementById('fulfilmentEmpty');
     if (empty) {
-      if (shownCount === 0) {
+      if (shown.length === 0) {
         var copy = {
           overdue: { icon: 'check', title: 'Nothing overdue', sub: 'Orders past their due date appear here.' },
           today:   { icon: 'check', title: 'Nothing due today', sub: 'Orders due today appear here.' },
-          later:   { icon: 'check', title: 'Nothing coming up', sub: 'Orders due tomorrow or later appear here.' },
-          unpaid:  { icon: 'credit-card', title: 'No unpaid invoices', sub: 'Invoices created but not yet paid for appear here.' }
+          later:   { icon: 'check', title: 'Nothing coming up', sub: 'Orders due tomorrow or later appear here.' }
         }[fulfilmentTab] || { icon: 'check', title: 'All caught up', sub: 'Orders with a due date appear here as the day approaches.' };
         empty.innerHTML = '<span class="es-ico" data-icon="' + copy.icon + '"></span><h3>' + copy.title + '</h3><p>' + copy.sub + '</p>';
         try { window.renderIcons(empty); } catch (e) {}
@@ -5449,6 +5476,54 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     }
     var completed = getCompletedTodayOrders();
     document.getElementById('fulfilmentDone').innerHTML = (fulfilmentTab === 'today' && completed.length) ? fulfilmentGroupHtml('Completed today', false, completed, true) : '';
+  }
+
+  // ============ INVOICES PAGE ============
+  var invoicesTab = 'unpaid';
+  function invoiceRowHtml(inv) {
+    var st = getInvoiceStatus(inv);
+    var items = (inv.lineItems || []).map(function(li){ return li.productName + ' (' + li.quantity + ')'; }).join(', ');
+    var today = todayStr();
+    var overdue = st !== 'paid' && st !== 'cancelled' && inv.dueDate && inv.dueDate < today;
+    var dateTxt = inv.dueDate ? ('Due ' + formatShortDate(inv.dueDate)) : ('Issued ' + formatShortDate(inv.date || (inv.createdAt||'').slice(0,10)));
+    if (overdue) { var n = daysSinceDate(inv.dueDate); dateTxt += ' · ' + n + (n === 1 ? ' day overdue' : ' days overdue'); }
+    return '<div class="fulfil-row invoice-row" data-inv-id="' + inv.id + '">'
+      + '<div class="fulfil-info">'
+      +   '<div class="fulfil-name"><span>' + escapeHtml(inv.customerName || 'No name') + '</span>' + invoiceStatusPillHtml(st) + '</div>'
+      +   '<div class="fulfil-items">' + escapeHtml(inv.invoiceNumber) + ' · ' + escapeHtml(items || 'No items') + '</div>'
+      +   '<div class="fulfil-due' + (overdue ? ' overdue' : '') + '">' + escapeHtml(dateTxt) + ' · ' + formatNaira(inv.total || 0) + '</div>'
+      + '</div>'
+      + '<button type="button" class="btn btn-secondary btn-sm" data-action="open-invoice">Open</button>'
+      + '</div>';
+  }
+  function renderInvoicesPage() {
+    var all = DataStore.getInvoices().slice();
+    // Normalise status cache so filters are accurate
+    all.forEach(function(inv) { inv.__st = getInvoiceStatus(inv); });
+    var unpaid = all.filter(function(inv) { return inv.__st === 'pending' || inv.__st === 'unpaid' || inv.__st === 'partial'; })
+      .sort(function(a,b) { var ad = a.dueDate || a.date || a.createdAt, bd = b.dueDate || b.date || b.createdAt; return ad < bd ? -1 : (ad > bd ? 1 : 0); });
+    var paid = all.filter(function(inv) { return inv.__st === 'paid'; })
+      .sort(function(a,b) { return (b.createdAt||'').localeCompare(a.createdAt||''); });
+    var setCount = function(id, n) { var el = document.getElementById(id); if (!el) return; if (n > 0) { el.textContent = n; el.style.display = ''; } else { el.style.display = 'none'; } };
+    setCount('invoicesCountUnpaid', unpaid.length);
+    setCount('invoicesCountPaid', paid.length);
+    document.querySelectorAll('#invoicesTabs .filter-pill').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-tab') === invoicesTab); });
+    var shown = invoicesTab === 'paid' ? paid : unpaid;
+    var list = document.getElementById('invoicesList');
+    list.innerHTML = shown.map(invoiceRowHtml).join('');
+    var empty = document.getElementById('invoicesEmpty');
+    if (empty) {
+      if (shown.length === 0) {
+        var copy = invoicesTab === 'paid'
+          ? { icon: 'check', title: 'No paid invoices yet', sub: 'When an invoice is paid, it appears here.' }
+          : { icon: 'credit-card', title: 'No unpaid invoices', sub: 'Invoices awaiting payment appear here. Tap the + button to create one.' };
+        empty.innerHTML = '<span class="es-ico" data-icon="' + copy.icon + '"></span><h3>' + copy.title + '</h3><p>' + copy.sub + '</p>';
+        try { window.renderIcons(empty); } catch (e) {}
+        empty.style.display = '';
+      } else {
+        empty.style.display = 'none';
+      }
+    }
   }
 
   function setOrderFulfilled(entryId, fulfilled) {
@@ -5466,17 +5541,18 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     if (tab) { fulfilmentTab = tab.getAttribute('data-tab'); renderFulfilmentPage(); return; }
     var btn = ev.target.closest('[data-action]');
     if (!btn) return;
-    var pendingRow = btn.closest('.fulfil-row.pending');
-    if (pendingRow) {
-      var invId = pendingRow.getAttribute('data-inv-id');
-      var act = btn.getAttribute('data-action');
-      if (act === 'view-invoice') { openInvoicePreview(invId); return; }
-      if (act === 'mark-paid') { showConfirm('Mark this invoice paid? A sale entry will be logged and stock will go down.', function(ok) { if (ok) markPendingInvoicePaid(invId); }, 'Mark paid', 'Cancel'); return; }
-      return;
-    }
     var rowEl = btn.closest('.fulfil-row');
     if (!rowEl) return;
     setOrderFulfilled(rowEl.getAttribute('data-id'), btn.getAttribute('data-action') === 'fulfil');
+  });
+
+  // Invoices page click handler
+  document.getElementById('page-invoices').addEventListener('click', function(ev) {
+    var tab = ev.target.closest('#invoicesTabs .filter-pill');
+    if (tab) { invoicesTab = tab.getAttribute('data-tab'); renderInvoicesPage(); return; }
+    var row = ev.target.closest('.invoice-row');
+    if (!row) return;
+    openInvoicePreview(row.getAttribute('data-inv-id'));
   });
 
   // Read-only fulfilment status on the sale's own edit view (Story F2)
@@ -6665,7 +6741,7 @@ window.renderIcons = function(root){
       DataStore.saveInvoice(inv);
       closeModal();
       showToast('Invoice ' + inv.invoiceNumber + ' updated.', 'success');
-      renderFulfilmentPage();
+      renderFulfilmentPage(); renderInvoicesPage();
       renderHome();
       setTimeout(function() { openInvoicePreview(inv.id); }, 100);
       invOnlyEditingId = null;
@@ -6683,7 +6759,7 @@ window.renderIcons = function(root){
     DataStore.saveInvoice(inv);
     closeModal();
     showToast('Invoice ' + inv.invoiceNumber + ' created.', 'success');
-    renderFulfilmentPage();
+    renderFulfilmentPage(); renderInvoicesPage();
     renderHome();
     // Open the preview so she can share or download right away
     setTimeout(function() { openInvoicePreview(inv.id); }, 100);
@@ -6707,7 +6783,7 @@ window.renderIcons = function(root){
     inv.entryId = entry.id; inv.status = 'paid';
     DataStore.saveInvoice(inv);
     showToast(inv.invoiceNumber + ' marked paid.', 'success');
-    renderFulfilmentPage(); renderHome(); renderLogList();
+    renderFulfilmentPage(); renderInvoicesPage(); renderHome(); renderLogList();
   }
 
   init();
