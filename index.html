@@ -632,6 +632,10 @@ ul, ol { list-style: none; }
 .badge-stockin { background: #E7F1FA; color: #1565C0; }
 .badge-lost { background: #FDEAEA; color: var(--bad); }
 .entry-amount { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--gray-900); white-space: nowrap; }
+.entry-edit-hint { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: var(--teal-light); color: var(--teal-dark); font-size: 11px; font-weight: 700; letter-spacing: 0.01em; }
+.entry-edit-hint svg { width: 12px; height: 12px; stroke-width: 2; }
+.list-row-sub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+:root[data-theme="dark"] .entry-edit-hint { background: var(--teal-light); color: var(--teal); }
 
 /* Payment status pill */
 .status-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.01em; }
@@ -3158,6 +3162,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>'
       + '<div class="list-row-sub">' + escapeHtml(entryDetailText(e)) + ' ' + paymentPillHtml(e)
       +   (searching ? ' <span class="month-tag">' + escapeHtml(formatMonthLabel(e.date.slice(0, 7))) + '</span>' : '')
+      +   '<span class="entry-edit-hint" aria-hidden="true"><span data-icon="pen"></span>Edit</span>'
       + '</div>'
       + '</div>';
   }
@@ -5229,11 +5234,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       +   '<button type="button" class="btn btn-primary" id="invShare" disabled>Share</button>'
       +   '<button type="button" class="btn btn-secondary" id="invDownload" disabled>Download</button>'
       + '</div>'
+      + (getInvoiceStatus(inv) === 'pending' ? '<button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px" id="invEdit">Edit invoice</button>' : '')
       + '<button type="button" class="btn btn-danger" style="width:100%;margin-top:10px" id="invCancel">Cancel invoice</button>'
       + '</div>';
     openModal(html, 'Invoice');
     var host = document.getElementById('invPreviewHost');
     document.getElementById('invShare').addEventListener('click', shareInvoiceImage);
+    var invEditBtn = document.getElementById('invEdit');
+    if (invEditBtn) invEditBtn.addEventListener('click', function() { closeModal(); setTimeout(function(){ openInvoiceOnlyForm(inv.id); }, 100); });
     document.getElementById('invCancel').addEventListener('click', function() {
       showConfirm('Cancel ' + inv.invoiceNumber + '? The number will not be reused. You can create a new invoice for this sale afterwards.', function(ok) {
         if (!ok) return;
@@ -5401,9 +5409,23 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       shownCount = shown.length;
     }
     var empty = document.getElementById('fulfilmentEmpty');
-    if (empty) empty.style.display = shownCount === 0 ? '' : 'none';
+    if (empty) {
+      if (shownCount === 0) {
+        var copy = {
+          overdue: { icon: 'check', title: 'Nothing overdue', sub: 'Orders past their due date appear here.' },
+          today:   { icon: 'check', title: 'Nothing due today', sub: 'Orders due today appear here.' },
+          later:   { icon: 'check', title: 'Nothing coming up', sub: 'Orders due tomorrow or later appear here.' },
+          unpaid:  { icon: 'credit-card', title: 'No unpaid invoices', sub: 'Invoices created but not yet paid for appear here.' }
+        }[fulfilmentTab] || { icon: 'check', title: 'All caught up', sub: 'Orders with a due date appear here as the day approaches.' };
+        empty.innerHTML = '<span class="es-ico" data-icon="' + copy.icon + '"></span><h3>' + copy.title + '</h3><p>' + copy.sub + '</p>';
+        try { window.renderIcons(empty); } catch (e) {}
+        empty.style.display = '';
+      } else {
+        empty.style.display = 'none';
+      }
+    }
     var completed = getCompletedTodayOrders();
-    document.getElementById('fulfilmentDone').innerHTML = completed.length ? fulfilmentGroupHtml('Completed today', false, completed, true) : '';
+    document.getElementById('fulfilmentDone').innerHTML = (fulfilmentTab === 'today' && completed.length) ? fulfilmentGroupHtml('Completed today', false, completed, true) : '';
   }
 
   function setOrderFulfilled(entryId, fulfilled) {
@@ -6457,7 +6479,25 @@ window.renderIcons = function(root){
   var invOnlyLines = [];
   var invOnlyLineId = 0;
   var invOnlyCustomer = '', invOnlyNote = '', invOnlyDue = '', invOnlyDate = '';
-  function openInvoiceOnlyForm() {
+  var invOnlyEditingId = null;
+  function openInvoiceOnlyForm(editingInvoiceId) {
+    invOnlyEditingId = editingInvoiceId || null;
+    if (invOnlyEditingId) {
+      var inv = DataStore.getInvoices().filter(function(i){ return i.id === invOnlyEditingId; })[0];
+      if (!inv) { invOnlyEditingId = null; }
+      else {
+        invOnlyLines = (inv.lineItems || []).map(function(li){
+          return { id: ++invOnlyLineId, productId: li.productId, quantity: li.quantity, amount: li.amount, overridden: true };
+        });
+        if (invOnlyLines.length === 0) invOnlyLines = [{id: ++invOnlyLineId, productId:'', quantity:1, amount:0, overridden:false}];
+        invOnlyCustomer = inv.customerName || '';
+        invOnlyNote = inv.note || '';
+        invOnlyDue = inv.dueDate || '';
+        invOnlyDate = inv.date || todayStr();
+        showInvoiceOnlyForm();
+        return;
+      }
+    }
     invOnlyLines = [{id: ++invOnlyLineId, productId:'', quantity:1, amount:0, overridden:false}];
     invOnlyCustomer = ''; invOnlyNote = ''; invOnlyDue = ''; invOnlyDate = todayStr();
     showInvoiceOnlyForm();
@@ -6498,8 +6538,8 @@ window.renderIcons = function(root){
       +   '<div class="form-error" id="invOnlyDueErr"></div></div>'
       + '<div class="form-group"><label class="form-label">Note</label>'
       +   '<input type="text" class="form-input" id="invOnlyNote" placeholder="Optional" value="' + escapeHtml(invOnlyNote) + '"></div>'
-      + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="invOnlyCreateBtn">Create invoice</button>';
-    openModal(html, 'Create an invoice');
+      + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="invOnlyCreateBtn">' + (invOnlyEditingId ? 'Save changes' : 'Create invoice') + '</button>';
+    openModal(html, invOnlyEditingId ? 'Edit invoice' : 'Create an invoice');
     renderInvOnlyLines();
     var lineHost = document.getElementById('invOnlyLines');
     lineHost.addEventListener('input', function(e) {
@@ -6552,16 +6592,36 @@ window.renderIcons = function(root){
     if (lines.length === 0) { showToast('Add at least one product line.', 'error'); return; }
     if (errs > 0) return;
     var total = lines.reduce(function(s, l){ return s + (parseFloat(l.amount) || 0); }, 0);
-    var inv = {
+    var lineItemsOut = lines.map(function(l) {
+      var p = DataStore.getProductById(l.productId);
+      return { productId: l.productId, productName: p ? p.name : '', quantity: l.quantity, unitPrice: (l.quantity > 0 ? Math.round((parseFloat(l.amount) || 0) / l.quantity) : 0), amount: parseFloat(l.amount) || 0 };
+    });
+    var inv;
+    if (invOnlyEditingId) {
+      inv = DataStore.getInvoices().filter(function(i){ return i.id === invOnlyEditingId; })[0];
+      if (!inv) { invOnlyEditingId = null; return; }
+      inv.customerName = customer;
+      inv.date = date;
+      inv.lineItems = lineItemsOut;
+      inv.total = total;
+      inv.note = note;
+      inv.dueDate = due;
+      DataStore.saveInvoice(inv);
+      closeModal();
+      showToast('Invoice ' + inv.invoiceNumber + ' updated.', 'success');
+      renderFulfilmentPage();
+      renderHome();
+      setTimeout(function() { openInvoicePreview(inv.id); }, 100);
+      invOnlyEditingId = null;
+      return;
+    }
+    inv = {
       id: generateId(),
       invoiceNumber: DataStore.getNextInvoiceNumber(),
       entryId: null,
       customerName: customer,
       date: date,
-      lineItems: lines.map(function(l) {
-        var p = DataStore.getProductById(l.productId);
-        return { productId: l.productId, productName: p ? p.name : '', quantity: l.quantity, unitPrice: (l.quantity > 0 ? Math.round((parseFloat(l.amount) || 0) / l.quantity) : 0), amount: parseFloat(l.amount) || 0 };
-      }),
+      lineItems: lineItemsOut,
       total: total, note: note, status: 'pending', dueDate: due, createdAt: new Date().toISOString()
     };
     DataStore.saveInvoice(inv);
@@ -6569,6 +6629,8 @@ window.renderIcons = function(root){
     showToast('Invoice ' + inv.invoiceNumber + ' created.', 'success');
     renderFulfilmentPage();
     renderHome();
+    // Open the preview so she can share or download right away
+    setTimeout(function() { openInvoicePreview(inv.id); }, 100);
   }
   // Convert a pending invoice to a paid sale (used by Mark paid on Fulfilment)
   function markPendingInvoicePaid(invoiceId) {
