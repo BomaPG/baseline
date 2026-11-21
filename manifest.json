@@ -1,16 +1,45 @@
 {
+  "id": "./",
   "name": "Baseline",
   "short_name": "Baseline",
-  "description": "Business calculator for Nigerian small business owners",
-  "start_url": "./index.html",
+  "description": "Know your numbers. Log sales, track stock and see your profit, even without internet.",
+  "lang": "en-NG",
+  "dir": "ltr",
+  "start_url": "./#home",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#043D3D",
-  "theme_color": "#043D3D",
-  "orientation": "portrait",
+  "orientation": "any",
+  "background_color": "#F8F9FA",
+  "theme_color": "#0B7B7B",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
