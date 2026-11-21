@@ -528,6 +528,29 @@ ul, ol { list-style: none; }
 .pw-hero { text-align: center; margin-bottom: 20px; }
 :root[data-theme="dark"] .promo-example { background: #15191F; color: var(--gray-700); }
 
+
+/* My Numbers — collapsible sections */
+.an-section.collapsible .an-section-body { display: none; padding-top: 0; }
+.an-section.collapsible.open .an-section-body { display: block; animation: anExpand 0.22s cubic-bezier(0.22,1,0.36,1); }
+@keyframes anExpand { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.an-section-head { display: flex; align-items: center; width: 100%; gap: 10px; padding: 14px 16px; margin-bottom: 10px; background: #fff; border: 1px solid var(--gray-100); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+.an-section-head:hover { box-shadow: var(--shadow-md); border-color: var(--gray-200); }
+.an-section.collapsible.open .an-section-head { margin-bottom: 8px; }
+.an-section-label { flex: 1; text-align: left; font-weight: 700; font-size: 14px; color: var(--gray-900); letter-spacing: -0.01em; text-transform: none; opacity: 1; }
+.an-section-info { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--gray-500); background: var(--gray-100); flex-shrink: 0; transition: background 0.15s, color 0.15s; }
+.an-section-info:hover { background: var(--teal-light); color: var(--teal-dark); }
+.an-section-info svg { width: 14px; height: 14px; stroke-width: 2; }
+.an-section-chev { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--gray-500); transition: transform 0.2s; flex-shrink: 0; }
+.an-section.collapsible.open .an-section-chev { transform: rotate(90deg); color: var(--teal-dark); }
+.an-section-chev svg { width: 16px; height: 16px; stroke-width: 2; }
+.an-page-hint { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--teal-light); color: var(--teal-dark); border-radius: 12px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
+.an-page-hint svg { width: 16px; height: 16px; stroke-width: 1.75; flex-shrink: 0; }
+.info-what ul { margin: 10px 0 0; padding-left: 20px; }
+.info-what ul li { margin-bottom: 6px; font-size: 14px; }
+:root[data-theme="dark"] .an-section-head { background: #15191F; border-color: var(--gray-200); }
+:root[data-theme="dark"] .an-section-info { background: var(--gray-200); color: var(--gray-600); }
+:root[data-theme="dark"] .an-page-hint { background: var(--teal-light); color: var(--teal); }
+
 /* Home action row: icon tiles */
 .action-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
 .action-btn {
@@ -5904,7 +5927,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var n = computeMonthNumbers(anMonth, DataStore.getEntries({}), DataStore._get('baseline_cost_history') || [], DataStore._get('baseline_credit_payments') || []);
     anLast = n;
     var none = 'No sales this month';
-    var html = '';
+    var html = '<div class="an-page-hint"><span data-icon="info"></span>Tap each section to open it, each metric to understand what it means.</div>';
     var prevM = prevMonthOf(anMonth);
     anCmpMap = null; anCmpPrev = null;
     if (prevM < b.min) html += '<div class="an-cmp-note">First month, no comparison available.</div>';
@@ -5925,12 +5948,12 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     }
 
     var salesSub = anPlural(n.salesCount, 'sale', 'sales') + (n.creditSold > 0 ? ' · ' + formatNaira(n.creditSold) + ' sold on credit' : '');
-    html += '<div class="an-section"><div class="an-section-title">Sales</div><div class="an-card">'
+    html += '<div class="an-section collapsible" data-sec="sales"><button type="button" class="an-section-head"><span class="an-section-label">Sales</span><span class="an-section-info" data-info-sec="sales" aria-label="About Sales"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">'
       + anRow({ key: 'revenue', label: 'Revenue', value: formatNaira(n.revenue), sub: 'Sales made' + (n.salesCount ? ' · ' + salesSub : '') })
       + anRow({ key: 'aov', label: 'Average order value', value: n.aov === null ? '' : formatNaira(n.aov), na: n.aov === null ? none : null })
       + '</div></div>';
 
-    html += '<div class="an-section"><div class="an-section-title">Profit</div><div class="an-card">'
+    html += '<div class="an-section collapsible" data-sec="profit"><button type="button" class="an-section-head"><span class="an-section-label">Profit & Margins</span><span class="an-section-info" data-info-sec="profit" aria-label="About Profit & Margins"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">'
       + anRow({ key: 'cogs', label: 'Cost of goods sold', value: formatNaira(n.cogs), incomplete: n.cogsIncomplete })
       + anRow({ key: 'gross', label: 'Gross profit', value: anMoney(n.grossProfit), tone: n.grossProfit < 0 ? 'neg' : '', incomplete: n.cogsIncomplete })
       + anRow({ key: 'grossm', label: 'Gross margin', value: n.grossMargin === null ? '' : anPct(n.grossMargin), na: n.grossMargin === null ? none : null, tone: n.grossMargin !== null && n.grossMargin < 0 ? 'neg' : '', incomplete: n.cogsIncomplete && n.grossMargin !== null })
@@ -5944,9 +5967,24 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     html += anAdvancedHtml(n, anAdv);
     html += anRankHtml(anAdv);
     host.innerHTML = html;
+    if (anOpenSection) {
+      var openEl = host.querySelector('.an-section.collapsible[data-sec="' + anOpenSection + '"]');
+      if (openEl) openEl.classList.add('open');
+    }
   }
 
   document.getElementById('analyticsContent').addEventListener('click', function(ev) {
+    var secInfo = ev.target.closest('[data-info-sec]');
+    if (secInfo) { ev.stopPropagation(); openAnSectionInfo(secInfo.getAttribute('data-info-sec')); return; }
+    var head = ev.target.closest('.an-section.collapsible .an-section-head');
+    if (head) {
+      var sec = head.closest('.an-section.collapsible');
+      var wasOpen = sec.classList.contains('open');
+      document.querySelectorAll('.an-section.collapsible.open').forEach(function(s) { s.classList.remove('open'); });
+      if (!wasOpen) { sec.classList.add('open'); anOpenSection = sec.getAttribute('data-sec'); }
+      else { anOpenSection = null; }
+      return;
+    }
     var rkb = ev.target.closest('[data-rk]');
     if (rkb) { anRankMode = rkb.getAttribute('data-rk'); renderAnalyticsPage(); return; }
     var be = ev.target.closest('[data-be]');
@@ -5978,6 +6016,23 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     dio: { title: 'Days inventory outstanding', what: 'On average, how many days your stock takes to sell.' },
     netm: { title: 'Net profit margin', what: 'The share of each sale that ended up as real profit.' }
   };
+
+
+  // Section-level explainers for My Numbers (one or two lines each).
+  var AN_SECTION_INFO = {
+    'sales': { title: 'Sales', what: 'See how much money you\u2019ve made from sales and how much you make per order on average.' },
+    'profit': { title: 'Profit & Margins', what: 'See what the business kept after goods, running costs and losses, and how much of each sale ends up as real profit.' },
+    'breakeven': { title: 'Break-even', what: 'See what you need to sell in a month to cover your running costs, before you start making profit.' },
+    'stock': { title: 'Stock', what: 'See how fast your stock moves and how long it sits before it sells.' },
+    'products': { title: 'Products', what: 'For each product, see:<ul><li><b>Margin per unit:</b> how much each unit you sell has left after paying for the goods.</li><li><b>Markup:</b> how much you add on top of what the goods cost you.</li><li><b>Sell-through:</b> how much of what you had available actually sold.</li></ul>' },
+    'ranking': { title: 'Product performance', what: 'Your products lined up from best to lowest on one measure \u2014 revenue, profit made, or how much of your stock sold.' }
+  };
+  function openAnSectionInfo(key) {
+    var info = AN_SECTION_INFO[key]; if (!info) return;
+    openModal('<p class="info-what">' + info.what + '</p><button type="button" class="btn btn-primary" style="width:100%;margin-top:4px" data-close>Got it</button>', info.title, {compact: true});
+    var btn = document.querySelector('#modalBody [data-close]');
+    if (btn) btn.addEventListener('click', function(){ requestModalClose(); });
+  }
 
   function openMetricInfo(key) {
     var info = AN_INFO[key];
@@ -6021,7 +6076,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var be = adv.breakEven;
 
     // --- Break-even ---
-    html += '<div class="an-section"><div class="an-section-title">Break-even</div><div class="an-card">'
+    html += '<div class="an-section collapsible" data-sec="breakeven"><button type="button" class="an-section-head"><span class="an-section-label">Break-even</span><span class="an-section-info" data-info-sec="breakeven" aria-label="About Break-even"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">'
       + '<div class="an-toggle"><div class="toggle-group" role="group" aria-label="Break-even view">'
       +   '<button type="button" class="toggle-btn' + (anBeMode === 'biz' ? ' active' : '') + '" data-be="biz">Whole business</button>'
       +   '<button type="button" class="toggle-btn' + (anBeMode === 'prod' ? ' active' : '') + '" data-be="prod">One product alone</button>'
@@ -6059,13 +6114,13 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     else dv = '<span class="an-na">' + escapeHtml(anStateText(st.dio.state)) + '</span>';
     var estTag = '<span class="an-tag">Estimate</span>';
     var incTag = n.cogsIncomplete ? '<span class="an-tag">Incomplete</span>' : '';
-    html += '<div class="an-section"><div class="an-section-title">Stock</div><div class="an-card">'
+    html += '<div class="an-section collapsible" data-sec="stock"><button type="button" class="an-section-head"><span class="an-section-label">Stock</span><span class="an-section-info" data-info-sec="stock" aria-label="About Stock"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">'
       + '<div class="an-row" data-info-key="turnover"><div class="an-row-main"><span class="an-label">Inventory turnover' + estTag + (st.turnover.state === 'ok' ? incTag : '') + '</span>' + tv + '</div>' + (tsub ? '<div class="an-sub">' + escapeHtml(tsub) + '</div>' : '') + '</div>'
       + '<div class="an-row" data-info-key="dio"><div class="an-row-main"><span class="an-label">Days inventory outstanding' + estTag + (st.dio.state === 'ok' ? incTag : '') + '</span>' + dv + '</div>' + (dsub ? '<div class="an-sub">' + escapeHtml(dsub) + '</div>' : '') + '</div>'
       + '</div></div>';
 
     // --- Products ---
-    html += '<div class="an-section"><div class="an-section-title">Products</div><div class="an-card">';
+    html += '<div class="an-section collapsible" data-sec="products"><button type="button" class="an-section-head"><span class="an-section-label">Products</span><span class="an-section-info" data-info-sec="products" aria-label="About Products"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">';
     if (adv.rows.length === 0) html += '<p class="an-empty" style="padding:12px 0;margin:0">No products yet.</p>';
     else {
       html += '<div class="an-prod-head">'
@@ -6088,10 +6143,11 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   // ============ MY NUMBERS: RANKINGS + MONTH COMPARISON (B-23) ============
 
-  var anRankMode = 'revenue';   // revenue | grossm | contrib | sell
+  var anRankMode = 'revenue';   // revenue | contrib | sell
+  var anOpenSection = null;      // which section is open on My Numbers (persists across re-renders)
   var anCmpMap = null;          // comparison with the month before (null when not shown)
   var anCmpPrev = null;         // the month before's numbers, for the popup working
-  var AN_RANK_TABS = [['revenue', 'Revenue'], ['grossm', 'Gross margin'], ['contrib', 'Contribution'], ['sell', 'Sell-through']];
+  var AN_RANK_TABS = [['revenue', 'Revenue'], ['contrib', 'Profit made'], ['sell', 'Sell-through']];
 
   function anFmtChange(v) { return (v < 0 ? '−' : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
   function anMonthName(m, ref) { var l = formatMonthLabel(m).split(' '); return (ref && ref.slice(0, 4) === m.slice(0, 4)) ? l[0] : l.join(' '); }
@@ -6118,7 +6174,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   }
 
   function anRankHtml(adv) {
-    var html = '<div class="an-section"><div class="an-section-title">Product performance</div><div class="an-card">';
+    var html = '<div class="an-section collapsible" data-sec="ranking"><button type="button" class="an-section-head"><span class="an-section-label">Product performance</span><span class="an-section-info" data-info-sec="ranking" aria-label="About Product performance"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">';
     if (adv.rows.length === 0) return html + '<p class="an-empty" style="padding:12px 0;margin:0">No products yet.</p></div></div>';
     var rk = rankProducts(adv)[anRankMode];
     html += '<div class="an-chips" role="group" aria-label="Rank products by">'
