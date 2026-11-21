@@ -4,7 +4,7 @@
 
    To ship a new version of the app: just deploy the new index.html. This file does not need to change.
    Change VERSION only if you change which files are in SHELL. */
-const VERSION = 'baseline-shell-v2';
+const VERSION = 'baseline-shell-v3';
 const FONTS = 'baseline-fonts-v1';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
   './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png', './icon.svg'];
