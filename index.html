@@ -655,8 +655,8 @@ ul, ol { list-style: none; }
 .badge-stockin { background: #E7F1FA; color: #1565C0; }
 .badge-lost { background: #FDEAEA; color: var(--bad); }
 .entry-amount { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--gray-900); white-space: nowrap; }
-.entry-edit-hint { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: var(--teal-light); color: var(--teal-dark); font-size: 11px; font-weight: 700; letter-spacing: 0.01em; }
-.entry-edit-hint svg { width: 12px; height: 12px; stroke-width: 2; }
+.entry-edit-hint { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 999px; background: var(--teal-light); color: var(--teal-dark); }
+.entry-edit-hint svg { width: 14px; height: 14px; stroke-width: 2; }
 .list-row-sub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 :root[data-theme="dark"] .entry-edit-hint { background: var(--teal-light); color: var(--teal); }
 
@@ -3217,7 +3217,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>'
       + '<div class="list-row-sub">' + escapeHtml(entryDetailText(e)) + ' ' + paymentPillHtml(e)
       +   (searching ? ' <span class="month-tag">' + escapeHtml(formatMonthLabel(e.date.slice(0, 7))) + '</span>' : '')
-      +   '<span class="entry-edit-hint" aria-hidden="true"><span data-icon="pen"></span>Edit</span>'
+      +   '<span class="entry-edit-hint" aria-label="Edit"><span data-icon="pen"></span></span>'
       + '</div>'
       + '</div>';
   }
@@ -5657,8 +5657,6 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
               + '<div class="settings-note" style="padding-top:0;padding-bottom:12px">Shown on your unpaid invoices.</div>'
             : '<p class="settings-note" style="padding-bottom:12px">Not added yet. You’ll be asked when you create your first invoice, or add them now.</p>')
       +   '</div></div>'
-
-      + '<div class="settings-section"><div class="settings-head"><h3>Invoices</h3><span class="settings-meta">' + escapeHtml(invoicesMetaText()) + '</span></div>' + settingsInvoicesHtml() + '</div>'
 
       + '<div class="settings-section"><div class="settings-head"><h3>Backup</h3></div>'
       +   '<div class="settings-card card"><p class="settings-note" id="settingsBackupStatus" style="color:var(--gray-800);font-weight:600">' + escapeHtml(lastBackupText(s)) + '</p>'
