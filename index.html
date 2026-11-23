@@ -505,8 +505,16 @@ ul, ol { list-style: none; }
 .ob-price-field label { display: block; font-size: 11px; font-weight: 700; color: var(--gray-500); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
 .ob-price-field input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 10px; font-size: 14px; color: var(--gray-900); background: #fff; font-weight: 600; }
 .ob-price-field input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(11,123,123,0.12); }
-.obnav-step4 { flex-wrap: wrap; }
-.obnav-step4 .btn { flex: 1; min-width: 120px; }
+.obnav-step5 { flex-wrap: wrap; }
+.obnav-step5 .btn { flex: 1; min-width: 120px; }
+.ob-type-choices { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+.ob-type-card { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 2px solid var(--gray-200); border-radius: var(--r-lg); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; background: var(--white); }
+.ob-type-card:hover { border-color: var(--gray-400); }
+.ob-type-card.selected { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(11,123,123,0.12); }
+.ob-type-card .ob-type-title { font-weight: 700; font-size: 15px; color: var(--gray-900); }
+.ob-type-card .ob-type-sub { font-size: 13px; color: var(--gray-500); line-height: 1.4; }
+:root[data-theme="dark"] .ob-type-card { background: #15191F; border-color: var(--gray-300); }
+:root[data-theme="dark"] .ob-type-card.selected { border-color: var(--teal); }
 :root[data-theme="dark"] .ob-price-card { background: #15191F; border-color: var(--gray-200); }
 :root[data-theme="dark"] .ob-price-field input { background: #15191F; border-color: var(--gray-200); color: var(--gray-900); }
 :root[data-theme="dark"] .ob-price-code { background: var(--teal-light); color: var(--teal); border-color: var(--teal-light); }
@@ -1113,6 +1121,7 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       <div class="step-dot"></div>
       <div class="step-dot"></div>
       <div class="step-dot"></div>
+      <div class="step-dot"></div>
     </div>
     <div class="ob-step active" data-step="1">
       <h2 class="onboarding-heading">What should we call you?</h2>
@@ -1139,6 +1148,24 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       </div>
     </div>
     <div class="ob-step" data-step="3">
+      <h2 class="onboarding-heading">How do you get your products?</h2>
+      <p class="onboarding-sub">This helps Baseline calculate your costs correctly.</p>
+      <div class="ob-type-choices">
+        <div class="ob-type-card" data-btype="reseller">
+          <span class="ob-type-title">I buy and resell</span>
+          <span class="ob-type-sub">You buy finished products from a supplier and sell them.</span>
+        </div>
+        <div class="ob-type-card" data-btype="producer">
+          <span class="ob-type-title">I make them myself</span>
+          <span class="ob-type-sub">You buy ingredients or materials and make the products you sell.</span>
+        </div>
+      </div>
+      <div class="onboarding-nav">
+        <button class="onboarding-back" id="obBack3" aria-label="Back"><span data-icon="chev-left"></span></button>
+        <button class="btn btn-primary" id="obNext3" disabled>Next</button>
+      </div>
+    </div>
+    <div class="ob-step" data-step="4">
       <h2 class="onboarding-heading">What do you sell?</h2>
       <p class="onboarding-sub">Add the products you sell. You can always add more later.</p>
       <div class="form-group">
@@ -1150,16 +1177,16 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       </div>
       <div class="product-chips" id="obChips"></div>
       <div class="onboarding-nav">
-        <button class="onboarding-back" id="obBack3" aria-label="Back"><span data-icon="chev-left"></span></button>
-        <button class="btn btn-primary" id="obNext3" disabled>Next</button>
+        <button class="onboarding-back" id="obBack4" aria-label="Back"><span data-icon="chev-left"></span></button>
+        <button class="btn btn-primary" id="obNext4" disabled>Next</button>
       </div>
     </div>
-    <div class="ob-step" data-step="4">
+    <div class="ob-step" data-step="5">
       <h2 class="onboarding-heading">Set your prices</h2>
-      <p class="onboarding-sub">Add selling and cost prices and your own short code for each product. You can skip and set them later.</p>
+      <p class="onboarding-sub" id="obPricesSub">Add selling and cost prices and your own short code for each product. You can skip and set them later.</p>
       <div class="ob-prices" id="obPrices"></div>
-      <div class="onboarding-nav obnav-step4">
-        <button class="onboarding-back" id="obBack4" aria-label="Back"><span data-icon="chev-left"></span></button>
+      <div class="onboarding-nav obnav-step5">
+        <button class="onboarding-back" id="obBack5" aria-label="Back"><span data-icon="chev-left"></span></button>
         <button class="btn btn-secondary" id="obSkipPrices">Skip for later</button>
         <button class="btn btn-primary" id="obDone">Done</button>
       </div>
@@ -1648,6 +1675,7 @@ function buildBackup(raw) {
     if (st[k] === undefined) { st[k] = defaults[k]; if (k !== 'backupReminderDismissed' && k !== 'pinPromptShown' && k !== 'lowStockAlerted') missingSettings++; }
   });
   st.onboardingComplete = !!st.onboardingComplete;
+  if (st.businessType !== 'reseller' && st.businessType !== 'producer') st.businessType = null;
   st.lowStockAlerted = Array.isArray(st.lowStockAlerted) ? st.lowStockAlerted.filter(function(x) { return typeof x === 'string'; }) : [];
   // PIN (B-24): only a properly stored PIN is kept. One that can't be read would lock her out for good, so it is dropped.
   var secretOk = function(v) { return typeof v === 'string' && /^v1\$[0-9a-f]+\$[0-9a-f]{64}$/.test(v); };
@@ -1794,7 +1822,9 @@ function an2(n) { return Math.round(n * 100) / 100; }
 // A written-off debt counts in the month the balance was cleared, and only while its sale is still on credit (same rule Home uses for credit payments).
 // Balances cleared on what she owes suppliers do not change these numbers.
 // Stock purchases are not subtracted (COGS already covers them). Only verified costs are used.
-function computeMonthNumbers(month, entries, costHistory, creditPayments) {
+function computeMonthNumbers(month, entries, costHistory, creditPayments, businessType) {
+  var isProd = businessType === 'producer';
+  var COGS_CATS = { 'Ingredients/raw materials': true, 'Packaging/materials': true };
   var r = { month: month, salesCount: 0, revenue: 0, creditSold: 0, cogs: 0, opex: 0, expenseCount: 0,
     lostCost: 0, lostUnits: 0, lostEntries: 0, writtenOff: 0, writeOffCount: 0, missingCostSales: 0, missingCostProducts: {}, lostMissing: 0, lostMissingProducts: {}, entryCount: 0 };
   (entries || []).forEach(function(e) {
@@ -1804,15 +1834,23 @@ function computeMonthNumbers(month, entries, costHistory, creditPayments) {
       r.salesCount++;
       r.revenue += e.total || 0;
       if (e.paymentStatus === 'credit') r.creditSold += e.total || 0;
-      var saleMissing = false;
-      (e.lineItems || []).forEach(function(li) {
-        if (typeof li.costAtSale === 'number' && isFinite(li.costAtSale)) r.cogs += (li.quantity || 0) * li.costAtSale;
-        else { saleMissing = true; var n = li.productName || 'Unknown product'; r.missingCostProducts[n] = (r.missingCostProducts[n] || 0) + 1; }
-      });
-      if (saleMissing) r.missingCostSales++;
+      if (!isProd) {
+        // Reseller: COGS from costAtSale as before
+        var saleMissing = false;
+        (e.lineItems || []).forEach(function(li) {
+          if (typeof li.costAtSale === 'number' && isFinite(li.costAtSale)) r.cogs += (li.quantity || 0) * li.costAtSale;
+          else { saleMissing = true; var n = li.productName || 'Unknown product'; r.missingCostProducts[n] = (r.missingCostProducts[n] || 0) + 1; }
+        });
+        if (saleMissing) r.missingCostSales++;
+      }
+      // Producer: COGS comes from expenses, not costAtSale
     } else if (e.type === 'expense') {
       r.expenseCount++;
-      r.opex += e.amount || 0;
+      if (isProd && COGS_CATS[e.category]) {
+        r.cogs += e.amount || 0;
+      } else {
+        r.opex += e.amount || 0;
+      }
     } else if (e.type === 'units_lost') {
       r.lostEntries++;
       r.lostUnits += e.quantity || 0;
@@ -2123,7 +2161,7 @@ var DataStore = {
   _defaultSettings: function() {
     return { userName:'', businessName:'', phoneNumber:'', requireCustomerName:false,
       pin:null, securityQuestion:null, securityAnswer:null, bankDetails:null,
-      lastExportDate:null, backupReminderDismissed:null, pinPromptShown:false, lowStockAlerted:[], onboardingComplete:false, initialStockPromptShown:false, schemaVersion:1 };
+      lastExportDate:null, backupReminderDismissed:null, pinPromptShown:false, lowStockAlerted:[], onboardingComplete:false, initialStockPromptShown:false, businessType:null, schemaVersion:1 };
   },
   getSettings: function() { return this._get('baseline_settings') || this._defaultSettings(); },
   saveSettings: function(s) { this._set('baseline_settings', s); },
@@ -2260,6 +2298,11 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   var currentPage = 'home';
   var modalIsOpen = false;
+
+  // ---- Business type helpers ----
+  var COGS_CATEGORIES = { 'Ingredients/raw materials': true, 'Packaging/materials': true };
+  function isProducer() { return (DataStore.getSettings().businessType === 'producer'); }
+  function isReseller() { var bt = DataStore.getSettings().businessType; return bt === 'reseller' || bt === null; }
   var modalHasChanges = false;
   var confirmCb = null;
   var isMobile = window.innerWidth < 768;
@@ -2480,9 +2523,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   var obBizInput = document.getElementById('obBiz');
   var obProdInput = document.getElementById('obProdInput');
   var obChips = document.getElementById('obChips');
-  var obDoneBtn = document.getElementById('obNext3');
+  var obDoneBtn = document.getElementById('obNext4');
   var stepDots = document.getElementById('stepDots').children;
   var obStepEls = document.querySelectorAll('.ob-step');
+  var obBusinessType = null;
 
   function obGoTo(step) {
     obStep = step;
@@ -2492,7 +2536,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     }
     if(step===1) obNameInput.focus();
     if(step===2) obBizInput.focus();
-    if(step===3) obProdInput.focus();
+    if(step===4) obProdInput.focus();
   }
   function obRenderChips() {
     obChips.innerHTML = '';
@@ -2513,6 +2557,12 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   function obRenderPrices() {
     var host = document.getElementById('obPrices');
     var codes = DataStore.getProducts(true).map(function(p){return p.code;});
+    var isProd = obBusinessType === 'producer';
+    // Update sub text for producers
+    var subEl = document.getElementById('obPricesSub');
+    if (subEl) subEl.textContent = isProd
+      ? 'Add selling prices and your own short code for each product. You can skip and set them later.'
+      : 'Add selling and cost prices and your own short code for each product. You can skip and set them later.';
     host.innerHTML = obProducts.map(function(name, i){
       var code = generateCode(name, codes); codes.push(code);
       return '<div class="ob-price-card" data-i="'+i+'">'
@@ -2521,7 +2571,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
         + '</div>'
         + '<div class="ob-price-grid">'
         +   '<div class="ob-price-field"><label>Selling price (₦)</label><input type="number" inputmode="numeric" min="0" step="1" data-f="sell" placeholder="Optional" /></div>'
-        +   '<div class="ob-price-field"><label>Cost price (₦)</label><input type="number" inputmode="numeric" min="0" step="1" data-f="cost" placeholder="Optional" /></div>'
+        +   (isProd ? '' : '<div class="ob-price-field"><label>Cost price (₦)</label><input type="number" inputmode="numeric" min="0" step="1" data-f="cost" placeholder="Optional" /></div>')
         + '</div></div>';
     }).join('');
     // Auto-uppercase code input
@@ -2530,23 +2580,24 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     });
   }
 
-  function obSaveProducts(fromStep4) {
+  function obSaveProducts(fromStep5) {
     var settings = DataStore.getSettings();
     settings.userName = obNameInput.value.trim();
     settings.businessName = obBizInput.value.trim();
+    settings.businessType = obBusinessType;
     settings.onboardingComplete = true;
     DataStore.saveSettings(settings);
     var existingCodes = DataStore.getProducts(true).map(function(p){return p.code;});
-    var cards = fromStep4 ? document.querySelectorAll('#obPrices .ob-price-card') : null;
+    var cards = fromStep5 ? document.querySelectorAll('#obPrices .ob-price-card') : null;
     obProducts.forEach(function(name, i){
       var code = '', sell = null, cost = null;
-      if (fromStep4 && cards[i]) {
+      if (fromStep5 && cards[i]) {
         var inpC = cards[i].querySelector('[data-f="code"]');
         var inpS = cards[i].querySelector('[data-f="sell"]');
         var inpK = cards[i].querySelector('[data-f="cost"]');
         if (inpC) code = (inpC.value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
         if (inpS && inpS.value !== '') { var v = parseFloat(inpS.value); if (!isNaN(v) && v >= 0) sell = Math.round(v); }
-        if (inpK && inpK.value !== '') { var v2 = parseFloat(inpK.value); if (!isNaN(v2) && v2 >= 0) cost = Math.round(v2); }
+        if (inpK && inpK.value !== '' && obBusinessType !== 'producer') { var v2 = parseFloat(inpK.value); if (!isNaN(v2) && v2 >= 0) cost = Math.round(v2); }
       }
       if (!code) code = generateCode(name, existingCodes);
       existingCodes.push(code);
@@ -2575,18 +2626,33 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   obBizInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('obNext2').click();}});
   document.getElementById('obBack2').addEventListener('click', function(){obGoTo(1);});
   document.getElementById('obBack3').addEventListener('click', function(){obGoTo(2);});
+  // Step 3: business type selection
+  document.querySelectorAll('.ob-type-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.ob-type-card').forEach(function(c) { c.classList.remove('selected'); });
+      card.classList.add('selected');
+      obBusinessType = card.getAttribute('data-btype');
+      document.getElementById('obNext3').disabled = false;
+    });
+  });
+  document.getElementById('obNext3').addEventListener('click', function(){
+    if (!obBusinessType) return;
+    obGoTo(4);
+  });
+  // Step 4: products
+  document.getElementById('obBack4').addEventListener('click', function(){obGoTo(3);});
   document.getElementById('obAddProd').addEventListener('click', obAddProduct);
   obProdInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();obAddProduct();}});
-  // step 3 Next -> step 4 (render prices)
-  var _obNext3 = document.getElementById('obNext3');
-  if (_obNext3) _obNext3.addEventListener('click', function(){
+  // step 4 Next -> step 5 (render prices)
+  var _obNext4 = document.getElementById('obNext4');
+  if (_obNext4) _obNext4.addEventListener('click', function(){
     if (obProducts.length===0) { document.getElementById('obProdErr').textContent='Add at least one product to get started'; return; }
-    obRenderPrices(); obGoTo(4);
+    obRenderPrices(); obGoTo(5);
   });
   var _obSkip = document.getElementById('obSkipPrices');
   if (_obSkip) _obSkip.addEventListener('click', function(){ obSaveProducts(false); });
-  var _obBack4 = document.getElementById('obBack4');
-  if (_obBack4) _obBack4.addEventListener('click', function(){ obGoTo(3); });
+  var _obBack5 = document.getElementById('obBack5');
+  if (_obBack5) _obBack5.addEventListener('click', function(){ obGoTo(4); });
   var _obDone = document.getElementById('obDone');
   if (_obDone) _obDone.addEventListener('click', obComplete);
   obChips.addEventListener('click',function(e){var btn=e.target.closest('.chip-x');if(!btn)return;obProducts.splice(parseInt(btn.getAttribute('data-i')),1);obRenderChips();});
@@ -2861,6 +2927,35 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     });
   }
 
+  function showBusinessTypePrompt() {
+    var s = DataStore.getSettings();
+    if (!s.onboardingComplete || s.businessType) return;
+    var html = '<p style="margin-bottom:16px;color:var(--gray-600)">This helps Baseline calculate your costs correctly.</p>'
+      + '<div class="ob-type-choices">'
+      + '<div class="ob-type-card" data-btype="reseller"><span class="ob-type-title">I buy and resell</span><span class="ob-type-sub">You buy finished products from a supplier and sell them.</span></div>'
+      + '<div class="ob-type-card" data-btype="producer"><span class="ob-type-title">I make them myself</span><span class="ob-type-sub">You buy ingredients or materials and make the products you sell.</span></div>'
+      + '</div>'
+      + '<div style="margin-top:16px"><button class="btn btn-primary" id="btypeSave" disabled>Save</button></div>';
+    openModal(html, 'How do you get your products?', {compact:true});
+    var chosen = null;
+    document.querySelectorAll('.ob-type-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.ob-type-card').forEach(function(c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        chosen = card.getAttribute('data-btype');
+        document.getElementById('btypeSave').disabled = false;
+      });
+    });
+    document.getElementById('btypeSave').addEventListener('click', function() {
+      if (!chosen) return;
+      var settings = DataStore.getSettings();
+      settings.businessType = chosen;
+      DataStore.saveSettings(settings);
+      closeModal();
+      showToast('Business type saved.', 'success');
+    });
+  }
+
   // Home action cards
   document.getElementById('pillStock').addEventListener('click', openStockModal);
   document.getElementById('pillOrders').addEventListener('click', openOrdersMenu);
@@ -2919,9 +3014,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       var stockCls = p.stock < 0 ? 'warning' : (isLowStock(p) ? 'low' : '');
       var sellingTxt = p.sellingPrice != null ? formatNaira(p.sellingPrice) : 'Not set';
       var costTxt = p.costPrice != null ? formatNaira(p.costPrice) : 'Not set';
+      var showCost = !isProducer();
       return '<div class="list-row" data-id="' + p.id + '">'
         + '<div class="list-row-main"><span class="list-row-title">' + escapeHtml(p.name) + '</span><span class="code-pill">' + escapeHtml(p.code) + '</span></div>'
-        + '<div class="product-figs">'+   '<span class="product-pill ' + (p.sellingPrice!=null ? 'sell':'muted') + '">' + sellingTxt + '</span>'+   '<span class="product-pill ' + (p.costPrice!=null ? 'cost':'muted') + '">' + costTxt + '</span>'+   '<span class="product-stock ' + stockCls + '">' + p.stock + '</span>'+ '</div>'
+        + '<div class="product-figs">'+   '<span class="product-pill ' + (p.sellingPrice!=null ? 'sell':'muted') + '">' + sellingTxt + '</span>'+   (showCost ? '<span class="product-pill ' + (p.costPrice!=null ? 'cost':'muted') + '">' + costTxt + '</span>' : '') +   '<span class="product-stock ' + stockCls + '">' + p.stock + '</span>'+ '</div>'
         + '</div>';
     }).join('');
   }
@@ -2939,7 +3035,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Selling price (\u20A6)</label><input type="number" class="form-input" id="papSelling" min="0" placeholder="Optional"></div>'
-      +   '<div class="form-group"><label class="form-label">Cost price (\u20A6)</label><input type="number" class="form-input" id="papCost" min="0" placeholder="Optional"></div>'
+      +   (isProducer() ? '' : '<div class="form-group"><label class="form-label">Cost price (\u20A6)</label><input type="number" class="form-input" id="papCost" min="0" placeholder="Optional"></div>')
       + '</div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Current stock</label><input type="number" class="form-input" id="papStock" min="0" value="0"><div class="form-error" id="papStockErr"></div></div>'
@@ -2962,7 +3058,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var papStockTouched = false;
     document.getElementById('papStock').addEventListener('input', function() { papStockTouched = true; });
     ['papSelling','papCost','papStock','papReorder'].forEach(function(id) {
-      document.getElementById(id).addEventListener('input', function(){ setModalChanged(); });
+      var el = document.getElementById(id); if (!el) return;
+      el.addEventListener('input', function(){ setModalChanged(); });
     });
 
     document.getElementById('papSave').addEventListener('click', function() {
@@ -2978,7 +3075,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       if (stockVal < 0) { document.getElementById('papStockErr').textContent = 'Initial stock cannot be negative.'; return; }
 
       var sellingRaw = document.getElementById('papSelling').value;
-      var costRaw = document.getElementById('papCost').value;
+      var costEl = document.getElementById('papCost');
+      var costRaw = costEl ? costEl.value : '';
       var reorderRaw = document.getElementById('papReorder').value;
       var selling = sellingRaw !== '' ? parseFloat(sellingRaw) : null;
       var cost = costRaw !== '' ? parseFloat(costRaw) : null;
@@ -3032,7 +3130,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       +   '<div class="form-error" id="pedCodeErr"></div></div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Selling price (\u20A6)</label><input type="number" class="form-input" id="pedSelling" min="0" value="' + (product.sellingPrice != null ? product.sellingPrice : '') + '" placeholder="Not set"></div>'
-      +   '<div class="form-group"><label class="form-label">Cost price (\u20A6)</label><input type="number" class="form-input" id="pedCost" min="0" value="' + (product.costPrice != null ? product.costPrice : '') + '" placeholder="Not set"></div>'
+      +   (isProducer() ? '' : '<div class="form-group"><label class="form-label">Cost price (\u20A6)</label><input type="number" class="form-input" id="pedCost" min="0" value="' + (product.costPrice != null ? product.costPrice : '') + '" placeholder="Not set"></div>')
       + '</div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Stock</label><input type="number" class="form-input" id="pedStock" value="' + product.stock + '"></div>'
@@ -3045,7 +3143,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var pedStockTouched = false;
     document.getElementById('pedStock').addEventListener('input', function() { pedStockTouched = true; });
     ['pedName','pedCode','pedSelling','pedCost','pedStock','pedReorder'].forEach(function(fid) {
-      document.getElementById(fid).addEventListener('input', function(){ setModalChanged(); });
+      var el = document.getElementById(fid); if (!el) return;
+      el.addEventListener('input', function(){ setModalChanged(); });
     });
 
     document.getElementById('pedSave').addEventListener('click', function() {
@@ -3061,7 +3160,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       if (dupCode) { document.getElementById('pedCodeErr').textContent = 'Code "' + newCode + '" is already in use.'; return; }
 
       var sellingRaw = document.getElementById('pedSelling').value;
-      var costRaw = document.getElementById('pedCost').value;
+      var costEl = document.getElementById('pedCost');
+      var costRaw = costEl ? costEl.value : '';
       var reorderRaw = document.getElementById('pedReorder').value;
       var stockRaw = document.getElementById('pedStock').value;
       var newSelling = sellingRaw !== '' ? parseFloat(sellingRaw) : null;
@@ -3771,7 +3871,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   // ---- B-10 gate, per product, one at a time (Story PL2: changing to a product with no price) ----
   function openPasteGate(product) {
     var html = '<p style="margin-bottom:16px;color:var(--gray-700)">'
-      + escapeHtml(product.name) + ' doesn\u2019t have a selling price and cost price set yet. Set these up before logging these sales.</p>'
+      + escapeHtml(product.name) + ' doesn\u2019t have ' + (isProducer() ? 'a selling price' : 'a selling price and cost price') + ' set yet. Set ' + (isProducer() ? 'this' : 'these') + ' up before logging these sales.</p>'
       + '<div style="display:flex;gap:8px">'
       +   '<button class="btn btn-secondary" style="flex:1" id="pasteGateNotNow">Not now</button>'
       +   '<button class="btn btn-primary" style="flex:1" id="pasteGateSetup">Set up now</button>'
@@ -3821,7 +3921,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     for (var i = 0; i < pasteCards.length; i++) {
       if (pasteCards[i].type !== 'sale') continue;
       var p = DataStore.getProductById(pasteCards[i].productId);
-      if (p && (p.sellingPrice == null || p.costPrice == null)) { openPasteGate(p); return; }
+      if (p && (p.sellingPrice == null || (!isProducer() && p.costPrice == null))) { openPasteGate(p); return; }
     }
     var affected = pasteStockAffected();
     if (affected.length > 0) {
@@ -3845,7 +3945,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
         entry = {
           id: generateId(), type: 'sale', date: date, createdAt: createdAt,
           lineItems: [{ productId: c.productId, productName: p ? p.name : '', quantity: qty,
-            unitPrice: (p && p.sellingPrice != null) ? p.sellingPrice : 0, costAtSale: p ? p.costPrice : null, amount: amount }],
+            unitPrice: (p && p.sellingPrice != null) ? p.sellingPrice : 0, costAtSale: (p && !isProducer()) ? p.costPrice : null, amount: amount }],
           total: amount, customerName: (c.customerName || '').trim() || null, paymentStatus: 'paid',
           dueDate: due ? c.dueDate : null, fulfilled: !due, fulfilledAt: due ? null : createdAt, invoiceId: null, note: note
         };
@@ -4107,7 +4207,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   // ---- B-10: first-sale price gate ----
   function openPriceSetupGate(product) {
     var html = '<p style="margin-bottom:16px;color:var(--gray-700)">'
-      + escapeHtml(product.name) + ' doesn\u2019t have a selling price and cost price set yet. Set these up before logging this sale.</p>'
+      + escapeHtml(product.name) + ' doesn\u2019t have ' + (isProducer() ? 'a selling price' : 'a selling price and cost price') + ' set yet. Set ' + (isProducer() ? 'this' : 'these') + ' up before logging this sale.</p>'
       + '<div style="display:flex;gap:8px">'
       +   '<button class="btn btn-secondary" style="flex:1" id="gateNotNow">Not now</button>'
       +   '<button class="btn btn-primary" style="flex:1" id="gateSetup">Set up now</button>'
@@ -4186,7 +4286,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     // B-10: price gate fires before the stock gate, one product at a time
     for (var i = 0; i < saleLines.length; i++) {
       var p = DataStore.getProductById(saleLines[i].productId);
-      if (p && (p.sellingPrice == null || p.costPrice == null)) {
+      if (p && (p.sellingPrice == null || (!isProducer() && p.costPrice == null))) {
         openPriceSetupGate(p);
         return;
       }
@@ -4232,7 +4332,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
         productName: p ? p.name : '',
         quantity: line.quantity,
         unitPrice: (p && p.sellingPrice != null) ? p.sellingPrice : 0,
-        costAtSale: p ? p.costPrice : null,
+        costAtSale: (p && !isProducer()) ? p.costPrice : null,
         amount: line.amount || 0
       };
     });
@@ -4289,7 +4389,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   // ============ LOG AN EXPENSE (B-09) ============
 
-  var expenseCategories = ['Rent','Salaries','Utilities','Subscriptions','Loan repayment','Transport/delivery','Packaging/materials','Labour/staff','Market/stall fees','Other'];
+  var expenseCategories = ['Ingredients/raw materials','Packaging/materials','Rent','Salaries','Utilities','Subscriptions','Loan repayment','Transport/delivery','Labour/staff','Market/stall fees','Other'];
 
   function openExpenseForm(existingEntry) {
     var e = existingEntry || null;
@@ -4299,7 +4399,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '<div class="form-group"><label class="form-label">Category</label><select class="form-select" id="expCategory">'
       +   '<option value="">Select a category</option>'
       +   expenseCategories.map(function(c){ return '<option value="' + c + '"' + (e && e.category === c ? ' selected' : '') + '>' + c + '</option>'; }).join('')
-      +   '</select><div class="form-error" id="expCategoryErr"></div></div>'
+      +   '</select><div class="form-error" id="expCategoryErr"></div>'
+      +   '<div id="expCatHint" style="font-size:11px;margin-top:4px;font-style:italic;color:var(--gray-500)"></div></div>'
       + '<div class="form-group"><label class="form-label">Note</label><input type="text" class="form-input" id="expNote" placeholder="Optional" value="' + (e && e.note ? escapeHtml(e.note) : '') + '"></div>'
       + '<div class="form-group"><label class="form-label">Payment status</label>'
       +   '<div class="toggle-group" id="expPaymentToggle">'
@@ -4332,6 +4433,17 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       var el = document.getElementById(id);
       if (el) { el.addEventListener('input', function(){ setModalChanged(); }); el.addEventListener('change', function(){ setModalChanged(); }); }
     });
+    // Category hint: show COGS vs opex classification for producers
+    function updateExpCatHint() {
+      var hint = document.getElementById('expCatHint');
+      if (!hint) return;
+      var cat = document.getElementById('expCategory').value;
+      if (!cat || !isProducer()) { hint.textContent = ''; return; }
+      if (COGS_CATEGORIES[cat]) { hint.textContent = 'This counts as cost of goods sold in your P&L.'; hint.style.color = 'var(--teal-dark)'; }
+      else { hint.textContent = 'This counts as an operating expense in your P&L.'; hint.style.color = 'var(--gray-500)'; }
+    }
+    document.getElementById('expCategory').addEventListener('change', updateExpCatHint);
+    updateExpCatHint();
 
     document.getElementById('expSaveBtn').addEventListener('click', function() {
       document.getElementById('expAmountErr').textContent = '';
@@ -5633,7 +5745,9 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var req = !!s.requireCustomerName;
     var html = ''
       + '<div class="settings-section"><div class="settings-head"><h3>Profile</h3><button type="button" class="link-btn" data-act="edit-profile">Edit</button></div>'
-      +   '<div class="settings-card card">' + settingsLine('Your name', escapeHtml(s.userName || '')) + settingsLine('Business name', escapeHtml(s.businessName || '')) + phoneRow + '</div></div>'
+      +   '<div class="settings-card card">' + settingsLine('Your name', escapeHtml(s.userName || '')) + settingsLine('Business name', escapeHtml(s.businessName || '')) + phoneRow
+      +   settingsLine('Business type', s.businessType === 'producer' ? 'I make my products' : (s.businessType === 'reseller' ? 'I buy and resell' : 'Not set'))
+      +   '</div></div>'
 
       + '<div class="settings-section"><div class="settings-head"><h3>Preferences</h3></div>'
       +   '<div class="settings-card card"><div class="settings-pref"><div class="settings-pref-text">Ask for a customer name on every sale<span>Credit sales and due dates always need one.</span></div>'
@@ -5698,9 +5812,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '<div class="form-group"><label class="form-label">Business name</label><input type="text" class="form-input" id="spBiz" autocomplete="off" value="' + escAttr(s.businessName || '') + '"><div class="form-error" id="spBizErr"></div></div>'
       + '<div class="form-group"><label class="form-label">Business phone (optional)</label><input type="tel" class="form-input" id="spPhone" autocomplete="off" value="' + escAttr(s.phoneNumber || '') + '">'
       +   '<div class="form-help">Shown at the top of your invoices. Leave it blank to use the number in your payment details.</div></div>'
+      + '<div class="form-group"><label class="form-label">Business type</label><select class="form-select" id="spBtype">'
+      +   '<option value="reseller"' + (s.businessType !== 'producer' ? ' selected' : '') + '>I buy and resell</option>'
+      +   '<option value="producer"' + (s.businessType === 'producer' ? ' selected' : '') + '>I make my products</option>'
+      + '</select><div class="form-help">This changes how your costs are calculated in My Numbers.</div></div>'
       + '<button type="button" class="btn btn-primary" style="width:100%" id="spSave">Save profile</button>';
     openModal(html, 'Edit profile', {compact: true});
     ['spName', 'spBiz', 'spPhone'].forEach(function(id) { document.getElementById(id).addEventListener('input', function() { setModalChanged(); }); });
+    document.getElementById('spBtype').addEventListener('change', function() { setModalChanged(); });
     document.getElementById('spSave').addEventListener('click', function() {
       var name = document.getElementById('spName').value.trim();
       var biz = document.getElementById('spBiz').value.trim();
@@ -5713,6 +5832,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       if (bad) return;
       var cur = DataStore.getSettings();
       cur.userName = name; cur.businessName = biz; cur.phoneNumber = phone;
+      cur.businessType = document.getElementById('spBtype').value;
       DataStore.saveSettings(cur);
       closeModal();
       updateSidebarUser();
@@ -5998,7 +6118,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     document.getElementById('anPrevMonth').disabled = anMonth <= b.min;
     document.getElementById('anNextMonth').disabled = anMonth >= b.max;
 
-    var n = computeMonthNumbers(anMonth, DataStore.getEntries({}), DataStore._get('baseline_cost_history') || [], DataStore._get('baseline_credit_payments') || []);
+    var n = computeMonthNumbers(anMonth, DataStore.getEntries({}), DataStore._get('baseline_cost_history') || [], DataStore._get('baseline_credit_payments') || [], DataStore.getSettings().businessType);
     anLast = n;
     var none = 'No sales this month';
     var html = '<div class="an-page-hint"><span data-icon="info"></span>Tap each section to open it, each metric to understand what it means.</div>';
@@ -6007,12 +6127,12 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     if (prevM < b.min) html += '<div class="an-cmp-note">First month, no comparison available.</div>';
     else if (isCurrent) html += '<div class="an-cmp-note">This month isn\u2019t finished, so it isn\u2019t compared yet. Comparisons appear for completed months.</div>';
     else {
-      anCmpPrev = computeMonthNumbers(prevM, DataStore.getEntries({}), DataStore._get('baseline_cost_history') || [], DataStore._get('baseline_credit_payments') || []);
+      anCmpPrev = computeMonthNumbers(prevM, DataStore.getEntries({}), DataStore._get('baseline_cost_history') || [], DataStore._get('baseline_credit_payments') || [], DataStore.getSettings().businessType);
       anCmpMap = compareMonths(n, anCmpPrev);
     }
 
     if (n.entryCount === 0) html += '<p class="an-empty">Nothing logged in ' + escapeHtml(formatMonthLabel(anMonth)) + ' yet.</p>';
-    if (n.missingCostSales > 0) {
+    if (n.missingCostSales > 0 && !isProducer()) {
       html += '<div class="an-notice"><strong>' + escapeHtml(anPlural(n.missingCostSales, 'sale has', 'sales have')) + ' no cost price on record</strong>'
         + 'Cost of goods is missing for ' + escapeHtml(anProductList(n.missingCostProducts)) + ', so Cost of goods sold is too low and the profit figures may be higher than the real ones. Add cost prices in My Products so future sales are counted.</div>';
     }
@@ -6111,10 +6231,13 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   function openMetricInfo(key) {
     var info = AN_INFO[key];
     if (!info || !anLast) return;
+    // Producer-specific overrides for COGS-related info text
+    if (isProducer() && key === 'cogs') info = { title: info.title, what: 'What you spent on ingredients, raw materials and packaging this month.' };
+    if (isProducer() && key === 'gross') info = { title: info.title, what: 'What is left from your sales after ingredient and material costs, before running costs.' };
     var n = anLast;
     var warn = '';
     if (AN_ESTIMATE_KEYS.indexOf(key) >= 0 || (key === 'ranking' && anRankMode === 'sell')) warn = '<p class="info-warn">Estimate: worked out from the sales, stock-ins and losses you logged.</p>';
-    else if (n.cogsIncomplete && (key === 'cogs' || key === 'gross' || key === 'grossm' || key === 'net' || key === 'netm'))
+    else if (!isProducer() && n.cogsIncomplete && (key === 'cogs' || key === 'gross' || key === 'grossm' || key === 'net' || key === 'netm'))
       warn = '<p class="info-warn">' + escapeHtml(anPlural(n.missingCostSales, 'sale has', 'sales have')) + ' no cost price on record, so this figure may be off.</p>';
     else if (n.lostMissing > 0 && (key === 'lost' || key === 'net' || key === 'netm'))
       warn = '<p class="info-warn">' + escapeHtml(anPlural(n.lostMissing, 'lost-stock entry has', 'lost-stock entries have')) + ' no cost price on record, so this figure may be off.</p>';
@@ -6150,12 +6273,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var be = adv.breakEven;
 
     // --- Break-even ---
-    html += '<div class="an-section collapsible" data-sec="breakeven"><button type="button" class="an-section-head"><span class="an-section-label">Break-even</span><span class="an-section-info" data-info-sec="breakeven" aria-label="About Break-even"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">'
-      + '<div class="an-toggle"><div class="toggle-group" role="group" aria-label="Break-even view">'
-      +   '<button type="button" class="toggle-btn' + (anBeMode === 'biz' ? ' active' : '') + '" data-be="biz">Whole business</button>'
-      +   '<button type="button" class="toggle-btn' + (anBeMode === 'prod' ? ' active' : '') + '" data-be="prod">One product alone</button>'
-      + '</div></div>';
-    if (anBeMode === 'biz') {
+    html += '<div class="an-section collapsible" data-sec="breakeven"><button type="button" class="an-section-head"><span class="an-section-label">Break-even</span><span class="an-section-info" data-info-sec="breakeven" aria-label="About Break-even"><span data-icon="info"></span></span><span class="an-section-chev" data-icon="chev-right"></span></button><div class="an-card an-section-body">';
+    if (!isProducer()) {
+      html += '<div class="an-toggle"><div class="toggle-group" role="group" aria-label="Break-even view">'
+        +   '<button type="button" class="toggle-btn' + (anBeMode === 'biz' ? ' active' : '') + '" data-be="biz">Whole business</button>'
+        +   '<button type="button" class="toggle-btn' + (anBeMode === 'prod' ? ' active' : '') + '" data-be="prod">One product alone</button>'
+        + '</div></div>';
+    }
+    if (anBeMode === 'biz' || isProducer()) {
       var val, sub = '';
       if (be.state === 'ok') {
         val = '<span class="an-value">' + escapeHtml(formatNaira(be.revenue)) + '</span>';
@@ -6221,7 +6346,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   var anOpenSection = null;      // which section is open on My Numbers (persists across re-renders)
   var anCmpMap = null;          // comparison with the month before (null when not shown)
   var anCmpPrev = null;         // the month before's numbers, for the popup working
-  var AN_RANK_TABS = [['revenue', 'Revenue'], ['contrib', 'Profit made'], ['sell', 'Sell-through']];
+  function anRankTabs() {
+    if (isProducer()) return [['revenue', 'Revenue'], ['sell', 'Sell-through']];
+    return [['revenue', 'Revenue'], ['contrib', 'Profit made'], ['sell', 'Sell-through']];
+  }
 
   function anFmtChange(v) { return (v < 0 ? '−' : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
   function anMonthName(m, ref) { var l = formatMonthLabel(m).split(' '); return (ref && ref.slice(0, 4) === m.slice(0, 4)) ? l[0] : l.join(' '); }
@@ -6252,7 +6380,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     if (adv.rows.length === 0) return html + '<p class="an-empty" style="padding:12px 0;margin:0">No products yet.</p></div></div>';
     var rk = rankProducts(adv)[anRankMode];
     html += '<div class="an-chips" role="group" aria-label="Rank products by">'
-      + AN_RANK_TABS.map(function(t) { return '<button type="button" class="an-chip' + (anRankMode === t[0] ? ' active' : '') + '" data-rk="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>'
+      + anRankTabs().map(function(t) { return '<button type="button" class="an-chip' + (anRankMode === t[0] ? ' active' : '') + '" data-rk="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>'
       + '<div class="an-rank-head" data-info-key="ranking">Best first' + (anRankMode === 'sell' ? '<span class="an-tag">Estimate</span>' : '') + '</div>';
     if (rk.items.length === 0) html += '<p class="an-empty" style="padding:12px 0;margin:0">Nothing to rank on this measure this month.</p>';
     rk.items.forEach(function(it) {
@@ -6519,6 +6647,7 @@ window.renderIcons = function(root){
       renderHome();
       showPage(getHashPage(), true);
       if (!settings.initialStockPromptShown) { showInitialStockPrompt(); }
+      else if (!settings.businessType) { setTimeout(showBusinessTypePrompt, 300); }
       else { setTimeout(maybeShowPinPrompt, 400); setTimeout(maybeShowLowStockPopup, 900); }
     }
   }
@@ -6771,7 +6900,7 @@ window.renderIcons = function(root){
       id: generateId(), type: 'sale', date: todayStr(), createdAt: now,
       lineItems: inv.lineItems.map(function(li) {
         var p = DataStore.getProductById(li.productId);
-        return { productId: li.productId, productName: li.productName, quantity: li.quantity, unitPrice: li.unitPrice, costAtSale: p ? p.costPrice : null, amount: li.amount };
+        return { productId: li.productId, productName: li.productName, quantity: li.quantity, unitPrice: li.unitPrice, costAtSale: (p && !isProducer()) ? p.costPrice : null, amount: li.amount };
       }),
       total: inv.total, customerName: inv.customerName, paymentStatus: 'paid',
       dueDate: null, fulfilled: true, fulfilledAt: now, invoiceId: inv.id, note: inv.note
