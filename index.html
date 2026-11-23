@@ -209,6 +209,9 @@ ul, ol { list-style: none; }
 .sidebar-nav {
   flex: 1; padding: 12px 8px; overflow-y: auto; white-space: nowrap;
 }
+.sidebar-biz-link { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-biz-link button { display: flex; align-items: center; gap: 8px; color: var(--teal-mid); font-size: 13px; font-weight: 600; padding: 8px 6px; cursor: pointer; background: none; border: none; font-family: inherit; }
+.sidebar-biz-link button:active { opacity: 0.6; }
 .nav-item {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 14px; border-radius: 10px;
@@ -241,7 +244,7 @@ ul, ol { list-style: none; }
 }
 .topbar-hamburger:hover { background: var(--gray-100); }
 .topbar-title {
-  flex: 1; font-weight: 700; font-size: 17px; color: var(--gray-900); letter-spacing: -0.015em;
+  font-weight: 700; font-size: 17px; color: var(--gray-900); letter-spacing: -0.015em;
 }
 .topbar-home {
   width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
@@ -250,6 +253,11 @@ ul, ol { list-style: none; }
 .topbar-home:hover { background: var(--teal-light); }
 .topbar-home { transition: background 0.15s, transform 0.08s; }
 .topbar-home:active { transform: scale(0.95); }
+.topbar-mid { flex: 1; min-width: 0; }
+.topbar-biz { font-size: 11px; font-weight: 600; color: var(--teal); cursor: pointer; display: flex; align-items: center; gap: 3px; margin-top: 1px; }
+.topbar-biz svg { width: 10px; height: 10px; flex-shrink: 0; }
+.topbar-biz:active { opacity: 0.6; }
+:root[data-theme="dark"] .topbar-biz { color: var(--teal); }
 
 /* ========== PAGES ========== */
 .page-content {
@@ -515,6 +523,19 @@ ul, ol { list-style: none; }
 .ob-type-card .ob-type-sub { font-size: 13px; color: var(--gray-500); line-height: 1.4; }
 :root[data-theme="dark"] .ob-type-card { background: #15191F; border-color: var(--gray-300); }
 :root[data-theme="dark"] .ob-type-card.selected { border-color: var(--teal); }
+/* Business switcher modal */
+.biz-switch-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: var(--r-lg); cursor: pointer; transition: border-color 0.15s; margin-bottom: 8px; }
+.biz-switch-item:last-of-type { margin-bottom: 0; }
+.biz-switch-item.active { border-color: var(--teal); background: var(--teal-light); }
+.biz-switch-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--gray-400); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.biz-switch-item.active .biz-switch-radio { border-color: var(--teal); }
+.biz-switch-item.active .biz-switch-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--teal); }
+.biz-switch-name { font-weight: 600; font-size: 14px; color: var(--gray-900); }
+.biz-switch-type { font-size: 12px; color: var(--gray-500); }
+.biz-switch-add { display: flex; align-items: center; gap: 8px; padding: 12px 16px; color: var(--teal); font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 12px; }
+.biz-switch-add:active { opacity: 0.6; }
+:root[data-theme="dark"] .biz-switch-item { border-color: var(--gray-300); }
+:root[data-theme="dark"] .biz-switch-item.active { border-color: var(--teal); background: var(--teal-light); }
 :root[data-theme="dark"] .ob-price-card { background: #15191F; border-color: var(--gray-200); }
 :root[data-theme="dark"] .ob-price-field input { background: #15191F; border-color: var(--gray-200); color: var(--gray-900); }
 :root[data-theme="dark"] .ob-price-code { background: var(--teal-light); color: var(--teal); border-color: var(--teal-light); }
@@ -1214,11 +1235,15 @@ textarea.paste-text { min-height: 190px; font-size: 15px; line-height: 1.55; }
       <button class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span class="nav-label">My Numbers</span></button>
       <button class="nav-item" data-page="settings"><span class="nav-icon" data-icon="gear"></span><span class="nav-label">Settings</span></button>
     </nav>
+    <div class="sidebar-biz-link" id="sidebarBizLink"></div>
   </aside>
   <main class="main-area">
     <header class="topbar">
       <button class="topbar-hamburger" id="hamburger" aria-label="Open menu"><span data-icon="menu" style="width:22px;height:22px;display:inline-flex"></span></button>
-      <div class="topbar-title" id="topbarTitle">Home</div>
+      <div class="topbar-mid">
+        <div class="topbar-title" id="topbarTitle">Home</div>
+        <div class="topbar-biz" id="topbarBiz" aria-label="Switch business"></div>
+      </div>
       <button class="topbar-home" id="topbarHome" aria-label="Go to Home"><span data-icon="home" style="width:20px;height:20px;display:inline-flex"></span></button>
     </header>
     <div class="page-content">
@@ -1625,7 +1650,7 @@ function parsePasteText(text, products) {
 }
 
 /* ============ BACKUP VALIDATION (B-20) ============ */
-var BACKUP_SCHEMA_VERSION = 1;
+var BACKUP_SCHEMA_VERSION = 2;
 var BACKUP_ENTRY_TYPES = ['sale', 'expense', 'stock_received', 'units_lost'];
 var BACKUP_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -1654,12 +1679,30 @@ function buildBackup(raw) {
   function fail(m) { throw new BackupError(m); }
   function now() { return new Date().toISOString(); }
 
-  if (!backupIsObj(raw) || !backupIsObj(raw.settings) || !Array.isArray(raw.products) || !Array.isArray(raw.entries)) {
+  if (!backupIsObj(raw)) fail('This file isn’t a Baseline backup.');
+  if (raw.app !== undefined && raw.app !== 'baseline') fail('This backup belongs to a different app, so it can\u2019t be restored here.');
+  var ver = backupIsNum(raw.schemaVersion) ? raw.schemaVersion : (raw.settings && backupIsNum(raw.settings.schemaVersion) ? raw.settings.schemaVersion : null);
+  if (ver !== null && ver > BACKUP_SCHEMA_VERSION) fail('This backup was made by a newer version of Baseline. Update the app, then try again.');
+
+  // v2 multi-business format
+  if (ver >= 2 && raw.global && Array.isArray(raw.businesses)) {
+    if (!backupIsObj(raw.global)) fail('The global settings in this backup are damaged.');
+    if (raw.businesses.length === 0) fail('This backup has no businesses.');
+    raw.businesses.forEach(function(b, i) {
+      if (!backupIsObj(b) || !b.id || !b.name) fail('Business ' + (i+1) + ' in this backup is damaged.');
+      if (!Array.isArray(b.products)) b.products = [];
+      if (!Array.isArray(b.entries)) b.entries = [];
+      if (!Array.isArray(b.invoices)) b.invoices = [];
+      if (!Array.isArray(b.creditPayments)) b.creditPayments = [];
+      if (!Array.isArray(b.costHistory)) b.costHistory = [];
+    });
+    return { ok: true, data: raw, notes: ['Backup contains ' + raw.businesses.length + ' business' + (raw.businesses.length > 1 ? 'es' : '') + '.'] };
+  }
+
+  // v1 single-business format
+  if (!backupIsObj(raw.settings) || !Array.isArray(raw.products) || !Array.isArray(raw.entries)) {
     fail('This file isn’t a Baseline backup. It’s missing your settings, products or entries.');
   }
-  if (raw.app !== undefined && raw.app !== 'baseline') fail('This backup belongs to a different app, so it can\u2019t be restored here.');
-  var ver = backupIsNum(raw.settings.schemaVersion) ? raw.settings.schemaVersion : (backupIsNum(raw.schemaVersion) ? raw.schemaVersion : null);
-  if (ver !== null && ver > BACKUP_SCHEMA_VERSION) fail('This backup was made by a newer version of Baseline. Update the app, then try again.');
 
   [['invoices', 'invoices'], ['creditPayments', 'credit payments'], ['costHistory', 'cost history']].forEach(function(pair) {
     if (raw[pair[0]] === undefined) { raw[pair[0]] = []; notes.push('This backup has no ' + pair[1] + ', so that list starts empty.'); }
@@ -2151,20 +2194,98 @@ function pinRecordFail() {
 function pinRecordSuccess() { try { localStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {} }
 function pinWaitText(sec) { if (sec < 60) return sec + (sec === 1 ? ' second' : ' seconds'); var m = Math.ceil(sec / 60); return m + (m === 1 ? ' minute' : ' minutes'); }
 
-/* ============ DATASTORE ============ */
+/* ============ DATASTORE (multi-business) ============ */
+var BIZ_DATA_KEYS = ['settings','products','entries','invoices','credit_payments','cost_history'];
 var DataStore = {
-  _get: function(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } },
-  _set: function(key, data) {
+  // ---- Raw localStorage (no prefix) ----
+  _getRaw: function(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } },
+  _setRaw: function(key, data) {
     try { localStorage.setItem(key, JSON.stringify(data)); return true; }
     catch(e) { if (typeof window.onSaveFailed === 'function') window.onSaveFailed(e); return false; }
   },
-  _defaultSettings: function() {
-    return { userName:'', businessName:'', phoneNumber:'', requireCustomerName:false,
-      pin:null, securityQuestion:null, securityAnswer:null, bankDetails:null,
-      lastExportDate:null, backupReminderDismissed:null, pinPromptShown:false, lowStockAlerted:[], onboardingComplete:false, initialStockPromptShown:false, businessType:null, schemaVersion:1 };
+  // ---- Business-scoped reads/writes: route through active business prefix ----
+  _activeBizId: function() {
+    var g = this._getRaw('baseline_global');
+    return (g && g.activeBusiness) ? g.activeBusiness : 'b1';
   },
-  getSettings: function() { return this._get('baseline_settings') || this._defaultSettings(); },
-  saveSettings: function(s) { this._set('baseline_settings', s); },
+  _bizKey: function(flatKey) {
+    // baseline_products -> baseline_b1_products
+    return flatKey.replace('baseline_', 'baseline_' + this._activeBizId() + '_');
+  },
+  _get: function(key) {
+    var val = this._getRaw(this._bizKey(key));
+    // Fallback: if migration hasn't run yet (or failed), try the flat key
+    if (val === null && !this._getRaw('baseline_global')) val = this._getRaw(key);
+    return val;
+  },
+  _set: function(key, data) {
+    try { localStorage.setItem(this._bizKey(key), JSON.stringify(data)); return true; }
+    catch(e) { if (typeof window.onSaveFailed === 'function') window.onSaveFailed(e); return false; }
+  },
+  // ---- Global data (shared across businesses) ----
+  _defaultGlobal: function() {
+    return { userName:'', pin:null, securityQuestion:null, securityAnswer:null,
+      activeBusiness:'b1', onboardingComplete:false, pinPromptShown:false, schemaVersion:2 };
+  },
+  getGlobal: function() { return this._getRaw('baseline_global') || this._defaultGlobal(); },
+  saveGlobal: function(g) { this._setRaw('baseline_global', g); },
+  getBusinesses: function() { return this._getRaw('baseline_businesses') || []; },
+  saveBusinesses: function(arr) { this._setRaw('baseline_businesses', arr); },
+  getActiveBusiness: function() {
+    var id = this._activeBizId();
+    var bs = this.getBusinesses();
+    return bs.find(function(b) { return b.id === id; }) || bs[0] || null;
+  },
+  switchBusiness: function(bizId) {
+    var g = this.getGlobal();
+    g.activeBusiness = bizId;
+    this.saveGlobal(g);
+  },
+  nextBizId: function() {
+    var bs = this.getBusinesses();
+    var max = 0;
+    bs.forEach(function(b) { var n = parseInt(b.id.replace('b',''), 10) || 0; if (n > max) max = n; });
+    return 'b' + (max + 1);
+  },
+  // ---- Per-business settings (merged with global fields for backward compat) ----
+  _defaultBizSettings: function() {
+    return { businessName:'', phoneNumber:'', requireCustomerName:false, bankDetails:null,
+      lastExportDate:null, backupReminderDismissed:null, lowStockAlerted:[], initialStockPromptShown:false, businessType:null };
+  },
+  _defaultSettings: function() {
+    // Full merged shape for backward compat with code that reads all fields from getSettings()
+    var g = this._defaultGlobal(), b = this._defaultBizSettings();
+    var s = {}; Object.keys(g).forEach(function(k){ s[k]=g[k]; }); Object.keys(b).forEach(function(k){ s[k]=b[k]; });
+    return s;
+  },
+  getSettings: function() {
+    var biz = this._get('baseline_settings') || this._defaultBizSettings();
+    var g = this.getGlobal();
+    var migrated = !!this._getRaw('baseline_global');
+    // Merge global fields into the per-business settings object so existing code sees everything in one place.
+    // Before migration, global fields are still in the flat settings object — use them directly.
+    biz.userName = migrated ? (g.userName || '') : (biz.userName || '');
+    biz.pin = migrated ? g.pin : (biz.pin || null);
+    biz.securityQuestion = migrated ? g.securityQuestion : (biz.securityQuestion || null);
+    biz.securityAnswer = migrated ? g.securityAnswer : (biz.securityAnswer || null);
+    biz.onboardingComplete = migrated ? !!g.onboardingComplete : !!biz.onboardingComplete;
+    biz.pinPromptShown = migrated ? !!g.pinPromptShown : !!biz.pinPromptShown;
+    biz.schemaVersion = migrated ? (g.schemaVersion || 2) : (biz.schemaVersion || 1);
+    return biz;
+  },
+  saveSettings: function(s) {
+    // Split: global fields to global, rest to per-business key
+    var g = this.getGlobal();
+    if (s.userName !== undefined) g.userName = s.userName;
+    if (s.pin !== undefined) g.pin = s.pin;
+    if (s.securityQuestion !== undefined) g.securityQuestion = s.securityQuestion;
+    if (s.securityAnswer !== undefined) g.securityAnswer = s.securityAnswer;
+    if (s.onboardingComplete !== undefined) g.onboardingComplete = !!s.onboardingComplete;
+    if (s.pinPromptShown !== undefined) g.pinPromptShown = !!s.pinPromptShown;
+    this.saveGlobal(g);
+    this._set('baseline_settings', s);
+  },
+  // ---- Products, entries, invoices, credit, cost history (unchanged interface) ----
   getProducts: function(inclDel) {
     var all = this._get('baseline_products') || [];
     return inclDel ? all : all.filter(function(p){return !p.deleted;});
@@ -2236,19 +2357,64 @@ var DataStore = {
     var p = this.getProductById(pid);
     if(p){p.stock+=delta; this.saveProduct(p);}
   },
+  // ---- Export: v2 format with all businesses ----
   exportAll: function() {
-    return { app:'baseline', schemaVersion:1, settings:this.getSettings(), products:this._get('baseline_products')||[],
-      entries:this._get('baseline_entries')||[], invoices:this._get('baseline_invoices')||[],
-      creditPayments:this._get('baseline_credit_payments')||[], costHistory:this._get('baseline_cost_history')||[],
-      exportedAt:new Date().toISOString() };
+    var self = this;
+    var g = this.getGlobal();
+    var bs = this.getBusinesses();
+    var businesses = bs.map(function(b) {
+      var prefix = 'baseline_' + b.id + '_';
+      return {
+        id: b.id, name: b.name, type: b.type, createdAt: b.createdAt,
+        settings: self._getRaw(prefix + 'settings') || {},
+        products: self._getRaw(prefix + 'products') || [],
+        entries: self._getRaw(prefix + 'entries') || [],
+        invoices: self._getRaw(prefix + 'invoices') || [],
+        creditPayments: self._getRaw(prefix + 'credit_payments') || [],
+        costHistory: self._getRaw(prefix + 'cost_history') || []
+      };
+    });
+    return { app:'baseline', schemaVersion:2, global:g, businesses:businesses, exportedAt:new Date().toISOString() };
   },
-  // All-or-nothing: if any write fails (e.g. storage full), the previous data is put back and false is returned.
+  // ---- Import: accept v1 (single business) and v2 (multi-business) ----
   importAll: function(data) {
-    var map = { baseline_settings:data.settings, baseline_products:data.products, baseline_entries:data.entries,
-      baseline_invoices:data.invoices, baseline_credit_payments:data.creditPayments, baseline_cost_history:data.costHistory };
+    var self = this;
+    // Build the write map depending on format version
+    var map = {};
+    if (data.schemaVersion >= 2 && data.businesses) {
+      // v2 format
+      map['baseline_global'] = data.global;
+      map['baseline_businesses'] = data.businesses.map(function(b) { return { id:b.id, name:b.name, type:b.type, createdAt:b.createdAt }; });
+      data.businesses.forEach(function(b) {
+        var prefix = 'baseline_' + b.id + '_';
+        map[prefix + 'settings'] = b.settings;
+        map[prefix + 'products'] = b.products;
+        map[prefix + 'entries'] = b.entries;
+        map[prefix + 'invoices'] = b.invoices;
+        map[prefix + 'credit_payments'] = b.creditPayments;
+        map[prefix + 'cost_history'] = b.costHistory;
+      });
+    } else {
+      // v1 format: wrap into multi-business structure under b1
+      var g = { userName: data.settings.userName || '', pin: data.settings.pin || null,
+        securityQuestion: data.settings.securityQuestion || null, securityAnswer: data.settings.securityAnswer || null,
+        activeBusiness: 'b1', onboardingComplete: !!data.settings.onboardingComplete,
+        pinPromptShown: !!data.settings.pinPromptShown, schemaVersion: 2 };
+      map['baseline_global'] = g;
+      map['baseline_businesses'] = [{ id:'b1', name: data.settings.businessName || '', type: data.settings.businessType || null, createdAt: new Date().toISOString() }];
+      map['baseline_b1_settings'] = data.settings;
+      map['baseline_b1_products'] = data.products;
+      map['baseline_b1_entries'] = data.entries;
+      map['baseline_b1_invoices'] = data.invoices;
+      map['baseline_b1_credit_payments'] = data.creditPayments;
+      map['baseline_b1_cost_history'] = data.costHistory;
+    }
+    // All-or-nothing write
     var keys = Object.keys(map), snapshot = {};
     try {
       keys.forEach(function(k) { snapshot[k] = localStorage.getItem(k); });
+      // First clear all existing business data to avoid stale keys from previous businesses
+      self._clearBizKeys();
       keys.forEach(function(k) { localStorage.setItem(k, JSON.stringify(map[k])); });
       return true;
     } catch(e) {
@@ -2258,12 +2424,82 @@ var DataStore = {
       return false;
     }
   },
+  _clearBizKeys: function() {
+    // Remove all baseline_bN_* keys and global/businesses keys
+    var toRemove = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && (k.indexOf('baseline_b') === 0 || k === 'baseline_global' || k === 'baseline_businesses')) toRemove.push(k);
+    }
+    toRemove.forEach(function(k) { try { localStorage.removeItem(k); } catch(e) {} });
+  },
   clearAll: function() {
-    var keys=['baseline_settings','baseline_products','baseline_entries','baseline_invoices','baseline_credit_payments','baseline_cost_history','baseline_pin_attempts'];
-    keys.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+    this._clearBizKeys();
+    // Also clear legacy flat keys if they exist, plus pin attempts
+    ['baseline_settings','baseline_products','baseline_entries','baseline_invoices','baseline_credit_payments','baseline_cost_history','baseline_pin_attempts'].forEach(function(k){
+      try{localStorage.removeItem(k);}catch(e){}
+    });
+  },
+  // ---- Delete a single business ----
+  deleteBusiness: function(bizId) {
+    var prefix = 'baseline_' + bizId + '_';
+    BIZ_DATA_KEYS.forEach(function(k) { try { localStorage.removeItem(prefix + k); } catch(e) {} });
+    var bs = this.getBusinesses().filter(function(b) { return b.id !== bizId; });
+    this.saveBusinesses(bs);
+    // If this was the active business, switch to the first remaining
+    if (this._activeBizId() === bizId && bs.length > 0) {
+      this.switchBusiness(bs[0].id);
+    }
   }
 };
 
+
+// ============ MIGRATION: flat keys -> multi-business ============
+// Runs once for existing users upgrading from v1 (flat keys) to v2 (prefixed keys).
+// New users never have flat keys, so this is a no-op for them.
+function migrateToMultiBusiness() {
+  if (DataStore._getRaw('baseline_global')) return; // already migrated
+  var oldSettings = DataStore._getRaw('baseline_settings');
+  if (!oldSettings) return; // fresh install, nothing to migrate
+  try {
+    // Create global from old settings
+    var g = {
+      userName: oldSettings.userName || '',
+      pin: oldSettings.pin || null,
+      securityQuestion: oldSettings.securityQuestion || null,
+      securityAnswer: oldSettings.securityAnswer || null,
+      activeBusiness: 'b1',
+      onboardingComplete: !!oldSettings.onboardingComplete,
+      pinPromptShown: !!oldSettings.pinPromptShown,
+      schemaVersion: 2
+    };
+    // Create businesses list
+    var bs = [{ id: 'b1', name: oldSettings.businessName || '', type: oldSettings.businessType || null, createdAt: new Date().toISOString() }];
+    // Copy flat keys to prefixed keys
+    var keyMap = {
+      'baseline_settings': 'baseline_b1_settings',
+      'baseline_products': 'baseline_b1_products',
+      'baseline_entries': 'baseline_b1_entries',
+      'baseline_invoices': 'baseline_b1_invoices',
+      'baseline_credit_payments': 'baseline_b1_credit_payments',
+      'baseline_cost_history': 'baseline_b1_cost_history'
+    };
+    Object.keys(keyMap).forEach(function(oldKey) {
+      var val = localStorage.getItem(oldKey);
+      if (val !== null) localStorage.setItem(keyMap[oldKey], val);
+    });
+    // Write global and businesses
+    localStorage.setItem('baseline_global', JSON.stringify(g));
+    localStorage.setItem('baseline_businesses', JSON.stringify(bs));
+    // Remove old flat keys (data is now under prefixed keys)
+    Object.keys(keyMap).forEach(function(oldKey) {
+      try { localStorage.removeItem(oldKey); } catch(e) {}
+    });
+  } catch(e) {
+    // Migration failed — leave old keys in place. App will retry next open.
+    // Don't remove anything.
+  }
+}
 
 // Theme apply helper
 function applyTheme(mode) {
@@ -2303,6 +2539,120 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   var COGS_CATEGORIES = { 'Ingredients/raw materials': true, 'Packaging/materials': true };
   function isProducer() { return (DataStore.getSettings().businessType === 'producer'); }
   function isReseller() { var bt = DataStore.getSettings().businessType; return bt === 'reseller' || bt === null; }
+
+  // ---- Business switcher ----
+  function updateTopbarBiz() {
+    var el = document.getElementById('topbarBiz');
+    if (!el) return;
+    var biz = DataStore.getActiveBusiness();
+    var bs = DataStore.getBusinesses();
+    if (!biz || bs.length === 0) { el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    el.innerHTML = escapeHtml(biz.name) + ' <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>';
+    // Sidebar link
+    var sbLink = document.getElementById('sidebarBizLink');
+    if (sbLink) {
+      if (bs.length > 1) {
+        sbLink.innerHTML = '<button type="button" id="sidebarSwitchBiz"><span data-icon="swap" style="width:16px;height:16px;display:inline-flex"></span> Switch business</button>';
+      } else if (bs.length < 3) {
+        sbLink.innerHTML = '<button type="button" id="sidebarAddBiz"><span style="font-size:16px;line-height:1">+</span> Add a business</button>';
+      } else {
+        sbLink.innerHTML = '';
+      }
+    }
+  }
+  function openBusinessSwitcher() {
+    if (modalIsOpen) return;
+    var bs = DataStore.getBusinesses();
+    var activeId = DataStore.getGlobal().activeBusiness;
+    var html = '';
+    bs.forEach(function(b) {
+      var isActive = b.id === activeId;
+      var typeLabel = b.type === 'producer' ? 'I make my products' : (b.type === 'reseller' ? 'I buy and resell' : '');
+      html += '<div class="biz-switch-item' + (isActive ? ' active' : '') + '" data-bizid="' + b.id + '">'
+        + '<span class="biz-switch-radio"></span>'
+        + '<div><div class="biz-switch-name">' + escapeHtml(b.name) + '</div>'
+        + (typeLabel ? '<div class="biz-switch-type">' + typeLabel + '</div>' : '')
+        + '</div></div>';
+    });
+    if (bs.length < 3) {
+      html += '<div class="biz-switch-add" id="bizSwitchAdd">+ Add business' + (bs.length === 2 ? ' (1 left)' : '') + '</div>';
+    }
+    openModal(html, 'Switch business', { compact: true });
+    document.querySelectorAll('.biz-switch-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var bizId = item.getAttribute('data-bizid');
+        if (bizId === activeId) { closeModal(); return; }
+        DataStore.switchBusiness(bizId);
+        closeModal();
+        var biz = DataStore.getActiveBusiness();
+        updateTopbarBiz();
+        updateSidebarUser();
+        renderHome();
+        showPage(currentPage);
+        showToast('Switched to ' + (biz ? biz.name : 'business') + '.', 'success');
+      });
+    });
+    var addBtn = document.getElementById('bizSwitchAdd');
+    if (addBtn) addBtn.addEventListener('click', function() { closeModal(); setTimeout(openAddBusinessModal, 200); });
+  }
+  function openAddBusinessModal() {
+    var html = ''
+      + '<div class="form-group"><label class="form-label">Business name</label><input type="text" class="form-input" id="abName" placeholder="Your business name" autocomplete="off"><div class="form-error" id="abNameErr"></div></div>'
+      + '<div class="form-group"><label class="form-label">How do you get your products?</label>'
+      + '<div class="ob-type-choices">'
+      + '<div class="ob-type-card" data-btype="reseller"><span class="ob-type-title">I buy and resell</span><span class="ob-type-sub">You buy finished products from a supplier and sell them.</span></div>'
+      + '<div class="ob-type-card" data-btype="producer"><span class="ob-type-title">I make them myself</span><span class="ob-type-sub">You buy ingredients or materials and make the products you sell.</span></div>'
+      + '</div></div>'
+      + '<button class="btn btn-primary" style="width:100%" id="abSave" disabled>Add business</button>';
+    openModal(html, 'Add a business', { compact: true });
+    var abType = null;
+    document.querySelectorAll('#modalBody .ob-type-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('#modalBody .ob-type-card').forEach(function(c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        abType = card.getAttribute('data-btype');
+        document.getElementById('abSave').disabled = !document.getElementById('abName').value.trim();
+      });
+    });
+    document.getElementById('abName').addEventListener('input', function() {
+      setModalChanged();
+      document.getElementById('abSave').disabled = !this.value.trim() || !abType;
+    });
+    document.getElementById('abSave').addEventListener('click', function() {
+      var name = document.getElementById('abName').value.trim();
+      if (!name) { document.getElementById('abNameErr').textContent = 'Enter a business name.'; return; }
+      if (!abType) return;
+      var newId = DataStore.nextBizId();
+      var bs = DataStore.getBusinesses();
+      bs.push({ id: newId, name: name, type: abType, createdAt: new Date().toISOString() });
+      DataStore.saveBusinesses(bs);
+      // Create default per-business settings
+      DataStore.switchBusiness(newId);
+      var s = DataStore._defaultBizSettings();
+      s.businessName = name;
+      s.businessType = abType;
+      s.initialStockPromptShown = true; // skip stock prompt for new businesses
+      DataStore._set('baseline_settings', s);
+      closeModal();
+      updateTopbarBiz();
+      updateSidebarUser();
+      renderHome();
+      showPage('home');
+      // Prompt to add products
+      setTimeout(function() {
+        var pHtml = '<p style="margin-bottom:16px;color:var(--gray-700)">' + escapeHtml(name) + ' is set up. Add your products and selling prices so you can start logging sales.</p>'
+          + '<div style="display:flex;gap:8px">'
+          + '<button class="btn btn-secondary" style="flex:1" id="abProductsSkip">Skip for now</button>'
+          + '<button class="btn btn-primary" style="flex:1" id="abProductsGo">Add products</button>'
+          + '</div>';
+        openModal(pHtml, 'Add your products', {compact: true});
+        document.getElementById('abProductsSkip').addEventListener('click', function() { closeModal(); });
+        document.getElementById('abProductsGo').addEventListener('click', function() { closeModal(); navigate('products'); setTimeout(function() { document.getElementById('btnAddProduct').click(); }, 200); });
+      }, 200);
+    });
+  }
+  document.getElementById('topbarBiz').addEventListener('click', openBusinessSwitcher);
   var modalHasChanges = false;
   var confirmCb = null;
   var isMobile = window.innerWidth < 768;
@@ -2376,6 +2726,13 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     navItems[i].addEventListener('click', (function(item){return function(){navigate(item.getAttribute('data-page'));};})(navItems[i]));
   }
   topbarHome.addEventListener('click', function(){ navigate('home'); });
+  document.getElementById('sidebarBizLink').addEventListener('click', function(e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    closeMobileSidebar();
+    if (btn.id === 'sidebarSwitchBiz') setTimeout(openBusinessSwitcher, 150);
+    else if (btn.id === 'sidebarAddBiz') setTimeout(openAddBusinessModal, 150);
+  });
 
   // ---- Modal ----
   var modalDismissCb = null;
@@ -2501,6 +2858,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var s=DataStore.getSettings();
     document.getElementById('sidebarUserName').textContent = s.userName||'Welcome';
     document.getElementById('sidebarBusiness').textContent = s.businessName||'';
+    updateTopbarBiz();
   };
 
   window.addEventListener('resize', function(){isMobile=window.innerWidth<768;});
@@ -2581,6 +2939,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   }
 
   function obSaveProducts(fromStep5) {
+    // Ensure multi-business structures exist for new users
+    if (!DataStore._getRaw('baseline_global')) {
+      DataStore.saveGlobal(DataStore._defaultGlobal());
+    }
+    if (DataStore.getBusinesses().length === 0) {
+      DataStore.saveBusinesses([{ id: 'b1', name: obBizInput.value.trim(), type: obBusinessType, createdAt: new Date().toISOString() }]);
+      DataStore.switchBusiness('b1');
+    }
     var settings = DataStore.getSettings();
     settings.userName = obNameInput.value.trim();
     settings.businessName = obBizInput.value.trim();
@@ -3039,7 +3405,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Current stock</label><input type="number" class="form-input" id="papStock" min="0" value="0"><div class="form-error" id="papStockErr"></div></div>'
-      +   '<div class="form-group"><label class="form-label">Reorder level</label><input type="number" class="form-input" id="papReorder" min="0" placeholder="Default: 2"></div>'
+      +   '<div class="form-group"><label class="form-label">' + (isProducer() ? 'Low stock level' : 'Reorder level') + '</label><input type="number" class="form-input" id="papReorder" min="0" placeholder="Default: 2"></div>'
       + '</div>'
       + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="papSave">Save product</button>';
     openModal(html, 'Add product');
@@ -3134,7 +3500,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '</div>'
       + '<div class="form-row-2">'
       +   '<div class="form-group"><label class="form-label">Stock</label><input type="number" class="form-input" id="pedStock" value="' + product.stock + '"></div>'
-      +   '<div class="form-group"><label class="form-label">Reorder level</label><input type="number" class="form-input" id="pedReorder" min="0" value="' + levelVal + '" placeholder="Default: 2"></div>'
+      +   '<div class="form-group"><label class="form-label">' + (isProducer() ? 'Low stock level' : 'Reorder level') + '</label><input type="number" class="form-input" id="pedReorder" min="0" value="' + levelVal + '" placeholder="Default: 2"></div>'
       + '</div>'
       + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="pedSave">Save changes</button>'
       + '<button class="btn btn-danger" style="width:100%;margin-top:10px" id="pedDelete">Delete product</button>';
@@ -3674,7 +4040,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
         + note;
     } else if (c.type === 'expense') {
       var cats = '<select class="form-select" data-f="category"><option value="">Select a category</option>'
-        + expenseCategories.map(function(x) { return '<option value="' + x + '"' + (c.category === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select>';
+        + getExpenseCategories().map(function(x) { return '<option value="' + x + '"' + (c.category === x ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select>';
       h += '<div class="form-row-2">' + date + pasteField('Amount (\u20A6)', pasteInput('amount', 'number', c.amount, ' min="0" inputmode="decimal"'), 'amount') + '</div>'
         + pasteField('Category', cats, 'category') + note;
     } else if (c.type === 'stock_received') {
@@ -4389,7 +4755,10 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
 
   // ============ LOG AN EXPENSE (B-09) ============
 
-  var expenseCategories = ['Ingredients/raw materials','Packaging/materials','Rent','Salaries','Utilities','Subscriptions','Loan repayment','Transport/delivery','Labour/staff','Market/stall fees','Other'];
+  function getExpenseCategories() {
+    if (isProducer()) return ['Ingredients/raw materials','Packaging/materials','Rent','Salaries','Utilities','Subscriptions','Loan repayment','Transport/delivery','Labour/staff','Market/stall fees','Other'];
+    return ['Rent','Salaries','Utilities','Subscriptions','Loan repayment','Transport/delivery','Packaging/materials','Labour/staff','Market/stall fees','Other'];
+  }
 
   function openExpenseForm(existingEntry) {
     var e = existingEntry || null;
@@ -4398,7 +4767,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + '<div class="form-group"><label class="form-label">Amount (\u20A6)</label><input type="number" class="form-input" id="expAmount" min="0" value="' + (e ? e.amount : '') + '" placeholder="0"><div class="form-error" id="expAmountErr"></div></div>'
       + '<div class="form-group"><label class="form-label">Category</label><select class="form-select" id="expCategory">'
       +   '<option value="">Select a category</option>'
-      +   expenseCategories.map(function(c){ return '<option value="' + c + '"' + (e && e.category === c ? ' selected' : '') + '>' + c + '</option>'; }).join('')
+      +   getExpenseCategories().map(function(c){ return '<option value="' + c + '"' + (e && e.category === c ? ' selected' : '') + '>' + c + '</option>'; }).join('')
       +   '</select><div class="form-error" id="expCategoryErr"></div>'
       +   '<div id="expCatHint" style="font-size:11px;margin-top:4px;font-style:italic;color:var(--gray-500)"></div></div>'
       + '<div class="form-group"><label class="form-label">Note</label><input type="text" class="form-input" id="expNote" placeholder="Optional" value="' + (e && e.note ? escapeHtml(e.note) : '') + '"></div>'
@@ -5743,11 +6112,16 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       + (hasBank && b.phone ? 'Your invoices show your payment-details number (' + escapeHtml(b.phone) + ') for now.' : 'No phone number shows on your invoices yet.') + '</div>';
 
     var req = !!s.requireCustomerName;
+    var bizCount = DataStore.getBusinesses().length;
     var html = ''
       + '<div class="settings-section"><div class="settings-head"><h3>Profile</h3><button type="button" class="link-btn" data-act="edit-profile">Edit</button></div>'
-      +   '<div class="settings-card card">' + settingsLine('Your name', escapeHtml(s.userName || '')) + settingsLine('Business name', escapeHtml(s.businessName || '')) + phoneRow
+      +   '<div class="settings-card card">' + settingsLine('Your name', escapeHtml(s.userName || '')) + '</div></div>'
+      + '<div class="settings-section"><div class="settings-head"><h3>' + escapeHtml(s.businessName || 'Business') + '</h3><button type="button" class="link-btn" data-act="edit-business">Edit</button></div>'
+      +   '<div class="settings-card card">' + settingsLine('Business name', escapeHtml(s.businessName || '')) + phoneRow
       +   settingsLine('Business type', s.businessType === 'producer' ? 'I make my products' : (s.businessType === 'reseller' ? 'I buy and resell' : 'Not set'))
-      +   '</div></div>'
+      +   '</div>'
+      +   (bizCount > 1 ? '<div style="text-align:center;padding:8px 0 4px"><button type="button" class="link-btn" style="color:var(--bad);font-size:13px" data-act="delete-business">Delete this business</button></div>' : '')
+      + '</div>'
 
       + '<div class="settings-section"><div class="settings-head"><h3>Preferences</h3></div>'
       +   '<div class="settings-card card"><div class="settings-pref"><div class="settings-pref-text">Ask for a customer name on every sale<span>Credit sales and due dates always need one.</span></div>'
@@ -5788,6 +6162,8 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     if (!el) return;
     var act = el.getAttribute('data-act');
     if (act === 'edit-profile') openProfileModal();
+    else if (act === 'edit-business') openBusinessEditModal();
+    else if (act === 'delete-business') confirmDeleteBusiness();
     else if (act === 'pref-require') setRequireCustomerName(el.getAttribute('data-val') === 'on');
     else if (act === 'pref-theme') setTheme(el.getAttribute('data-val'));
     else if (act === 'edit-bank') {
@@ -5809,30 +6185,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     var s = DataStore.getSettings();
     var html = ''
       + '<div class="form-group"><label class="form-label">Your name</label><input type="text" class="form-input" id="spName" autocomplete="off" value="' + escAttr(s.userName || '') + '"><div class="form-error" id="spNameErr"></div></div>'
-      + '<div class="form-group"><label class="form-label">Business name</label><input type="text" class="form-input" id="spBiz" autocomplete="off" value="' + escAttr(s.businessName || '') + '"><div class="form-error" id="spBizErr"></div></div>'
-      + '<div class="form-group"><label class="form-label">Business phone (optional)</label><input type="tel" class="form-input" id="spPhone" autocomplete="off" value="' + escAttr(s.phoneNumber || '') + '">'
-      +   '<div class="form-help">Shown at the top of your invoices. Leave it blank to use the number in your payment details.</div></div>'
-      + '<div class="form-group"><label class="form-label">Business type</label><select class="form-select" id="spBtype">'
-      +   '<option value="reseller"' + (s.businessType !== 'producer' ? ' selected' : '') + '>I buy and resell</option>'
-      +   '<option value="producer"' + (s.businessType === 'producer' ? ' selected' : '') + '>I make my products</option>'
-      + '</select><div class="form-help">This changes how your costs are calculated in My Numbers.</div></div>'
-      + '<button type="button" class="btn btn-primary" style="width:100%" id="spSave">Save profile</button>';
+      + '<button type="button" class="btn btn-primary" style="width:100%" id="spSave">Save</button>';
     openModal(html, 'Edit profile', {compact: true});
-    ['spName', 'spBiz', 'spPhone'].forEach(function(id) { document.getElementById(id).addEventListener('input', function() { setModalChanged(); }); });
-    document.getElementById('spBtype').addEventListener('change', function() { setModalChanged(); });
+    document.getElementById('spName').addEventListener('input', function() { setModalChanged(); });
     document.getElementById('spSave').addEventListener('click', function() {
       var name = document.getElementById('spName').value.trim();
-      var biz = document.getElementById('spBiz').value.trim();
-      var phone = document.getElementById('spPhone').value.trim();
-      document.getElementById('spNameErr').textContent = '';
-      document.getElementById('spBizErr').textContent = '';
-      var bad = false;
-      if (!name) { document.getElementById('spNameErr').textContent = 'Enter your name.'; bad = true; }
-      if (!biz) { document.getElementById('spBizErr').textContent = 'Enter your business name.'; bad = true; }
-      if (bad) return;
+      if (!name) { document.getElementById('spNameErr').textContent = 'Enter your name.'; return; }
       var cur = DataStore.getSettings();
-      cur.userName = name; cur.businessName = biz; cur.phoneNumber = phone;
-      cur.businessType = document.getElementById('spBtype').value;
+      cur.userName = name;
       DataStore.saveSettings(cur);
       closeModal();
       updateSidebarUser();
@@ -5840,6 +6200,54 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       renderSettingsPage();
       showToast('Profile saved.', 'success');
     });
+  }
+
+  function openBusinessEditModal() {
+    var s = DataStore.getSettings();
+    var html = ''
+      + '<div class="form-group"><label class="form-label">Business name</label><input type="text" class="form-input" id="ebBiz" autocomplete="off" value="' + escAttr(s.businessName || '') + '"><div class="form-error" id="ebBizErr"></div></div>'
+      + '<div class="form-group"><label class="form-label">Business phone (optional)</label><input type="tel" class="form-input" id="ebPhone" autocomplete="off" value="' + escAttr(s.phoneNumber || '') + '">'
+      +   '<div class="form-help">Shown at the top of your invoices.</div></div>'
+      + '<div class="form-group"><label class="form-label">Business type</label><select class="form-select" id="ebBtype">'
+      +   '<option value="reseller"' + (s.businessType !== 'producer' ? ' selected' : '') + '>I buy and resell</option>'
+      +   '<option value="producer"' + (s.businessType === 'producer' ? ' selected' : '') + '>I make my products</option>'
+      + '</select><div class="form-help">This changes how your costs are calculated in My Numbers.</div></div>'
+      + '<button type="button" class="btn btn-primary" style="width:100%" id="ebSave">Save</button>';
+    openModal(html, 'Edit business', {compact: true});
+    ['ebBiz', 'ebPhone'].forEach(function(id) { document.getElementById(id).addEventListener('input', function() { setModalChanged(); }); });
+    document.getElementById('ebBtype').addEventListener('change', function() { setModalChanged(); });
+    document.getElementById('ebSave').addEventListener('click', function() {
+      var biz = document.getElementById('ebBiz').value.trim();
+      if (!biz) { document.getElementById('ebBizErr').textContent = 'Enter your business name.'; return; }
+      var cur = DataStore.getSettings();
+      cur.businessName = biz;
+      cur.phoneNumber = document.getElementById('ebPhone').value.trim();
+      cur.businessType = document.getElementById('ebBtype').value;
+      DataStore.saveSettings(cur);
+      // Also update the businesses list entry
+      var bs = DataStore.getBusinesses();
+      var activeId = DataStore.getGlobal().activeBusiness;
+      bs.forEach(function(b) { if (b.id === activeId) { b.name = biz; b.type = cur.businessType; } });
+      DataStore.saveBusinesses(bs);
+      closeModal();
+      updateSidebarUser();
+      renderHome();
+      renderSettingsPage();
+      showToast('Business updated.', 'success');
+    });
+  }
+
+  function confirmDeleteBusiness() {
+    var biz = DataStore.getActiveBusiness();
+    if (!biz) return;
+    showConfirm('Delete ' + biz.name + '? This removes all products, sales, expenses and invoices for this business. This can’t be undone.', function(ok) {
+      if (!ok) return;
+      DataStore.deleteBusiness(biz.id);
+      updateSidebarUser();
+      renderHome();
+      showPage('home');
+      showToast(biz.name + ' deleted.', 'success');
+    }, 'Delete', 'Cancel');
   }
 
   function setTheme(mode) {
@@ -6622,6 +7030,9 @@ window.renderIcons = function(root){
 })();
 
   function init() {
+    // Migrate from flat keys to multi-business (runs once for existing users, no-op otherwise)
+    migrateToMultiBusiness();
+
     // Session counter (own key, kept out of backups): count once per tab session.
     try {
       if (!sessionStorage.getItem('baseline_session_counted')) {
@@ -6634,11 +7045,13 @@ window.renderIcons = function(root){
     var settings = DataStore.getSettings();
     // A reload with a pop-up open leaves its history entry behind; step back over it so Back isn't wasted once.
     if (history.state && history.state.blModal) ownBack();
-    // Safety net: setup marked complete but the shop has no name or no products. Only reset when there is nothing
-    // else stored, so a damaged or hand-edited backup can never wipe real sales, invoices or payments.
+    // Safety net: setup marked complete but the shop has no name or no products. Only reset when there is genuinely
+    // no data anywhere, so a damaged or hand-edited backup can never wipe real sales, invoices or payments.
+    // In multi-business, an empty active business (just added) is normal — only clear if there are no businesses at all.
     if(settings.onboardingComplete && (!settings.userName || DataStore.getProducts(true).length===0)){
       var hasRecords = DataStore.getEntries({}).length > 0 || DataStore.getInvoices().length > 0 || (DataStore._get('baseline_credit_payments') || []).length > 0;
-      if (!hasRecords) { DataStore.clearAll(); settings = DataStore.getSettings(); }
+      var hasBusinesses = DataStore.getBusinesses().length > 0;
+      if (!hasRecords && !hasBusinesses) { DataStore.clearAll(); settings = DataStore.getSettings(); }
     }
     updateSidebarUser();
     if(!settings.onboardingComplete) { showView('onboarding'); }
