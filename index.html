@@ -2756,6 +2756,20 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   window.openModal = function(html, title, opts) {
     opts = opts || {};
     modalTitleEl.textContent = title||''; modalBodyEl.innerHTML = html;
+    // Show active business name in modals when there are 2+ businesses
+    var _mbiz = document.getElementById('modalBizBadge');
+    if (_mbiz) _mbiz.remove();
+    var _bs = DataStore.getBusinesses();
+    if (_bs.length > 1) {
+      var _ab = DataStore.getActiveBusiness();
+      if (_ab) {
+        var _badge = document.createElement('div');
+        _badge.id = 'modalBizBadge';
+        _badge.style.cssText = 'font-size:11px;font-weight:600;color:var(--teal);margin-top:2px;';
+        _badge.textContent = _ab.name;
+        modalTitleEl.parentNode.insertBefore(_badge, modalTitleEl.nextSibling);
+      }
+    }
     modalOverlay.classList.remove('compact','sheet');
     if (opts.compact) modalOverlay.classList.add('compact');
     if (opts.sheet) modalOverlay.classList.add('sheet');
@@ -2766,6 +2780,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
   };
   window.closeModal = function() {
     modalOverlay.classList.remove('visible','compact','sheet'); modalIsOpen=false; modalHasChanges=false; modalBodyEl.innerHTML=''; modalDismissCb=null;
+    var _mbiz = document.getElementById('modalBizBadge'); if (_mbiz) _mbiz.remove();
     // give the history entry back after this tick, unless another pop-up opens straight away or the app moves to another page
     if (modalEntry && modalPopTimer === null) modalPopTimer = setTimeout(releaseModalEntry, 0);
   };
