@@ -4491,6 +4491,7 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       +   '<input type="text" class="form-input" id="saleNote" placeholder="Optional" value="' + escapeHtml(saleNoteVal) + '"></div>'
       + '<button class="btn btn-primary" style="width:100%;margin-top:8px" id="saleSaveBtn">' + (editing ? 'Save changes' : 'Save sale') + '</button>'
       + (editing ? '<button class="btn btn-secondary" style="width:100%;margin-top:10px" id="saleInvoiceBtn">' + (DataStore.getInvoiceByEntryId(saleEditingEntryId) ? 'View invoice' : 'Generate invoice') + '</button>' : '')
+      + (editing && (function(){ var e = DataStore.getEntryById(saleEditingEntryId); return e && e.paymentStatus === 'paid'; })() ? '<button class="btn btn-secondary" style="width:100%;margin-top:10px" id="saleReceiptBtn">View receipt</button>' : '')
       + (editing ? '<button class="btn btn-danger" style="width:100%;margin-top:10px" id="saleDeleteBtn">Delete entry</button>' : '');
 
     openModal(html, editing ? 'Edit sale' : 'Log a sale');
@@ -4575,6 +4576,14 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
         var existingInv = DataStore.getInvoiceByEntryId(entry.id);
         if (existingInv) openInvoicePreview(existingInv.id);
         else startInvoiceFlow(entry.id);
+      });
+    }
+    var saleReceiptBtn = document.getElementById('saleReceiptBtn');
+    if (saleReceiptBtn) {
+      saleReceiptBtn.addEventListener('click', function() {
+        if (modalHasChanges) { showToast('Save your changes first.', 'info'); return; }
+        closeModal();
+        setTimeout(function() { openReceiptPreview(saleEditingEntryId); }, 100);
       });
     }
     if (editing) {
@@ -4762,9 +4771,15 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     renderProductsPage();
 
     setTimeout(function() {
-      showConfirm('Generate an invoice for this sale?', function(ok) {
-        if (ok) startInvoiceFlow(entry.id);
-      }, 'Generate', 'Not now');
+      if (salePaymentStatus === 'paid') {
+        showConfirm('Generate a receipt for this sale?', function(ok) {
+          if (ok) openReceiptPreview(entry.id);
+        }, 'Generate', 'Not now');
+      } else {
+        showConfirm('Generate an invoice for this sale?', function(ok) {
+          if (ok) startInvoiceFlow(entry.id);
+        }, 'Generate', 'Not now');
+      }
     }, 250);
   }
 
@@ -5723,6 +5738,155 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
     });
   }
 
+  // ============ RECEIPT RENDERER ============
+
+  var RCT_C = { orange: '#E8891C', gold: '#F5B731', orangeDark: '#A85E0A', orangeXDark: '#8A5508', orangeLight: '#FFF5E0', orangeMid: '#B8700E',
+    g900: '#212529', g700: '#495057', g600: '#868E96', g500: '#ADB5BD', g200: '#E9ECEF' };
+
+  function getReceiptOrderNumber(entry) {
+    if (entry.invoiceId) {
+      var inv = DataStore.getInvoices().filter(function(i) { return i.id === entry.invoiceId; })[0];
+      if (inv) return 'Order #' + inv.invoiceNumber.replace('INV-', '').replace(/^0+/, '');
+    }
+    // For direct sales, derive order number from position among all sales
+    var sales = DataStore.getEntries({}).filter(function(e) { return e.type === 'sale'; })
+      .sort(function(a, b) { return new Date(a.createdAt) - new Date(b.createdAt); });
+    var idx = 1;
+    for (var i = 0; i < sales.length; i++) { if (sales[i].id === entry.id) { idx = i + 1; break; } }
+    return 'Order #' + idx;
+  }
+
+  function buildReceiptRenderData(entry) {
+    var s = DataStore.getSettings();
+    return {
+      businessName: s.businessName || 'Baseline',
+      phone: s.phoneNumber || '',
+      orderNumber: getReceiptOrderNumber(entry),
+      dateText: formatInvoiceDate(localDateStr(new Date(entry.createdAt))),
+      customerName: entry.customerName || '',
+      lines: (entry.lineItems || []).map(function(li) { return { name: li.productName, qty: li.quantity, unit: li.unitPrice, amount: li.amount }; }),
+      totalAmount: entry.totalAmount || (entry.lineItems || []).reduce(function(s, li) { return s + (li.amount || 0); }, 0)
+    };
+  }
+
+  function drawReceipt(ctx, d, H) {
+    var W = INV_W, M = INV_M, C = RCT_C, contentW = W - 2 * M;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H);
+
+    // Header band — Baseline orange gradient with gold accent line
+    var headerH = 260;
+    var grad = null;
+    try { grad = ctx.createLinearGradient(0, 0, W, headerH); grad.addColorStop(0, C.orange); grad.addColorStop(1, C.gold); } catch (e) {}
+    ctx.fillStyle = grad || C.orange; ctx.fillRect(0, 0, W, headerH);
+    ctx.fillStyle = C.gold; ctx.fillRect(0, headerH - 4, W, 4);
+
+    // Business name in header
+    ctx.textAlign = 'center';
+    var nameUpper = (d.businessName || '').toUpperCase();
+    var nameSize = invFitSize(ctx, nameUpper, 800, INV_FD, 72, 32, contentW);
+    invFont(ctx, 800, nameSize, INV_FD);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(invEllipsize(ctx, nameUpper, contentW), W / 2, headerH / 2 + nameSize / 3);
+    ctx.textAlign = 'left';
+
+    // "RECEIPT" label + order number + date
+    var y = headerH + 88;
+    invFont(ctx, 800, 56, INV_FD); ctx.fillStyle = C.orangeDark; ctx.fillText('RECEIPT', M, y);
+    y += 56;
+    invFont(ctx, 700, 28, INV_FB); ctx.fillStyle = C.g700; ctx.fillText(d.orderNumber, M, y);
+    ctx.textAlign = 'right'; invFont(ctx, 500, 28, INV_FB); ctx.fillStyle = C.g600; ctx.fillText(d.dateText, W - M, y);
+    ctx.textAlign = 'left';
+
+    // Customer
+    if (d.customerName) {
+      y += 88;
+      invFont(ctx, 700, 22, INV_FB); ctx.fillStyle = C.g500; ctx.fillText('CUSTOMER', M, y);
+      y += 44;
+      var custSize = invFitSize(ctx, d.customerName, 700, INV_FD, 40, 24, contentW);
+      invFont(ctx, 700, custSize, INV_FD); ctx.fillStyle = C.g900;
+      ctx.fillText(invEllipsize(ctx, d.customerName, contentW), M, y);
+    }
+
+    // Line items table
+    y += 92;
+    var itemW = 406, colQtyR = 560, colUnitR = 810, colTotR = W - M;
+    invFont(ctx, 700, 20, INV_FB); ctx.fillStyle = C.g500;
+    ctx.textAlign = 'left'; ctx.fillText('ITEM', M, y);
+    ctx.textAlign = 'right';
+    ctx.fillText('QTY', colQtyR, y); ctx.fillText('UNIT PRICE', colUnitR, y); ctx.fillText('TOTAL', colTotR, y);
+    y += 22;
+    ctx.fillStyle = C.g200; ctx.fillRect(M, y, contentW, 2);
+    y += 2;
+    var rowH = 88;
+    d.lines.forEach(function(li) {
+      var base = y + 56;
+      ctx.textAlign = 'left'; invFont(ctx, 500, 30, INV_FB); ctx.fillStyle = C.g900;
+      ctx.fillText(invEllipsize(ctx, li.name, itemW), M, base);
+      invDrawRight(ctx, String(li.qty), 500, 30, 22, colQtyR, base, 90, C.g700);
+      invDrawRight(ctx, formatNaira(li.unit), 500, 30, 22, colUnitR, base, 220, C.g700);
+      invDrawRight(ctx, formatNaira(li.amount), 700, 30, 22, colTotR, base, 190, C.g900);
+      y += rowH;
+      ctx.fillStyle = C.g200; ctx.fillRect(M, y - 2, contentW, 1);
+    });
+
+    // Total paid band
+    y += 36;
+    var totalH = 118;
+    ctx.fillStyle = C.orangeLight; invRoundRect(ctx, M, y, contentW, totalH, 16); ctx.fill();
+    var totalStr = formatNaira(d.totalAmount);
+    var tSize = invFitSize(ctx, totalStr, 800, INV_FD, 52, 30, contentW - 220);
+    var baseline = y + totalH / 2 + tSize / 3;
+    invFont(ctx, 700, 32, INV_FB); ctx.fillStyle = C.orangeMid;
+    ctx.textAlign = 'left'; ctx.fillText('Total paid', M + 32, baseline);
+    invFont(ctx, 800, tSize, INV_FD); ctx.fillStyle = C.orangeXDark; ctx.textAlign = 'right';
+    ctx.fillText(totalStr, W - M - 32, baseline);
+    ctx.textAlign = 'left';
+    y += totalH;
+
+    // Cursive "Thank you!"
+    y += 64;
+    ctx.textAlign = 'center';
+    invFont(ctx, 400, 40, "'Georgia', 'Times New Roman', serif", true);
+    ctx.fillStyle = C.orange;
+    ctx.fillText('Thank you for your purchase!', W / 2, y);
+    ctx.textAlign = 'left';
+
+    // Delivery fee note
+    y += 56;
+    ctx.textAlign = 'center';
+    invFont(ctx, 400, 22, INV_FB); ctx.fillStyle = C.g500;
+    ctx.fillText('Please note that delivery fee is paid for by the customer.', W / 2, y);
+    ctx.textAlign = 'left';
+
+    // Contact us
+    if (d.phone) {
+      y += 48;
+      ctx.textAlign = 'center';
+      invFont(ctx, 400, 20, INV_FB); ctx.fillStyle = C.g600;
+      ctx.fillText('Contact us on ' + d.phone, W / 2, y);
+      ctx.textAlign = 'left';
+    }
+
+    // Footer
+    invFont(ctx, 600, 22, INV_FB); ctx.fillStyle = C.g500; ctx.textAlign = 'center';
+    ctx.fillText('MADE WITH BASELINE', W / 2, H - 56);
+    ctx.textAlign = 'left';
+    return y;
+  }
+
+  function renderReceiptCanvas(entry) {
+    return loadInvoiceFonts().then(function() {
+      var d = buildReceiptRenderData(entry);
+      var probe = document.createElement('canvas'); probe.width = INV_W; probe.height = 10;
+      var bottom = drawReceipt(probe.getContext('2d'), d, 10);
+      var H = Math.max(INV_MIN_H, bottom + 150);
+      var canvas = document.createElement('canvas'); canvas.width = INV_W; canvas.height = H;
+      drawReceipt(canvas.getContext('2d'), d, H);
+      return canvas;
+    });
+  }
+
   function triggerDownload(blob, name) {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -5751,6 +5915,68 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       triggerDownload(f.blob, f.name);
       showToast('Invoice image downloaded.', 'success');
     }
+  }
+
+  // ============ RECEIPT PREVIEW ============
+
+  var receiptPreviewToken = 0;
+  var receiptPreviewFile = null;
+
+  function shareReceiptImage() {
+    var f = receiptPreviewFile;
+    if (!f || !f.blob) return;
+    var file = null;
+    try { file = new File([f.blob], f.name, {type: 'image/png'}); } catch (e) { file = null; }
+    if (file && navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
+      navigator.share({files: [file], title: f.name}).catch(function(err) {
+        if (err && err.name === 'AbortError') return;
+        triggerDownload(f.blob, f.name);
+        showToast('Sharing did not open. The image was downloaded instead.', 'info');
+      });
+    } else {
+      triggerDownload(f.blob, f.name);
+      showToast('Receipt image downloaded.', 'success');
+    }
+  }
+
+  function openReceiptPreview(entryId) {
+    var entry = DataStore.getEntryById(entryId);
+    if (!entry || entry.type !== 'sale') return;
+    var token = ++receiptPreviewToken;
+    receiptPreviewFile = null;
+    var html = '<div class="inv-preview">'
+      + '<div class="inv-head"><span class="inv-head-num">Receipt</span></div>'
+      + '<div id="rcptPreviewHost"><div class="inv-loading">Preparing receipt…</div></div>'
+      + '<div class="inv-actions">'
+      +   '<button type="button" class="btn btn-primary" id="rcptShare" disabled>Share</button>'
+      +   '<button type="button" class="btn btn-secondary" id="rcptDownload" disabled>Download</button>'
+      + '</div>'
+      + '</div>';
+    openModal(html, 'Receipt');
+    var host = document.getElementById('rcptPreviewHost');
+    document.getElementById('rcptShare').addEventListener('click', shareReceiptImage);
+    document.getElementById('rcptDownload').addEventListener('click', function() {
+      if (!receiptPreviewFile) return;
+      triggerDownload(receiptPreviewFile.blob, receiptPreviewFile.name);
+      showToast('Receipt image downloaded.', 'success');
+    });
+
+    renderReceiptCanvas(entry).then(function(canvas) {
+      if (token !== receiptPreviewToken || !document.body.contains(host)) return;
+      canvas.className = 'inv-canvas';
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', 'Receipt for sale');
+      host.innerHTML = '';
+      host.appendChild(canvas);
+      canvas.toBlob(function(blob) {
+        if (token !== receiptPreviewToken || !document.body.contains(host) || !blob) return;
+        var inv = entry.invoiceId ? DataStore.getInvoices().filter(function(i) { return i.id === entry.invoiceId; })[0] : null;
+        var fname = inv ? 'Receipt-' + inv.invoiceNumber.replace('INV-', '') + '.png' : 'Receipt.png';
+        receiptPreviewFile = {blob: blob, name: fname};
+        document.getElementById('rcptShare').disabled = false;
+        document.getElementById('rcptDownload').disabled = false;
+      }, 'image/png');
+    });
   }
 
   function cancelInvoice(invoiceId) {
@@ -5786,11 +6012,15 @@ try { applyTheme(localStorage.getItem('baseline_theme') || 'system'); } catch (e
       +   '<button type="button" class="btn btn-secondary" id="invDownload" disabled>Download</button>'
       + '</div>'
       + (getInvoiceStatus(inv) === 'pending' ? '<button type="button" class="btn btn-primary" style="width:100%;margin-top:10px" id="invMarkPaid">Mark paid</button><button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px" id="invEdit">Edit invoice</button>' : '')
+      + (getInvoiceStatus(inv) === 'paid' && inv.entryId ? '<button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px" id="invPrintReceipt"><span data-icon="file-text" style="margin-right:6px"></span>Print receipt</button>' : '')
       + '<button type="button" class="btn btn-danger" style="width:100%;margin-top:10px" id="invCancel">Cancel invoice</button>'
       + '</div>';
     openModal(html, 'Invoice');
+    renderIcons();
     var host = document.getElementById('invPreviewHost');
     document.getElementById('invShare').addEventListener('click', shareInvoiceImage);
+    var invReceiptBtn = document.getElementById('invPrintReceipt');
+    if (invReceiptBtn) invReceiptBtn.addEventListener('click', function() { closeModal(); setTimeout(function(){ openReceiptPreview(inv.entryId); }, 100); });
     var invEditBtn = document.getElementById('invEdit');
     if (invEditBtn) invEditBtn.addEventListener('click', function() { closeModal(); setTimeout(function(){ openInvoiceOnlyForm(inv.id); }, 100); });
     var invMarkBtn = document.getElementById('invMarkPaid');
@@ -7339,6 +7569,11 @@ window.renderIcons = function(root){
     DataStore.saveInvoice(inv);
     showToast(inv.invoiceNumber + ' marked paid.', 'success');
     renderFulfilmentPage(); renderInvoicesPage(); renderHome(); renderLogList();
+    setTimeout(function() {
+      showConfirm('Generate a receipt for this payment?', function(ok) {
+        if (ok) openReceiptPreview(entry.id);
+      }, 'Generate', 'Not now');
+    }, 250);
   }
 
   init();
